@@ -238,6 +238,9 @@ input[type=text]:focus, input[type=number]:focus, input:not([type]):focus, selec
 .bal-n { font-size: 30px; font-weight: 800; line-height: 1.1; }
 .bal-n small { font-size: 12px; font-weight: 600; margin-left: 3px; }
 .bal-n.b { color: #58a6ff; } .bal-n.r { color: #ff7b72; }
+.dgp { font-size: 12px; font-weight: 700; color: #d29922; margin-left: 6px; white-space: nowrap; }
+.dgp small { font-size: 10px; font-weight: 600; margin-left: 1px; }
+.dgp.none { color: var(--tx-mu); }
 .bal-g { font-size: 12px; margin-top: 4px; color: var(--tx-sub); }
 .bal-l { font-size: 12px; color: var(--tx-sub); font-weight: 700; margin-bottom: 2px; }
 .bal-d { font-size: 13px; font-weight: 800; padding: 4px 10px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
@@ -621,7 +624,7 @@ details.mt summary { cursor: pointer; font-weight: 600; }
 <script>
 // ▼ 上部に流れるアナウンス
 const ANNOUNCE=[
-  "ろるぱーくカスタム管理アプリ ver2.1.0",
+  "ろるぱーくカスタム管理アプリ ver2.1.1",
   "試合後はチャンピオンとKDAを入力して、勝敗を保存しよう",
   "欲しい機能があったらつよしにDMしてね",
   "【実績】『逆ドラゴンスレイヤー』...どな",
@@ -630,11 +633,19 @@ const ANNOUNCE_SPEED=0.35;
 // streak: 連勝ボーナス（from連勝目から、勝つたびにstepずつ増え、最大max。負けるとリセット）
 const RATE={start:1000,win:10,kda:5,kdaBase:2.5,elo:true,eloScale:400,kdaRole:{TOP:2.5,JG:3,MID:3,ADC:3,SUP:3.5},streak:{from:2,step:1,max:3}};
 const PATCH=[
+ {v:"2.1.1",date:"2026-10-29",sec:[
+  ["チーム分け",[
+   "結果画面で、各プレイヤーの名前の右に現在のレート（DGP）を表示。戦績がない人は初期値を薄い色で表示。観戦者にも表示。"]],
+  ["修正",[
+   "試合の日付が、日本時間の0時〜9時に保存すると前の日になる問題を修正（端末の日付で記録）。",
+   "別のタブで保存した内容を自動で取り込むように。複数のタブを開いていても、片方の保存でもう片方の試合が消えないように修正。"]]
+ ]},
  {v:"2.1.0",date:"2026-10-23",sec:[
   ["レート",[
    "レートの単位を「DGP（ドパガキポイント）」に変更。戦績・順位、履歴、チーム分けの数字に「DGP」を付けた。",
    "連勝ボーナスを追加。2連勝目から、勝つたびに +1、+2、+3 DGP と増える（4連勝目以降は +3 で頭打ち）。負けると連勝は0に戻る。",
-   "レート推移グラフのツールチップに、連勝ボーナスの点数を表示。"]],
+   "レート推移グラフのツールチップに、連勝ボーナスの点数を表示。",
+   "「チーム差補正」の呼び名を「TG補正（TeamGap補正）」に変更。チームバランス表示に、勝った場合・負けた場合のTG補正の増減も表示。TG補正は、レートバランスのON/OFFに関係なく常に適用される。"]],
   ["チーム分け",[
    "参加者を追加したとき、その団体に戦績がある名前には「既」、初めての名前には「新」を表示。",
    "結果画面でプレイヤーを移動したとき、「平均レート」の表示も移動後の編成で更新されるように修正。",
@@ -646,7 +657,8 @@ const PATCH=[
    "結果画面でプレイヤーを移動したりロールを変えたりしても、TOP→JG→MID→ADC→SUP の並びが崩れないように。",
    "ロール指定ありのとき、同じチームでロールが重複していたら警告を表示。",
    "結果画面の入力欄のレイアウトを変更。左側にロールとチームサイド、右上に「クリア」ボタン。",
-   "ロールとチームサイドの文字を、中央揃えに修正。"]],
+   "ロールとチームサイドの文字を、中央揃えに修正。",
+   "チーム分けの結果に、チームバランス（両チームの平均レート・差・期待勝率）を大きく表示。ロール指定・レートバランスのON/OFFに関わらず常に表示し、プレイヤーを移動すると更新される。"]],
   ["履歴",[
    "入力欄のレイアウトを、チーム分けの結果画面と同じに変更。",
    "試合を開いたとき、プレイヤーのチーム（ブルー／レッド）を後から変更できるように。DGPも計算し直される。"]],
@@ -654,14 +666,11 @@ const PATCH=[
    "選手の詳細を閉じられるように。「閉じる」ボタン、または同じ選手をもう一度タップ。",
    "画面の一番下に「レートの計算方法」を掲載。設定値と連動して自動で更新される。",
    "計算方法の説明で、「勝つ見込み」を「TG補正」「期待勝率」という言い方に変更。期待勝率の一覧も追加。",
-   "チーム分けの結果に、チームバランス（両チームの平均レート・差・期待勝率）を大きく表示。ロール指定・レートバランスのON/OFFに関わらず常に表示し、プレイヤーを移動すると更新される。",
-   "「チーム差補正」の呼び名を「TG補正（TeamGap補正）」に変更。チームバランス表示に、勝った場合・負けた場合のTG補正の増減も表示。TG補正は、レートバランスのON/OFFに関係なく常に適用される。",
    "全員のレート推移グラフを追加。直近10／30／50試合・全期間の切り替え、名前をタップして表示／非表示、上位8人だけの表示ができる。"]]
  ]},
  {v:"2.0.0",date:"2026-10-22",sec:[
   ["デザイン（UI全面改修）",[
-   "硬派なダークUIへ全面見直し。",
-  ]],
+   "硬派なダークUIへ全面見直し。"]],
   ["チーム分け & 試合履歴",[
    "チーム分け実行後に、プレイヤーを「ブルー ⇔ レッド ⇔ 観戦」へ自由に変更・移動できる機能を追加。",
    "チーム分け結果画面および試合履歴画面で、ロールを後から自由に変更・指定できるドロップダウンを追加。",
@@ -784,7 +793,13 @@ function syncCurInputs(){
   });
 }
 
+function dgpTag(name,RT,known){
+  const has=known.has(name),v=RT.rt[name]??RATE.start;
+  return `<span class="dgp${has?"":" none"}" title="${has?"現在のレート":"この団体の戦績なし（初期値）"}">${v}<small>DGP</small></span>`;
+}
+function knownSet(){const k=new Set();S.history.forEach(m=>[...m.blue,...m.red].forEach(x=>k.add(x.name)));return k;}
 function slot(side,t){
+  const RT=rate(),kn=knownSet();
   return t.map((p,i)=>`<div class="slot">
     <div class="slot-side">
       <select class="role-sel" data-s="${side}" data-i="${i}" data-f="role">
@@ -798,7 +813,7 @@ function slot(side,t){
       </select>
     </div>
     <div class="slot-main">
-      <div class="slot-top"><b>${esc(p.name)}</b><button class="sm" data-clear="1" title="チャンピオンとKDAを空にします">クリア</button></div>
+      <div class="slot-top"><span><b>${esc(p.name)}</b>${dgpTag(p.name,RT,kn)}</span><button class="sm" data-clear="1" title="チャンピオンとKDAを空にします">クリア</button></div>
       <div class="in">
         <input data-s="${side}" data-i="${i}" data-f="champ" type="text" placeholder="チャンピオン" value="${esc(p.champ||"")}" list="champs" style="flex:1;min-width:100px">
         <input class="n" data-s="${side}" data-i="${i}" data-f="k" type="number" min="0" placeholder="K" value="${p.k!=null?p.k:""}">
@@ -811,16 +826,18 @@ function slot(side,t){
 
 function specListHTML(spec){
   if(!spec || !spec.length) return "";
+  const RT=rate(),kn=knownSet();
   return `<div class="card" style="margin-top:12px">
     <b>観戦</b>:
-    ${spec.map((sp, i)=>`<span class="chip">${esc(sp.name)}
+    ${spec.map((sp, i)=>`<span class="chip">${esc(sp.name)}${dgpTag(sp.name,RT,kn)}
       <button class="sm b" data-spec-to="blue" data-spec-i="${i}">+ブルー</button>
       <button class="sm r" data-spec-to="red" data-spec-i="${i}">+レッド</button>
     </span>`).join(" ")}
   </div>`;
 }
 
-function show(){S.draft=cur;save();
+function localDate(){const d=new Date(),p=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate());}
+function show(sv=true){S.draft=cur;if(sv)save();
   $("res").innerHTML=`<div class="teams"><div class="team bl"><h3>ブルーサイド</h3>${slot("blue",cur.blue)}</div><div class="team rd"><h3>レッドサイド</h3>${slot("red",cur.red)}</div></div>
   ${balBox()}
   ${warnHTML()}
@@ -875,7 +892,7 @@ $("res").addEventListener("click",e=>{
 
   const w=e.target.dataset.w;if(!w||!cur)return;
   syncCurInputs();
-  const m={id:Date.now(),date:new Date().toISOString().slice(0,10),mode:cur.mode,winner:w,blue:cur.blue.map(x=>({...x})),red:cur.red.map(x=>({...x}))};
+  const m={id:Date.now(),date:localDate(),mode:cur.mode,winner:w,blue:cur.blue.map(x=>({...x})),red:cur.red.map(x=>({...x}))};
   S.history.push(m);S.draft=null;save();cur=null;gl();dl();
   $("res").innerHTML='<div class="card">保存しました。「戦績」タブで確認できます。</div>';
 });
@@ -1208,6 +1225,16 @@ $("rn").onclick=()=>{
   if(po){if(S.players.some(p=>p.name===n))S.players=S.players.filter(p=>p!==po);else po.name=n;}
   save();pl();stats();$("rv").value="";r.textContent="「"+o+"」を「"+n+"」に"+(merged?"統合":"変更")+"しました。";
 };
+window.addEventListener("storage",e=>{
+  if(e.key!==K||!e.newValue)return;
+  let d;try{d=JSON.parse(e.newValue)}catch(x){return}
+  if(!d||!Array.isArray(d.groups)||!d.groups.length)return;
+  const keep=DB.cur;DB=d;setG(DB.groups.some(g=>g.id===keep)?keep:DB.groups[0].id);
+  cur=S.draft||null;
+  $("swr").checked=!!(DB.opt&&DB.opt.r);$("swb").checked=!!(DB.opt&&DB.opt.b);
+  if(cur)show(false);else $("res").innerHTML="";
+  pl();gl();stats();
+});
 $("swr").checked=!!(DB.opt&&DB.opt.r);$("swb").checked=!!(DB.opt&&DB.opt.b);
 ["swr","swb"].forEach(i=>$(i).onchange=()=>{DB.opt={r:$("swr").checked,b:$("swb").checked};save();});
 (()=>{
