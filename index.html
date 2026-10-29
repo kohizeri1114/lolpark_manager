@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="color-scheme" content="dark light">
-<title>ろるぱーくカスタム管理アプリ</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+<title>ろるぱーくカスタム管理アプリ</title><meta name="theme-color" content="#0a111e"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230a111e%27/%3E%3Cpolygon points=%2720,14 52,14 44,50 12,50%27 fill=%27%23f1c45c%27/%3E%3Ctext x=%2730%27 y=%2740%27 font-size=%2726%27 font-weight=%27800%27 text-anchor=%27middle%27 fill=%27%231b1405%27 font-family=%27Arial,sans-serif%27%3ED%3C/text%3E%3C/svg%3E"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>/* 配色: 夜の配信画面。青と赤はチームの色、金だけがDGP（点数）の色。
    構成: 上に流れるお知らせ / 見出し+団体 / 4つの画面 / スマホは下に操作バー */
 :root{
@@ -323,6 +323,27 @@ dialog img{max-width:100%;height:auto;display:block;border-radius:var(--r)}
 @media(min-width:900px){.set{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;align-items:start}}
 .set .col{grid-template-columns:minmax(0,1fr)}
 .set .grp{grid-template-columns:minmax(0,1fr)}.set .add .field{min-width:0}.set .btn{white-space:normal}
+
+/* ---- ver4 ---- */
+.pl.sel{box-shadow:inset 3px 0 0 var(--gold);background:color-mix(in srgb,var(--gold) 9%,transparent)}
+.chip.sel{border-color:var(--gold);color:var(--ink);background:var(--gold-bg)}
+.pl .hd .x{margin-left:auto;font-size:15px;min-width:30px}
+.sub{overflow-x:auto;white-space:nowrap;scrollbar-width:none}.sub::-webkit-scrollbar{display:none}.sub button{flex:none}
+.modal{position:fixed;z-index:52;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,calc(100% - 24px));max-height:calc(100% - 24px);overflow:auto;background:var(--bg);border:1px solid var(--line-2);border-radius:var(--rl);padding:16px;box-shadow:var(--shadow)}
+.modal.wide{width:min(980px,calc(100% - 24px))}
+.modal img{width:100%;height:auto;display:block;border-radius:var(--r);border:1px solid var(--line)}
+.btn.cta-sm{background:var(--gold);border-color:var(--gold);color:var(--gold-ink)}
+table.pm{border-collapse:separate;border-spacing:2px;font-size:12.5px;margin:0 auto}
+table.pm th.rowh{text-align:right;padding:0 8px 0 4px;font-weight:700;white-space:nowrap;position:sticky;left:0;background:var(--panel);z-index:1}
+table.pm th.pc{height:76px;vertical-align:bottom;font-weight:600;color:var(--ink-2)}
+table.pm .vt{display:inline-block;writing-mode:vertical-rl;max-height:72px;overflow:hidden;text-overflow:ellipsis}
+table.pm td.pc{width:44px;min-width:40px;height:40px;text-align:center;border-radius:3px;background:var(--panel-2);line-height:1.1;color:var(--ink)}
+table.pm td.pc b{display:block;font-family:var(--f-num);font-size:15px;font-variant-numeric:tabular-nums}
+table.pm td.pc small{font-family:var(--f-num);font-size:10px;color:var(--ink-2)}
+table.pm td.na{color:var(--ink-3)}table.pm td.self{background:var(--line)}
+.lg{display:inline-block;width:14px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle}
+table.pm th.pc{height:100px}table.pm .vt{max-height:96px}
+.two>.card{margin-top:0!important}
 </style></head><body>
 <div class="ticker" aria-hidden="true"><div class="ticker-in" id="tk"></div></div>
 <header class="top"><div class="wrap top-in">
@@ -339,9 +360,9 @@ dialog img{max-width:100%;height:auto;display:block;border-radius:var(--r)}
 
 <script>
 // ===== 設定（ここだけ触れば、点数・お知らせ・パッチノートを変えられる） =====
-const VER="3.1.0";
+const VER="3.2.0";
 const RATE={start:1000,win:10,kda:5,kdaBase:2.5,elo:true,eloScale:400,kdaRole:{TOP:2.5,JG:3,MID:3,ADC:3,SUP:3.5},streak:{from:2,step:1,max:3}};
-const TEAM={variety:0.6,jitter:2.5,rolePenalty:12};
+const TEAM={variety:0.6,jitter:2.5,rolePenalty:12,pairW:4};
 const ANNOUNCE=[
   "ろるぱーくカスタム管理アプリ ver"+VER,
   "試合後はチャンピオンとKDAを入力して、勝敗を保存しよう",
@@ -380,7 +401,23 @@ const PATCH_31={v:"3.1.0",date:"2026-10-29",sec:[
     "ドパガキポイント（DGP）の説明を設定画面とランキングに追加。",
     "戦績入力で方向キー（↑↓←→）による欄の移動に対応。称号の条件一覧を殿堂に追加。設定画面を2列に整理。"]]
 ]};
-const PATCH=[PATCH_31,PATCH_NEW].concat([{"v": "2.1.1", "date": "2026-10-29", "sec": [["チーム分け", ["結果画面で、各プレイヤーの名前の右に現在のレート（DGP）を表示。戦績がない人は初期値を薄い色で表示。観戦者にも表示。"]], ["修正", ["試合の日付が、日本時間の0時〜9時に保存すると前の日になる問題を修正（端末の日付で記録）。", "別のタブで保存した内容を自動で取り込むように。複数のタブを開いていても、片方の保存でもう片方の試合が消えないように修正。"]]]}, {"v": "2.1.0", "date": "2026-10-23", "sec": [["レート", ["レートの単位を「DGP（ドパガキポイント）」に変更。戦績・順位、履歴、チーム分けの数字に「DGP」を付けた。", "連勝ボーナスを追加。2連勝目から、勝つたびに +1、+2、+3 DGP と増える（4連勝目以降は +3 で頭打ち）。負けると連勝は0に戻る。", "レート推移グラフのツールチップに、連勝ボーナスの点数を表示。", "「チーム差補正」の呼び名を「TG補正（TeamGap補正）」に変更。チームバランス表示に、勝った場合・負けた場合のTG補正の増減も表示。TG補正は、レートバランスのON/OFFに関係なく常に適用される。"]], ["チーム分け", ["参加者を追加したとき、その団体に戦績がある名前には「既」、初めての名前には「新」を表示。", "結果画面でプレイヤーを移動したとき、「平均レート」の表示も移動後の編成で更新されるように修正。", "チャンピオン名の入力欄が読みにくかった問題を修正。", "ロールのプルダウンで Enter を押すと、別の入力欄へ飛んでしまう問題を修正。", "結果画面で、チームの人数が偏っているときや誰もいないときに警告を表示。", "観戦に移したプレイヤーをチームに戻しても、入力したチャンピオン・KDAが消えないように。", "保存前の結果画面を、団体の切り替え・タブの移動・ページの再読み込みをしても残すように。不要なときは「結果を破棄」で消せる。", "結果画面でプレイヤーを移動したりロールを変えたりしても、TOP→JG→MID→ADC→SUP の並びが崩れないように。", "ロール指定ありのとき、同じチームでロールが重複していたら警告を表示。", "結果画面の入力欄のレイアウトを変更。左側にロールとチームサイド、右上に「クリア」ボタン。", "ロールとチームサイドの文字を、中央揃えに修正。", "チーム分けの結果に、チームバランス（両チームの平均レート・差・期待勝率）を大きく表示。ロール指定・レートバランスのON/OFFに関わらず常に表示し、プレイヤーを移動すると更新される。"]], ["履歴", ["入力欄のレイアウトを、チーム分けの結果画面と同じに変更。", "試合を開いたとき、プレイヤーのチーム（ブルー／レッド）を後から変更できるように。DGPも計算し直される。"]], ["戦績・順位", ["選手の詳細を閉じられるように。「閉じる」ボタン、または同じ選手をもう一度タップ。", "画面の一番下に「レートの計算方法」を掲載。設定値と連動して自動で更新される。", "計算方法の説明で、「勝つ見込み」を「TG補正」「期待勝率」という言い方に変更。期待勝率の一覧も追加。", "全員のレート推移グラフを追加。直近10／30／50試合・全期間の切り替え、名前をタップして表示／非表示、上位8人だけの表示ができる。"]]]}, {"v": "2.0.0", "date": "2026-10-22", "sec": [["デザイン（UI全面改修）", ["硬派なダークUIへ全面見直し。"]], ["チーム分け & 試合履歴", ["チーム分け実行後に、プレイヤーを「ブルー ⇔ レッド ⇔ 観戦」へ自由に変更・移動できる機能を追加。", "チーム分け結果画面および試合履歴画面で、ロールを後から自由に変更・指定できるドロップダウンを追加。", "試合履歴の「年月日（日付）」による絞り込み欄を削除し、UIを簡素化。"]], ["戦績・グラフ", ["レート推移グラフの点にカーソルを乗せた際、遅延なしで即座にツールチップが表示されるように改修。", "ツールチップ内に「試合番号」「レート増減」「プレイしたロール」「ピックチャンピオン」「KDA」の超詳細情報を一覧表示。"]]]}, {"v": "1.1.0", "date": "2026-10-21", "sec": [["レート", ["プレイヤーごとのカスタムレートを追加。初期1000、勝てば+10・負ければ-10が基本。", "相手チームの強さで増減が変わるように。格上に勝つと大きく増え、格下に負けると大きく減る。", "KDAによる補正を追加。ロールごとの基準KDAと比べて最大±5。", "戦績の詳細画面にレートの推移グラフ表示を追加。", "履歴に、試合ごとの各プレイヤーのレート増減を表示。", "戦績の表を、レート順の並びに変更。"]], ["チーム分け", ["「レートバランス」を追加。両チームの平均レートが近くなる組み合わせを選ぶ。", "希望サイド（ブルー／レッド／観戦）と「優先出場」を追加。", "11人以上のとき、10人をランダムに選び、残りを観戦者に。", "「ロール指定」をスイッチ式に変更。"]], ["団体", ["LTK・WCSのように、団体ごとに参加者と戦績を分けて管理できるように。"]], ["戦績", ["連勝・連敗の表示と、最大連勝・最大連敗を追加。", "味方のとき・敵のときの勝率（相性）を、プレイヤーの詳細に追加。"]], ["設定", ["メンバー名の変更を追加。過去の戦績の名前もまとめて変わる。", "戦績のJSON書き出し・読み込みを追加。"]]]}]);
+const PATCH_40={v:"3.2.0",date:"2026-10-29",sec:[
+  ["対戦",[
+    "チーム分けのあと、2人の名前を順に押して入れ替えられるように（チームをまたぐ入れ替え、観戦者との入れ替えにも対応）。平均差・期待勝率・TG補正はその場で計算し直される。",
+    "「一括入力」を追加。スコアボードを「名前 チャンピオン 7/2/9」のように貼り付けると、全員ぶんのチャンピオンとKDAがまとめて入る。",
+    "最近の試合で同じチームになった回数も考えてチームを分けるように。いつも同じ顔ぶれになりにくく、初めて組む人の数も案に表示する。",
+    "試合ごとにMVP（勝ったチームでDGPの伸びが最大の人）を自動で選び、結果画面と履歴に表示。",
+    "「今日のまとめ」を追加。その日の試合数、1人ずつの勝敗・DGPの増減・MVP回数が出る。Discordに貼る文章としてコピーできる。",
+    "試合結果・今日のまとめ・ランキングを、Discordに貼れる画像（PNG）にできる。"]],
+  ["ランキング",[
+    "順位に期間の切り替え（全期間／30日／直近10試合）を追加。期間の中のDGPの増減順で並べ替わる。",
+    "「相性」タブを追加。味方として組んだときの勝率、相手として当たったときの勝率を、全員ぶん色つきの表で見られる。",
+    "「チャンピオン」タブを追加。チャンピオンごとの使用回数・勝率・KDA・よく使う人と、ロールごとの得意な人を一覧できる。",
+    "殿堂に「予想的中率」（期待勝率が高いチームが実際に勝った割合）とMVP最多を追加。称号に「MVP王」を追加。"]],
+  ["その他",[
+    "ホーム画面に追加したときのアイコンとテーマ色を設定。"]]
+]};
+const PATCH=[PATCH_40,PATCH_31,PATCH_NEW].concat([{"v": "2.1.1", "date": "2026-10-29", "sec": [["チーム分け", ["結果画面で、各プレイヤーの名前の右に現在のレート（DGP）を表示。戦績がない人は初期値を薄い色で表示。観戦者にも表示。"]], ["修正", ["試合の日付が、日本時間の0時〜9時に保存すると前の日になる問題を修正（端末の日付で記録）。", "別のタブで保存した内容を自動で取り込むように。複数のタブを開いていても、片方の保存でもう片方の試合が消えないように修正。"]]]}, {"v": "2.1.0", "date": "2026-10-23", "sec": [["レート", ["レートの単位を「DGP（ドパガキポイント）」に変更。戦績・順位、履歴、チーム分けの数字に「DGP」を付けた。", "連勝ボーナスを追加。2連勝目から、勝つたびに +1、+2、+3 DGP と増える（4連勝目以降は +3 で頭打ち）。負けると連勝は0に戻る。", "レート推移グラフのツールチップに、連勝ボーナスの点数を表示。", "「チーム差補正」の呼び名を「TG補正（TeamGap補正）」に変更。チームバランス表示に、勝った場合・負けた場合のTG補正の増減も表示。TG補正は、レートバランスのON/OFFに関係なく常に適用される。"]], ["チーム分け", ["参加者を追加したとき、その団体に戦績がある名前には「既」、初めての名前には「新」を表示。", "結果画面でプレイヤーを移動したとき、「平均レート」の表示も移動後の編成で更新されるように修正。", "チャンピオン名の入力欄が読みにくかった問題を修正。", "ロールのプルダウンで Enter を押すと、別の入力欄へ飛んでしまう問題を修正。", "結果画面で、チームの人数が偏っているときや誰もいないときに警告を表示。", "観戦に移したプレイヤーをチームに戻しても、入力したチャンピオン・KDAが消えないように。", "保存前の結果画面を、団体の切り替え・タブの移動・ページの再読み込みをしても残すように。不要なときは「結果を破棄」で消せる。", "結果画面でプレイヤーを移動したりロールを変えたりしても、TOP→JG→MID→ADC→SUP の並びが崩れないように。", "ロール指定ありのとき、同じチームでロールが重複していたら警告を表示。", "結果画面の入力欄のレイアウトを変更。左側にロールとチームサイド、右上に「クリア」ボタン。", "ロールとチームサイドの文字を、中央揃えに修正。", "チーム分けの結果に、チームバランス（両チームの平均レート・差・期待勝率）を大きく表示。ロール指定・レートバランスのON/OFFに関わらず常に表示し、プレイヤーを移動すると更新される。"]], ["履歴", ["入力欄のレイアウトを、チーム分けの結果画面と同じに変更。", "試合を開いたとき、プレイヤーのチーム（ブルー／レッド）を後から変更できるように。DGPも計算し直される。"]], ["戦績・順位", ["選手の詳細を閉じられるように。「閉じる」ボタン、または同じ選手をもう一度タップ。", "画面の一番下に「レートの計算方法」を掲載。設定値と連動して自動で更新される。", "計算方法の説明で、「勝つ見込み」を「TG補正」「期待勝率」という言い方に変更。期待勝率の一覧も追加。", "全員のレート推移グラフを追加。直近10／30／50試合・全期間の切り替え、名前をタップして表示／非表示、上位8人だけの表示ができる。"]]]}, {"v": "2.0.0", "date": "2026-10-22", "sec": [["デザイン（UI全面改修）", ["硬派なダークUIへ全面見直し。"]], ["チーム分け & 試合履歴", ["チーム分け実行後に、プレイヤーを「ブルー ⇔ レッド ⇔ 観戦」へ自由に変更・移動できる機能を追加。", "チーム分け結果画面および試合履歴画面で、ロールを後から自由に変更・指定できるドロップダウンを追加。", "試合履歴の「年月日（日付）」による絞り込み欄を削除し、UIを簡素化。"]], ["戦績・グラフ", ["レート推移グラフの点にカーソルを乗せた際、遅延なしで即座にツールチップが表示されるように改修。", "ツールチップ内に「試合番号」「レート増減」「プレイしたロール」「ピックチャンピオン」「KDA」の超詳細情報を一覧表示。"]]]}, {"v": "1.1.0", "date": "2026-10-21", "sec": [["レート", ["プレイヤーごとのカスタムレートを追加。初期1000、勝てば+10・負ければ-10が基本。", "相手チームの強さで増減が変わるように。格上に勝つと大きく増え、格下に負けると大きく減る。", "KDAによる補正を追加。ロールごとの基準KDAと比べて最大±5。", "戦績の詳細画面にレートの推移グラフ表示を追加。", "履歴に、試合ごとの各プレイヤーのレート増減を表示。", "戦績の表を、レート順の並びに変更。"]], ["チーム分け", ["「レートバランス」を追加。両チームの平均レートが近くなる組み合わせを選ぶ。", "希望サイド（ブルー／レッド／観戦）と「優先出場」を追加。", "11人以上のとき、10人をランダムに選び、残りを観戦者に。", "「ロール指定」をスイッチ式に変更。"]], ["団体", ["LTK・WCSのように、団体ごとに参加者と戦績を分けて管理できるように。"]], ["戦績", ["連勝・連敗の表示と、最大連勝・最大連敗を追加。", "味方のとき・敵のときの勝率（相性）を、プレイヤーの詳細に追加。"]], ["設定", ["メンバー名の変更を追加。過去の戦績の名前もまとめて変わる。", "戦績のJSON書き出し・読み込みを追加。"]]]}]);
 // ===== /設定 =====
 // ===== <CORE> ===== 画面に依存しない計算だけをここに集める（テストしやすくするため）
 const ROLES=["TOP","JG","MID","ADC","SUP"];
@@ -500,6 +537,14 @@ function computeRecords(history,rat,stats){
   let mc=null,bc=null;
   for(const c in ch){if(!mc||ch[c].g>mc.g)mc={name:c,g:ch[c].g};if(ch[c].g>=4){const r=ch[c].w/ch[c].g;if(!bc||r>bc.v)bc={name:c,v:r,g:ch[c].g};}}
   out.topChamp=mc;out.bestChamp=bc;
+  let hitN=0,hitT=0;const mv={};
+  history.forEach(m=>{
+    const i=rat.info[m.id];
+    if(i&&m.blue.length&&m.red.length&&Math.abs(i.eBlue-0.5)>1e-9){hitT++;if((i.eBlue>0.5)===(m.winner==="blue"))hitN++;}
+    const x=mvpOf(m,rat);if(x)mv[x.name]=(mv[x.name]||0)+1;
+  });
+  out.hit=hitT?{n:hitN,total:hitT}:null;out.mvp=mv;
+  let mt=null;for(const n in mv)if(!mt||mv[n]>mt.v)mt={name:n,v:mv[n]};out.mvpTop=mt;
   return out;
 }
 
@@ -527,6 +572,7 @@ function computeTitles(history,rat,stats,rec){
   });
   const kdaRank=names.filter(n=>stats[n].kg>=5).sort((a,b)=>kdaOf(stats[b].k,stats[b].d,stats[b].a)-kdaOf(stats[a].k,stats[a].d,stats[a].a));
   if(kdaRank.length>=3)add(kdaRank[0],"kda","KDAの鬼","KDA入力5試合以上の中で平均KDA最高");
+  if(rec.mvpTop&&rec.mvpTop.v>=3){const top=Object.entries(rec.mvp).filter(([,v])=>v===rec.mvpTop.v).map(([n])=>n);top.forEach(n=>add(n,"mvp","MVP王","試合のMVP（勝った側でDGPの伸びが最大）の回数が最多"));}
   if(rec.upset&&rec.upset.e<0.45){
     const w=rec.upset.m[rec.upset.m.winner];w.forEach(p=>add(p.name,"upset","番狂わせ","団体内で最も期待勝率の低い試合に勝利"));
   }
@@ -571,7 +617,7 @@ function assignRoles(B,R,dg,balance,rng){
 }
 /* players: [{name,pref,side,prio}]  rating: {name:DGP}  prev: 直前の試合 {blue:[名前],red:[名前]} */
 function proposeTeams(o){
-  const {players,rating={},mode="free",balance=false,prev=null,sit={},rng=Math.random,slots=10,count=3,T=TEAM}=o;
+  const {players,rating={},mode="free",balance=false,prev=null,sit={},rng=Math.random,slots=10,count=3,T=TEAM,pairs=null}=o;
   const dg=n=>rating[n]??RATE.start;
   const pool=players.filter(p=>p.side!=="spec"),wantSpec=players.filter(p=>p.side==="spec");
   if(pool.length<2)return{error:"観戦希望を除いて2人以上必要です。"};
@@ -597,7 +643,9 @@ function proposeTeams(o){
     }
     let miss=0;
     if(mode==="role"&&prefCount)miss=prefCount-(bestPerms(B).score+bestPerms(R).score);
-    return{aB,aR,diff:Math.abs(aB-aR),rep,miss};
+    let pair=0,fresh=0;
+    if(pairs&&pairs.W)for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)if(((m>>i)&1)===((m>>j)&1)){const c=pairs.map[pairKey(names[i],names[j])]||0;pair+=c;if(!c)fresh++;}
+    return{aB,aR,diff:Math.abs(aB-aR),rep,miss,pair:pairs&&pairs.W?pair/pairs.W:0,fresh};
   };
   const prefCount=chosen.filter(p=>ROLES.includes(p.pref)).length;
   let picks=[];
@@ -605,7 +653,7 @@ function proposeTeams(o){
     const all=ok.map(c=>({m:c.m,...metrics(c.m)})),mm=Math.min(...all.map(x=>x.miss)),best=all.filter(x=>x.miss===mm);
     picks=[best[Math.floor(rng()*best.length)]];
   }else{
-    const scored=ok.map(c=>{const x=metrics(c.m);return{m:c.m,...x,score:x.diff+T.variety*x.rep+T.rolePenalty*x.miss+rng()*T.jitter};}).sort((a,b)=>a.score-b.score);
+    const scored=ok.map(c=>{const x=metrics(c.m);return{m:c.m,...x,score:x.diff+T.variety*x.rep+T.rolePenalty*x.miss+(T.pairW||0)*x.pair+rng()*T.jitter};}).sort((a,b)=>a.score-b.score);
     const seen=new Set(),uniq=[];
     for(const c of scored){const k=Math.min(c.m,full^c.m);if(seen.has(k))continue;seen.add(k);uniq.push(c);}
     const far=(a,b)=>Math.min(popcount(a^b),popcount(a^(full^b)));
@@ -618,10 +666,72 @@ function proposeTeams(o){
     if(mode==="role"){const a=assignRoles(B,R,dg,balance,rng);blue=a.blue;red=a.red;lanes=a.lanes;laneDiff=a.laneDiff;}
     else{blue=B.map(p=>({name:p.name,role:""}));red=R.map(p=>({name:p.name,role:""}));}
     const aB=mean(blue.map(p=>dg(p.name))),aR=mean(red.map(p=>dg(p.name)));
-    return{blue,red,aB,aR,diff:Math.abs(aB-aR),expB:expected(aB,aR,RATE.eloScale),rep:c.rep||0,lanes,laneDiff,violations:minV};
+    return{blue,red,aB,aR,diff:Math.abs(aB-aR),expB:expected(aB,aR,RATE.eloScale),rep:c.rep||0,lanes,laneDiff,violations:minV,pair:c.pair||0,fresh:c.fresh||0};
   });
   if(balance)proposals.sort((a,b)=>a.diff-b.diff);
   return{proposals,spec:spec.map(p=>p.name),chosen:names,violations:minV};
+}
+
+
+// ---------- 組み合わせの偏り（最近よく同じチームになった組を数える） ----------
+const pairKey=(a,b)=>a<b?a+"\u0001"+b:b+"\u0001"+a;
+function pairCounts(history,n=24){
+  const map={},list=history.slice(-n);
+  for(const m of list)for(const sd of["blue","red"]){
+    const t=m[sd];
+    for(let i=0;i<t.length;i++)for(let j=i+1;j<t.length;j++){const k=pairKey(t[i].name,t[j].name);map[k]=(map[k]||0)+1;}
+  }
+  return{map,W:list.length};
+}
+// ---------- 試合のMVP（勝ったチームで、DGPの伸びが最大の人） ----------
+function mvpOf(m,rat){
+  const per=rat.per[m.id];if(!per)return null;
+  let best=null;
+  for(const p of m[m.winner]){
+    const e=per[p.name];if(!e)continue;
+    const k=hasKDA(p)?kdaOf(p.k,p.d,p.a):0;
+    if(!best||e.d>best.d||(e.d===best.d&&k>best.k)||(e.d===best.d&&k===best.k&&p.name<best.name))best={name:p.name,d:e.d,k,p};
+  }
+  return best;
+}
+// ---------- 1日のまとめ ----------
+function sessionSummary(history,rat,date){
+  const ms=history.filter(m=>m.date===date),R={};
+  const get=n=>R[n]||(R[n]={name:n,g:0,w:0,net:0,k:0,d:0,a:0,kg:0,mvp:0});
+  for(const m of ms){
+    for(const sd of["blue","red"])for(const p of m[sd]){
+      const r=get(p.name),e=rat.per[m.id]&&rat.per[m.id][p.name];
+      r.g++;if(m.winner===sd)r.w++;if(e)r.net+=e.d;
+      if(hasKDA(p)){r.k+=p.k;r.d+=p.d;r.a+=p.a;r.kg++;}
+    }
+    const mv=mvpOf(m,rat);if(mv)get(mv.name).mvp++;
+  }
+  const rows=Object.values(R).sort((a,b)=>b.net-a.net||b.w-a.w||(a.name<b.name?-1:1));
+  return{date,n:ms.length,rows};
+}
+function rangeSubset(history,mode,now=new Date()){
+  if(mode==="10")return history.slice(-10);
+  if(mode==="30"){const c=new Date(now);c.setDate(c.getDate()-30);const cut=localDate(c);return history.filter(m=>m.date>=cut);}
+  return history;
+}
+// ---------- スコアボードの貼り付け（「名前 チャンピオン 7/2/9」のような行を読む） ----------
+function parseScoreboard(text,names,champs=[]){
+  const nk=names.map(n=>({n,k:normKey(n)})).filter(x=>x.k).sort((a,b)=>b.k.length-a.k.length);
+  const ck=champs.map(c=>({c,k:normKey(c)})).filter(x=>x.k.length>=2).sort((a,b)=>b.k.length-a.k.length);
+  const rows=[],bad=[],used=new Set();
+  for(const raw of String(text).split(/\r?\n/)){
+    let line=raw.normalize("NFKC").trim();if(!line)continue;
+    const lk=normKey(line),hit=nk.find(x=>!used.has(x.n)&&lk.includes(x.k));
+    if(!hit){bad.push(raw.trim());continue;}
+    const esc=hit.n.normalize("NFKC").replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+    let rest=line.replace(new RegExp(esc,"i"),"  ");
+    let k=null,d=null,a=null,m=rest.match(/(\d{1,2})\s*[\/\-・]\s*(\d{1,2})\s*[\/\-・]\s*(\d{1,2})/)||rest.match(/(?:^|\s)(\d{1,2})[\s,]+(\d{1,2})[\s,]+(\d{1,2})\s*$/);
+    if(m){k=+m[1];d=+m[2];a=+m[3];rest=rest.replace(m[0]," ");}
+    const rk=normKey(rest),ch=ck.find(x=>rk.includes(x.k));
+    if(!m&&!ch){bad.push(raw.trim());continue;}
+    used.add(hit.n);rows.push({name:hit.n,champ:ch?ch.c:"",k,d,a});
+  }
+  return{rows,bad};
 }
 
 // ---------- 文字列まわり ----------
@@ -764,7 +874,7 @@ function spark(vals,w=84,h=28){
 }
 // ---------- 画面の状態 ----------
 const UI={view:"play",sub:"board",props:null,done:null,bulk:false,openRm:new Set(),sel:null,slots:{},tbl:false,
-  hf:{q:"",w:"",n:30},openM:null,arm:null,sheet:null,focus:null,toast:null,quick:true};
+  hf:{q:"",w:"",n:30},openM:null,arm:null,sheet:null,focus:null,toast:null,quick:true,swap:null,modal:null,range:"all",pm:"ally",cq:"",cn:40,pi:0};
 const TABS=[
   ["play","対戦",'<path d="M6 4l12 8-12 8z"/>'],
   ["rank","ランキング",'<path d="M5 20v-7M12 20V5M19 20v-10"/>'],
@@ -793,7 +903,7 @@ function render(){
   h+=UI.view==="play"?vPlay():UI.view==="rank"?vRank():UI.view==="hist"?vHist():vSet();
   $("main").innerHTML=h;
   paintSave();
-  $("over").innerHTML=UI.sheet?sheetHTML(UI.sheet):"";
+  $("over").innerHTML=(UI.sheet?sheetHTML(UI.sheet):"")+(UI.modal?modalHTML():"");
   if(UI.focus){const f=$(UI.focus);if(f){f.focus();}UI.focus=null;}
   else if(foc&&$(foc)&&["INPUT","SELECT","TEXTAREA"].includes($(foc).tagName)){$(foc).focus();}
 }
@@ -829,6 +939,7 @@ function vPlay(){
   if(UI.done&&!cur)R=resultHTML(UI.done);
   else if(cur)R=boardHTML();
   else R=`<div class="empty"><h3>${S.history.length?"次の試合を始めましょう":"はじめての試合を始めましょう"}</h3><div>参加者を入れて「チーム分け」を押すと、ここに結果が出ます。</div>${S.history.length?"":`<div style="margin-top:10px"><button class="btn sm" data-act="demo">デモデータで試してみる</button></div>`}</div>`;
+  if(!cur)R+=sessionPanel();
   return `<div class="stage"><div class="side">${L}</div><div>${R}</div></div>`;
 }
 function rosterRow(p,stats,sit){
@@ -861,7 +972,7 @@ function addNames(txt){
 function gen(){
   const {rat}=calc(),role=!!S.opt.role,bal=!!S.opt.bal;
   const sit=sitStreaks(S.history,S.players.map(p=>p.name));
-  const res=proposeTeams({players:S.players,rating:rat.rt,mode:role?"role":"free",balance:bal,prev:lastTeams(),sit,count:3});
+  const res=proposeTeams({players:S.players,rating:rat.rt,mode:role?"role":"free",balance:bal,prev:lastTeams(),sit,count:3,pairs:pairCounts(S.history)});
   if(res.error){toast(res.error);return;}
   UI.props={res,role,bal};UI.done=null;pickPlan(0);
 }
@@ -869,14 +980,14 @@ function pickPlan(i){
   const {res,role}=UI.props,p=res.proposals[i];
   const mk=x=>({name:x.name,role:x.role||"",champ:"",k:null,d:null,a:null});
   cur={mode:role?"role":"free",blue:p.blue.map(mk),red:p.red.map(mk),spec:res.spec.slice(),pi:i,bal:UI.props.bal};
-  S.draft=cur;UI.pi=i;save();render();
+  S.draft=cur;UI.pi=i;UI.swap=null;save();render();
 }
 const avgOf=t=>t.length?t.reduce((a,p)=>a+dgpOf(p.name),0)/t.length:RATE.start;
 function boardHTML(){
   const aB=avgOf(cur.blue),aR=avgOf(cur.red),eB=expected(aB,aR,RATE.eloScale),diff=Math.abs(aB-aR);
   const dc=diff<=25?"ok":diff<=60?"mid":"ng";
   let plans="";
-  if(UI.props&&UI.props.res.proposals.length>1)plans=`<div class="plan">${UI.props.res.proposals.map((p,i)=>`<button data-act="plan" data-i="${i}" aria-pressed="${UI.pi===i}"><b>${"ABC"[i]}案</b><span class="d">平均差 ${p.diff.toFixed(1)}　期待勝率 ${Math.round(p.expB*100)}%${UI.props.role?`<br>ロール差 ${p.laneDiff.toFixed(0)}`:""}</span></button>`).join("")}</div>`;
+  if(UI.props&&UI.props.res.proposals.length>1)plans=`<div class="plan">${UI.props.res.proposals.map((p,i)=>`<button data-act="plan" data-i="${i}" aria-pressed="${UI.pi===i}"><b>${"ABC"[i]}案</b><span class="d">平均差 ${p.diff.toFixed(1)}　期待勝率 ${Math.round(p.expB*100)}%${UI.props.role?`<br>ロール差 ${p.laneDiff.toFixed(0)}`:""}${S.history.length>=3&&p.fresh>0?`<br>初めて組む ${p.fresh}組`:""}</span></button>`).join("")}</div>`;
   const tgw=e=>Math.round(2*RATE.win*(1-e)),tgl=e=>Math.round(2*RATE.win*(0-e));
   const vs=`<div class="vs"><div class="s b"><span class="mu">ブルー平均</span><span class="big">${Math.round(aB)}<small>DGP</small></span></div>
    <div class="mid"><span class="diff ${dc}">平均差 ${diff.toFixed(1)}</span></div>
@@ -884,19 +995,20 @@ function boardHTML(){
    <div class="gauge" aria-hidden="true"><i class="b" style="width:${(eB*100).toFixed(1)}%"></i><i class="r" style="width:${((1-eB)*100).toFixed(1)}%"></i></div>
    <div class="gl"><span>期待勝率 ${Math.round(eB*100)}%</span><span>${Math.round((1-eB)*100)}%</span></div>`;
   const team=(sd,eT)=>`<section class="team ${sd==="blue"?"b":"r"}" aria-label="${SIDE_JA[sd]}チーム"><div class="th">${SIDE_JA[sd]}<span class="tg">勝てば TG<b> ${dlTxt(tgw(eT))}</b><br>負ければ TG<b> ${dlTxt(tgl(eT))}</b></span></div>${cur[sd].map((p,i)=>plRow(sd,p,i)).join("")}</section>`;
-  const spec=cur.spec.length?`<div class="spec"><span class="mu">観戦：</span> ${cur.spec.map(n=>`<span class="chip">${esc(n)}</span>`).join(" ")} <span class="mu3">（次の抽選で優先されます）</span></div>`:"";
+  const spec=cur.spec.length?`<div class="spec"><span class="mu">観戦：</span> ${cur.spec.map((n,i)=>`<button class="chip btnlike${isSwap("spec",i)?" sel":""}" data-act="swap" data-t="spec" data-i="${i}" title="押して入れ替え">${esc(n)}</button>`).join(" ")} <span class="mu3">（次の抽選で優先されます）</span></div>`:"";
+  const hint=`<div class="mu" style="margin:8px 2px 0;min-height:20px">${UI.swap?'<b style="color:var(--gold-t)">入れ替える相手を選んでください</b>（もう一度同じ人を押すと解除）':'⇄ を押すと、2人の位置を入れ替えられます。'}</div>`;
   return `${plans}<div class="card" style="padding:14px 14px 12px">${vs}</div>
-   <div class="teams" style="margin-top:12px">${team("blue",eB)}${team("red",1-eB)}</div>${spec}
+   ${hint}<div class="teams" style="margin-top:6px">${team("blue",eB)}${team("red",1-eB)}</div>${spec}
    <div class="warns" id="warns">${warnsHTML()}</div>
    <div class="dock"><button class="btn blue win" data-act="win" data-w="blue">ブルー勝利を保存</button><button class="btn red win" data-act="win" data-w="red">レッド勝利を保存</button>
-   <button class="btn" data-act="regen">${UI.props?"もう一度分ける":"組み直す"}</button><button class="btn ghost" data-act="discord">Discord用にコピー</button>
+   <button class="btn" data-act="regen">${UI.props?"もう一度分ける":"組み直す"}</button><button class="btn" data-act="bulkin">一括入力</button><button class="btn ghost" data-act="discord">Discord用にコピー</button>
    <button class="btn ghost danger" data-act="discard">${arm("discard")?"もう一度押して破棄":"破棄"}</button></div>`;
 }
 const dlTxt=d=>d>0?"+"+d:d<0?String(d).replace("-","−"):"±0";
 function plRow(sd,p,i){
   const rc=recentChamps(p.name,3);
-  return `<div class="pl"><div class="rl">${cur.mode==="role"?`<select class="mini" data-f="role" data-t="${sd}" data-i="${i}" aria-label="${esc(p.name)}のロール">${["","TOP","JG","MID","ADC","SUP"].map(r=>`<option value="${r}"${p.role===r?" selected":""}>${r||"—"}</option>`).join("")}</select>`:""}</div>
-   <div><div class="hd"><span class="nm">${esc(p.name)}</span>${dgpH(p.name)}</div>
+  return `<div class="pl${isSwap(sd,i)?" sel":""}"><div class="rl">${cur.mode==="role"?`<select class="mini" data-f="role" data-t="${sd}" data-i="${i}" aria-label="${esc(p.name)}のロール">${["","TOP","JG","MID","ADC","SUP"].map(r=>`<option value="${r}"${p.role===r?" selected":""}>${r||"—"}</option>`).join("")}</select>`:""}</div>
+   <div><div class="hd"><span class="nm">${esc(p.name)}</span>${dgpH(p.name)}<button class="btn sm ghost x" data-act="swap" data-t="${sd}" data-i="${i}" aria-label="${esc(p.name)}を入れ替える" title="入れ替え">⇄</button></div>
    <div class="in"><input class="field ch" list="champs" data-f="champ" data-t="${sd}" data-i="${i}" value="${esc(p.champ)}" placeholder="チャンピオン" aria-label="${esc(p.name)}のチャンピオン" autocomplete="off">
    ${["k","d","a"].map(f=>`<input class="field kn" inputmode="numeric" data-f="${f}" data-t="${sd}" data-i="${i}" value="${p[f]==null?"":p[f]}" placeholder="${f.toUpperCase()}" aria-label="${esc(p.name)}の${f.toUpperCase()}" maxlength="3">`).join("")}</div></div>
    ${rc.length&&!p.champ?`<div class="qp">${rc.map(c=>`<button class="chip btnlike" data-act="qc" data-t="${sd}" data-i="${i}" data-c="${esc(c)}">${esc(c)}</button>`).join("")}</div>`:""}</div>`;
@@ -906,6 +1018,7 @@ function warnsHTML(){
   const w=[];
   for(const sd of["blue","red"]){
     if(cur.mode==="role"){const rs=cur[sd].map(p=>p.role).filter(Boolean),d=rs.filter((r,i)=>rs.indexOf(r)!==i);if(d.length)w.push(`${SIDE_JA[sd]}のロールが重複しています（${[...new Set(d)].join("・")}）。`);}
+    if(cur.mode==="role")cur[sd].forEach(p=>{const pf=(playerObj(p.name)||{}).pref;if(pf&&p.role&&pf!==p.role)w.push(`${p.name} は ${pf} 希望ですが、${p.role} になっています。`);});
     cur[sd].forEach(p=>{const n=[p.k,p.d,p.a].filter(x=>x!=null).length;if(n&&n<3)w.push(`${p.name} のKDAが途中までです。K/D/Aの3つがそろうと反映されます。`);});
   }
   return w.map(x=>`<div class="warn">${esc(x)}</div>`).join("");
@@ -915,7 +1028,7 @@ function cleanP(p){
   return{name:p.name,role:p.role||"",champ:(p.champ||"").trim(),k:full?p.k:null,d:full?p.d:null,a:full?p.a:null};
 }
 function saveMatch(w){
-  const m={id:Date.now(),date:nowStamp(),mode:cur.mode,winner:w,blue:cur.blue.map(cleanP),red:cur.red.map(cleanP),spec:cur.spec.slice()};
+  const m={id:Date.now(),date:nowStamp(),t:Date.now(),mode:cur.mode,winner:w,blue:cur.blue.map(cleanP),red:cur.red.map(cleanP),spec:cur.spec.slice()};
   S.history.push(m);S.draft=null;cur=null;UI.props=null;UI.done=m.id;save();render();
   toast("保存しました","取り消す",()=>undoMatch(m.id));
 }
@@ -927,18 +1040,18 @@ function undoMatch(id){
 }
 function resultHTML(id){
   const {rat}=calc(),m=S.history.find(x=>x.id===id);if(!m)return "";
-  const per=rat.per[m.id]||{},wn=m.winner,ww=SIDE_JA[wn];
+  const per=rat.per[m.id]||{},wn=m.winner,ww=SIDE_JA[wn],mv=mvpOf(m,rat);
   const rows=sd=>m[sd].map(p=>{
     const e=per[p.name];if(!e)return "";
     const parts=[`<span class="tag dim">TG ${dlTxt(e.tg)}</span>`];
     if(hasKDA(p))parts.push(`<span class="tag dim">KDA ${dlTxt(e.kd)}</span>`);
     if(e.sb)parts.push(`<span class="tag gold">連勝 +${e.sb}</span>`);
-    return `<tr class="${sd===wn?"w":""}"><td><b>${esc(p.name)}</b>${p.role?` <span class="mu3">${p.role}</span>`:""}${p.champ?` <span class="mu3">${esc(p.champ)}</span>`:""}${hasKDA(p)?` <span class="mu3 num">${p.k}/${p.d}/${p.a}</span>`:""}</td>
+    return `<tr class="${sd===wn?"w":""}"><td><b>${esc(p.name)}</b>${mv&&mv.name===p.name?' <span class="tag gold">MVP</span>':""}${p.role?` <span class="mu3">${p.role}</span>`:""}${p.champ?` <span class="mu3">${esc(p.champ)}</span>`:""}${hasKDA(p)?` <span class="mu3 num">${p.k}/${p.d}/${p.a}</span>`:""}</td>
      <td><div class="parts">${parts.join("")}</div></td><td class="n"><span class="mu3">${e.before} →</span> <span class="dgp">${e.after}</span></td><td class="n">${dl(e.d)}</td></tr>`;
   }).join("");
   const tbl=sd=>`<h3 class="sec" style="margin:14px 0 4px;color:var(--${sd==="blue"?"blue":"red"})">${SIDE_JA[sd]}${sd===wn?"　WIN":""}</h3><div class="tw"><table class="rtab"><thead><tr><th>名前</th><th>内訳</th><th>DGP</th><th>増減</th></tr></thead><tbody>${rows(sd)}</tbody></table></div>`;
   return `<div class="card"><div class="res-h ${wn==="blue"?"b":"r"}"><h3>${ww}の勝利</h3><span class="mu">${S.history.length}試合目・${fmtDate(m.date)}</span></div>${tbl("blue")}${tbl("red")}
-   <div class="row" style="margin-top:14px"><button class="btn" data-act="rematch">サイドを入れ替えて再戦</button><button class="btn ghost" data-act="newround">次の試合へ</button><button class="btn ghost" data-act="undo" data-id="${m.id}">取り消す</button></div></div>`;
+   <div class="row" style="margin-top:14px"><button class="btn" data-act="rematch">サイドを入れ替えて再戦</button><button class="btn" data-act="imgmatch" data-id="${m.id}">画像で共有</button><button class="btn ghost" data-act="newround">次の試合へ</button><button class="btn ghost" data-act="undo" data-id="${m.id}">取り消す</button></div></div>`;
 }
 function rematch(){
   const m=S.history[S.history.length-1];if(!m)return;
@@ -952,29 +1065,136 @@ function discordText(){
   const aB=Math.round(avgOf(cur.blue)),aR=Math.round(avgOf(cur.red));
   return `【カスタム ${S.history.length+1}試合目】\n🔵 ブルー（平均 ${aB} DGP）\n${cur.blue.map(line).join("\n")}\n\n🔴 レッド（平均 ${aR} DGP）\n${cur.red.map(line).join("\n")}`+(cur.spec.length?`\n\n観戦: ${cur.spec.join("、")}`:"");
 }
+
+// ---------- 入れ替え ----------
+const isSwap=(t,i)=>!!(UI.swap&&UI.swap.t===t&&UI.swap.i===i);
+function swapPlayers(a,b){
+  if(a.t==="spec"&&b.t==="spec")return;
+  if(a.t==="spec"||b.t==="spec"){
+    const sp=a.t==="spec"?a:b,pl=a.t==="spec"?b:a,p=cur[pl.t][pl.i],old=cur.spec[sp.i];
+    cur.spec[sp.i]=p.name;p.name=old;p.champ="";p.k=p.d=p.a=null;
+  }else{
+    const x=cur[a.t][a.i],y=cur[b.t][b.i];
+    for(const f of["name","champ","k","d","a"]){const t=x[f];x[f]=y[f];y[f]=t;}
+  }
+  UI.pi=-1;S.draft=cur;save();
+}
+// ---------- 一括入力（スコアボード貼り付け） ----------
+function bulkApply(text){
+  const names=[...cur.blue,...cur.red].map(p=>p.name);
+  const r=parseScoreboard(text,names,allChamps());
+  for(const row of r.rows){
+    const p=[...cur.blue,...cur.red].find(x=>x.name===row.name);if(!p)continue;
+    if(row.champ)p.champ=row.champ;
+    if(row.k!=null){p.k=row.k;p.d=row.d;p.a=row.a;}
+  }
+  S.draft=cur;save();return r;
+}
+// ---------- 今日のまとめ ----------
+function sessionDate(){const h=S.history;return h.length?h[h.length-1].date:null;}
+function sessionText(ss){
+  const d=ss.date.replace(/-/g,"/");
+  return `【${d} カスタムまとめ】${ss.n}試合\n`+ss.rows.map((r,i)=>`${i+1}. ${r.name}　${dlTxt(r.net)} DGP（${r.w}勝${r.g-r.w}敗）${r.mvp?" MVP×"+r.mvp:""}`).join("\n");
+}
+function sessionPanel(){
+  const date=sessionDate();if(!date)return "";
+  const {rat}=calc(),ss=sessionSummary(S.history,rat,date),today=date===localDate();
+  if(!ss.n)return "";
+  const rows=ss.rows.map((r,i)=>`<tr><td class="n mu3">${i+1}</td><td><b>${esc(r.name)}</b>${r.mvp?` <span class="tag gold">MVP×${r.mvp}</span>`:""}</td><td class="n">${r.w}-${r.g-r.w}</td><td class="n">${r.kg?kdaTxt(r.k,r.d,r.a):"-"}</td><td class="n">${dl(r.net)}</td></tr>`).join("");
+  return `<div class="card" style="margin-top:12px"><h2 class="sec">${today?"今日のまとめ":"直近のまとめ（"+fmtDate(date)+"）"}<span class="mu">${ss.n}試合</span></h2>
+   <div class="tw"><table class="mini-t"><thead><tr><th></th><th>名前</th><th class="n">勝敗</th><th class="n">KDA</th><th class="n">DGP増減</th></tr></thead><tbody>${rows}</tbody></table></div>
+   <div class="row" style="margin-top:10px"><button class="btn sm" data-act="copysession">Discord用にコピー</button><button class="btn sm" data-act="imgsession">画像にする</button></div></div>`;
+}
+// ---------- ポップアップ ----------
+function modalHTML(){
+  const m=UI.modal;
+  if(m.kind==="bulk")return `<div class="shade" data-act="closemodal"></div><div class="modal" role="dialog" aria-label="一括入力"><h3 style="margin:0 0 6px">スコアボードの一括入力</h3>
+   <div class="mu">1行に1人。「名前 チャンピオン キル/デス/アシスト」の順で貼り付けてください。<br>例：<span class="num">つよし アーリ 7/2/9</span>　チャンピオンだけ、KDAだけの行もOKです。</div>
+   <textarea class="field" id="bulkin-t" rows="9" style="margin-top:8px" placeholder="つよし アーリ 7/2/9&#10;たける ジンクス 10/3/4"></textarea>
+   <div class="mu3" id="bulkin-m" style="margin-top:4px"></div>
+   <div class="row" style="margin-top:8px"><button class="btn" data-act="closemodal">閉じる</button><span class="sp"></span><button class="btn cta-sm" data-act="bulkgo">入力する</button></div></div>`;
+  if(m.kind==="img")return `<div class="shade" data-act="closemodal"></div><div class="modal wide" role="dialog" aria-label="画像"><h3 style="margin:0 0 8px">${esc(m.title)}</h3>
+   <img src="${m.url}" alt="${esc(m.title)}"><div class="row" style="margin-top:10px"><button class="btn" data-act="imgcopy">画像をコピー</button><a class="btn" href="${m.url}" download="${esc(m.file)}">保存する</a><span class="sp"></span><button class="btn ghost" data-act="closemodal">閉じる</button></div>
+   <div class="mu3" style="margin-top:6px">スマホでは、画像を長押しして保存できます。</div></div>`;
+  return "";
+}
 // ---------- ランキング ----------
 function ordered(){const {rat,stats}=calc();return Object.keys(stats).sort((a,b)=>rat.rt[b]-rat.rt[a]||stats[b].g-stats[a].g);}
 function vRank(){
   const {rat,stats,rec,titles}=calc(),names=ordered();
-  const sub=[["lb","順位"],["ch","推移"],["hof","殿堂"]];
-  let h=`<div class="sub" role="group" aria-label="表示">${sub.map(([k,l])=>`<button data-act="sub" data-v="${k}" aria-pressed="${UI.sub===k||(k==="lb"&&!["ch","hof"].includes(UI.sub))}">${l}</button>`).join("")}</div>`;
+  const sub=[["lb","順位"],["ch","推移"],["pair","相性"],["champ","チャンピオン"],["hof","殿堂"]];
+  const cs=sub.some(x=>x[0]===UI.sub)?UI.sub:"lb";
+  let h=`<div class="sub" role="group" aria-label="表示">${sub.map(([k,l])=>`<button data-act="sub" data-v="${k}" aria-pressed="${cs===k}">${l}</button>`).join("")}</div>`;
   if(!names.length)return h+`<div class="empty"><h3>まだ記録がありません</h3><div>「対戦」で試合を保存すると、ここに順位が出ます。</div><div style="margin-top:10px"><button class="btn sm" data-act="demo">デモデータで試してみる</button></div></div>`;
-  const kp=`<div class="kpis"><div class="kpi"><div class="mu3">試合数</div><div class="v">${S.history.length}</div></div><div class="kpi"><div class="mu3">参加した人</div><div class="v">${names.length}</div></div>
-   <div class="kpi"><div class="mu3">1位</div><div class="v t">${esc(names[0])}</div></div><div class="kpi"><div class="mu3">最高DGP</div><div class="v">${rec.peak?rec.peak.v:"-"}</div></div></div>`;
-  if(UI.sub==="ch")return h+chartView(names);
-  if(UI.sub==="hof")return h+hallView();
-  const rows=names.map((n,i)=>{
-    const s=stats[n],ser=rat.series[n],last=ser[ser.length-1],st=streakOf(s.res),tt=(titles[n]||[]).slice(0,2);
+  if(cs==="ch")return h+chartView(names);
+  if(cs==="hof")return h+hallView();
+  if(cs==="pair")return h+pairView();
+  if(cs==="champ")return h+champView();
+  const rg=UI.range,sublist=rangeSubset(S.history,rg),ids=new Set(sublist.map(m=>m.id)),st=rg==="all"?stats:computeStats(sublist);
+  const net={};
+  if(rg!=="all")sublist.forEach(m=>{for(const sd of["blue","red"])for(const p of m[sd]){const e=rat.per[m.id]&&rat.per[m.id][p.name];if(e)net[p.name]=(net[p.name]||0)+e.d;}});
+  const list=rg==="all"?names:names.filter(n=>st[n]).sort((a,b)=>(net[b]||0)-(net[a]||0)||rat.rt[b]-rat.rt[a]);
+  const kp=`<div class="kpis"><div class="kpi"><div class="mu3">${rg==="all"?"試合数":"期間の試合数"}</div><div class="v">${sublist.length}</div></div><div class="kpi"><div class="mu3">参加した人</div><div class="v">${list.length}</div></div>
+   <div class="kpi"><div class="mu3">${rg==="all"?"1位":"期間の1位"}</div><div class="v t">${list.length?esc(list[0]):"-"}</div></div><div class="kpi"><div class="mu3">最高DGP</div><div class="v">${rec.peak?rec.peak.v:"-"}</div></div></div>`;
+  const seg=`<div class="row" style="margin-bottom:12px"><div class="seg" role="group" aria-label="期間">${[["all","全期間"],["30","30日"],["10","直近10試合"]].map(([v,l])=>`<button data-act="range" data-v="${v}" aria-pressed="${rg===v}">${l}</button>`).join("")}</div><span class="mu3">${rg==="all"?"DGPの高い順":"期間内のDGP増減が大きい順（戦績・KDAも期間内のみ）"}</span></div>`;
+  if(!list.length)return h+kp+seg+`<div class="empty">この期間の試合がありません。</div>`;
+  const rows=list.map((n,i)=>{
+    const s=st[n],ser=rat.series[n],last=ser[ser.length-1],tt=(titles[n]||[]).slice(0,2);
+    const d=rg==="all"?dl(last.diff):`<span class="delta ${net[n]>0?"up":net[n]<0?"dn":"z"}">期間 ${dlTxt(net[n]||0)}</span>`;
     return `<button class="lr${i===0?" r1":""}" data-act="player" data-n="${esc(n)}"><span class="rk">${i+1}</span>
      <span class="who"><b>${esc(n)}</b><span class="tt">${tt.map(t=>`<span class="tag gold">${esc(t.label)}</span>`).join("")}</span></span>
-     <span class="pts"><span class="dgp">${rat.rt[n]}</span>${dl(last.diff)}</span>
+     <span class="pts"><span class="dgp">${rat.rt[n]}</span>${d}</span>
      <span class="recw rec">${s.w}勝${s.g-s.w}敗　${pct(s.w,s.g)}%<span class="bar2"><i style="width:${pct(s.w,s.g)}%"></i></span></span>
      <span class="formw form" aria-label="直近の勝敗">${s.res.slice(-5).map(x=>`<i class="${x?"w":"l"}"></i>`).join("")}</span>
      <span class="kda">${s.kg?kdaTxt(s.k,s.d,s.a):"-"}</span>
      <span class="spw">${spark(ser.map(p=>p.v))}</span></button>`;
   }).join("");
-  return h+kp+`<div class="lhead"><span></span><span>名前</span><span style="text-align:right">DGP</span><span>戦績</span><span style="text-align:right">直近5</span><span style="text-align:right">KDA</span><span>推移</span></div><div class="lb">${rows}</div>
-   <div class="row" style="margin-top:12px"><button class="btn sm" data-act="copyrank">順位をテキストでコピー</button><span class="mu3">DGP＝ドパガキポイント（レートの単位。計算のしくみは設定画面）。KDAは（キル＋アシスト）÷デス。入力した試合のみ。</span></div>`;
+  return h+kp+seg+`<div class="lhead"><span></span><span>名前</span><span style="text-align:right">DGP</span><span>戦績</span><span style="text-align:right">直近5</span><span style="text-align:right">KDA</span><span>推移</span></div><div class="lb">${rows}</div>
+   <div class="row" style="margin-top:12px"><button class="btn sm" data-act="copyrank">順位をテキストでコピー</button><button class="btn sm" data-act="imgrank">画像にする</button><span class="mu3">DGP＝ドパガキポイント（レートの単位。計算のしくみは設定画面）。KDAは（キル＋アシスト）÷デス。入力した試合のみ。</span></div>`;
+}
+// 相性マップ：誰と組むと／誰と当たると勝ちやすいか
+function pairView(){
+  const {stats}=calc(),mode=UI.pm;
+  const names=Object.keys(stats).filter(n=>stats[n].g>=3).sort((a,b)=>stats[b].g-stats[a].g).slice(0,12);
+  const seg=`<div class="row" style="margin-bottom:10px"><div class="seg" role="group" aria-label="種類">${[["ally","味方として"],["foe","相手として"]].map(([v,l])=>`<button data-act="pm" data-v="${v}" aria-pressed="${mode===v}">${l}</button>`).join("")}</div><span class="mu3">${mode==="ally"?"行の人が、列の人と同じチームのときの勝率":"行の人が、列の人と別チームで当たったときの勝率"}</span></div>`;
+  if(names.length<3)return seg+`<div class="empty">3試合以上出た人が3人そろうと表示されます。</div>`;
+  const cell=(a,b)=>{
+    if(a===b)return `<td class="pc self"></td>`;
+    const d=(mode==="ally"?stats[a].partners:stats[a].rivals)[b];
+    if(!d||d.g<2)return `<td class="pc na" title="2試合未満">·</td>`;
+    const p=Math.round(d.w/d.g*100),str=Math.round(Math.min(1,Math.abs(p-50)/40)*Math.min(1,d.g/4)*62),hue=p>=50?"--s1":"--s2";
+    return `<td class="pc" style="background:color-mix(in srgb,var(${hue}) ${str}%,var(--panel))" title="${esc(a)} × ${esc(b)}：${d.w}勝${d.g-d.w}敗"><b>${p}</b><small>${d.g}</small></td>`;
+  };
+  const head=`<tr><th></th>${names.map(n=>`<th class="pc"><span class="vt">${esc(n)}</span></th>`).join("")}</tr>`;
+  const body=names.map(a=>`<tr><th class="rowh">${esc(a)}</th>${names.map(b=>cell(a,b)).join("")}</tr>`).join("");
+  const best=[];
+  names.forEach(a=>names.forEach(b=>{if(a<b){const d1=(mode==="ally"?stats[a].partners:stats[a].rivals)[b];if(d1&&d1.g>=4)best.push({a,b,p:d1.w/d1.g,g:d1.g});}}));
+  best.sort((x,y)=>y.p-x.p||y.g-x.g);
+  const fmt=x=>mode==="ally"?`${esc(x.a)} × ${esc(x.b)}　<b>${Math.round(x.p*100)}%</b>（${x.g}試合）`:`${esc(x.a)} は ${esc(x.b)} に <b>${Math.round(x.p*100)}%</b>（${x.g}試合）`;
+  const top=best.length?`<div class="two" style="margin-top:14px"><div class="card"><div class="mu3">${mode==="ally"?"相性の良い組み合わせ":"よく勝っている対戦"}</div>${best.slice(0,3).map(x=>`<div style="margin-top:4px">${fmt(x)}</div>`).join("")}</div><div class="card"><div class="mu3">${mode==="ally"?"相性の悪い組み合わせ":"よく負けている対戦"}</div>${best.slice(-3).reverse().map(x=>`<div style="margin-top:4px">${fmt(x)}</div>`).join("")}</div></div><div class="mu3" style="margin-top:4px">4試合以上の組み合わせだけを集計しています。</div>`:"";
+  return seg+`<div class="card tw" style="padding:8px"><table class="pm"><thead>${head}</thead><tbody>${body}</tbody></table></div>
+   <div class="row mu3" style="margin-top:8px;gap:14px"><span><i class="lg" style="background:color-mix(in srgb,var(--s1) 55%,var(--panel))"></i>勝ちやすい</span><span><i class="lg" style="background:color-mix(in srgb,var(--s2) 55%,var(--panel))"></i>負けやすい</span><span>大きい数字＝勝率(%)、小さい数字＝試合数、「·」＝2試合未満、色の濃さは差と試合数で変わります</span></div>`+top;
+}
+// チャンピオンとロール
+function champView(){
+  const {stats}=calc(),agg={};
+  for(const n in stats)for(const c in stats[n].champs){const v=stats[n].champs[c],a=agg[c]||(agg[c]={c,g:0,w:0,k:0,d:0,a:0,kg:0,pl:{}});a.g+=v.g;a.w+=v.w;a.k+=v.k;a.d+=v.d;a.a+=v.a;a.kg+=v.kg;a.pl[n]=v.g;}
+  let list=Object.values(agg).sort((x,y)=>y.g-x.g||y.w-x.w);
+  const q=normKey(UI.cq);if(q)list=list.filter(x=>normKey(x.c).includes(q));
+  const roleCards=ROLES.map(r=>{
+    const arr=Object.keys(stats).map(n=>({n,...(stats[n].roles[r]||{g:0,w:0})})).filter(x=>x.g>=3).sort((a,b)=>b.w/b.g-a.w/a.g||b.g-a.g).slice(0,3);
+    return `<div class="fc"><span class="k">${r}が得意な人</span>${arr.length?arr.map(x=>`<div class="row" style="gap:8px"><b>${esc(x.n)}</b><span class="sp"></span><span class="num mu">${Math.round(x.w/x.g*100)}%</span><span class="mu3">${x.g}試合</span></div>`).join(""):'<span class="mu3">3試合以上の人がまだいません</span>'}</div>`;
+  }).join("");
+  if(!Object.keys(agg).length)return `<div class="empty"><h3>チャンピオンの記録がありません</h3><div>試合を保存するとき、チャンピオンを入力するとここに集計されます。</div></div>`;
+  const rows=list.slice(0,UI.cn).map(x=>{
+    const top=Object.entries(x.pl).sort((a,b)=>b[1]-a[1]).slice(0,2).map(([n,g])=>`${esc(n)}(${g})`).join("・");
+    return `<tr><td><b>${esc(x.c)}</b></td><td class="n">${x.g}</td><td class="n">${pct(x.w,x.g)}%<div class="hbar" style="margin-top:3px;width:70px;margin-left:auto"><i style="width:${pct(x.w,x.g)}%"></i></div></td><td class="n">${x.kg?kdaTxt(x.k,x.d,x.a):"-"}</td><td class="mu">${top}</td></tr>`;
+  }).join("");
+  return `<h2 class="sec">ロール別の得意な人<span class="mu">ロールを決めた試合が3試合以上の人が対象</span></h2><div class="fame" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr))">${roleCards}</div>
+   <h2 class="sec" style="margin-top:22px">チャンピオン一覧<span class="mu">${list.length}種類</span></h2>
+   <input class="field" id="cq" value="${esc(UI.cq)}" placeholder="チャンピオン名で検索" style="width:100%;max-width:360px;margin-bottom:10px">
+   <div class="card tw" style="padding:6px 10px"><table class="mini-t"><thead><tr><th>チャンピオン</th><th class="n">試合</th><th class="n">勝率</th><th class="n">KDA</th><th>よく使う人（回数）</th></tr></thead><tbody>${rows}</tbody></table></div>
+   ${list.length>UI.cn?`<div class="row" style="justify-content:center;margin-top:10px"><button class="btn" data-act="morechamp">さらに表示</button></div>`:""}`;
 }
 function assignSlot(n){const used=new Set(UI.sel.map(x=>UI.slots[x]));for(let i=1;i<=8;i++)if(!used.has(i)){UI.slots[n]=i;return true;}return false;}
 function chartView(names){
@@ -1003,17 +1223,19 @@ function hallView(){
   if(rec.bigLoss)c.push(fc("1試合の最大ダウン",String(rec.bigLoss.v).replace("-","−"),esc(rec.bigLoss.name),mdate(rec.bigLoss.m)));
   if(rec.mostGames)c.push(fc("最多出場",rec.mostGames.v+"試合",esc(rec.mostGames.name)));
   if(rec.bestWin)c.push(fc("最高勝率",Math.round(rec.bestWin.v*100)+"%",esc(rec.bestWin.name),rec.bestWin.g+"試合（5試合以上が対象）"));
+  if(rec.hit)c.push(fc("予想的中率",Math.round(rec.hit.n/rec.hit.total*100)+"%","期待勝率が高いチームが勝った割合",`${rec.hit.total}試合中${rec.hit.n}試合（互角の試合は除く）`,false));
+  if(rec.mvpTop)c.push(fc("MVP最多",rec.mvpTop.v+"回",esc(rec.mvpTop.name),"勝ったチームでDGPの伸びが最大だった回数"));
   if(rec.topChamp)c.push(fc("人気チャンピオン",esc(rec.topChamp.name),rec.topChamp.g+"回使用",null,true));
   if(rec.bestChamp)c.push(fc("勝率の高いチャンピオン",esc(rec.bestChamp.name),Math.round(rec.bestChamp.v*100)+"%",rec.bestChamp.g+"試合（4試合以上が対象）",true));
   const tl=Object.entries(titles).map(([n,a])=>`<div class="fc" style="gap:6px"><b>${esc(n)}</b><div class="row" style="gap:5px">${a.map(t=>`<span class="tag gold">${esc(t.label)}</span>`).join("")}</div></div>`).join("");
-  const cat=[["首位","現在DGPが1位（3人以上、5試合以上出場）"],["○連勝中","いま3連勝以上している"],["最長連勝 ○","団体内の最長連勝記録（4連勝以上）"],["○専","ロールを決めた試合が6試合以上あり、その7割以上が同じロール"],["○一筋","チャンピオンを入力した試合が6試合以上あり、その半分以上が同じチャンピオン"],["雑食","12試合以上で、8種類以上のチャンピオンを使った"],["不屈","3連敗以上したあとに勝った"],["皆勤","直近5試合すべてに出場した"],["KDAの鬼","KDAを入力した試合が5試合以上ある人の中で、平均KDAが最高（3人以上いるとき）"],["番狂わせ","団体内で最も勝つ確率の低かった試合（45%未満）に勝ったチーム"]];
+  const cat=[["首位","現在DGPが1位（3人以上、5試合以上出場）"],["○連勝中","いま3連勝以上している"],["最長連勝 ○","団体内の最長連勝記録（4連勝以上）"],["○専","ロールを決めた試合が6試合以上あり、その7割以上が同じロール"],["○一筋","チャンピオンを入力した試合が6試合以上あり、その半分以上が同じチャンピオン"],["雑食","12試合以上で、8種類以上のチャンピオンを使った"],["不屈","3連敗以上したあとに勝った"],["皆勤","直近5試合すべてに出場した"],["KDAの鬼","KDAを入力した試合が5試合以上ある人の中で、平均KDAが最高（3人以上いるとき）"],["番狂わせ","団体内で最も勝つ確率の低かった試合（45%未満）に勝ったチーム"],["MVP王","MVPの回数が最多（3回以上）。MVP＝勝ったチームでDGPの伸びが最大の人"]];
   const catH=`<h2 class="sec" style="margin-top:22px">称号の条件</h2><div class="card tw"><table class="mini-t"><tbody>${cat.map(([l,d])=>`<tr><td style="white-space:nowrap"><span class="tag gold">${l}</span></td><td class="mu">${d}</td></tr>`).join("")}</tbody></table><div class="mu3" style="margin-top:6px">称号は試合を保存するたびに自動で付け直されます。</div></div>`;
   return `<div class="fame">${c.join("")}</div>${tl?`<h2 class="sec" style="margin-top:22px">いま付いている称号</h2><div class="fame" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">${tl}</div>`:""}${catH}`;
 }
 
 // ---------- 選手の詳細 ----------
 function sheetHTML(n){
-  const {rat,stats,titles}=calc(),s=stats[n];
+  const {rat,stats,titles,rec}=calc(),s=stats[n];
   if(!s)return "";
   const names=ordered(),rank=names.indexOf(n)+1,ser=rat.series[n],st=streakOf(s.res);
   const ch=Object.entries(s.champs).sort((a,b)=>b[1].g-a[1].g).slice(0,6);
@@ -1028,7 +1250,7 @@ function sheetHTML(n){
    <div class="ph"><div><div class="mu3">${rank}位／${names.length}人</div><div class="nm">${esc(n)}</div></div><span class="sp"></span><div class="big">${rat.rt[n]}<small class="mu3" style="font-size:14px"> DGP</small></div></div>
    <div style="margin-top:8px">${(titles[n]||[]).map(t=>`<div style="margin:3px 0"><span class="tag gold">${esc(t.label)}</span> <span class="mu">${esc(t.desc)}</span></div>`).join("")}</div>
    <div class="kpis" style="margin-top:12px"><div class="kpi"><div class="mu3">戦績</div><div class="v">${s.w}-${s.g-s.w}</div></div><div class="kpi"><div class="mu3">勝率</div><div class="v">${pct(s.w,s.g)}%</div></div>
-   <div class="kpi"><div class="mu3">KDA</div><div class="v">${s.kg?kdaTxt(s.k,s.d,s.a):"-"}</div></div><div class="kpi"><div class="mu3">連勝・連敗</div><div class="v">${st.cur>0?st.cur+"連勝中":st.cur<0?(-st.cur)+"連敗中":"-"}</div></div></div>
+   <div class="kpi"><div class="mu3">KDA</div><div class="v">${s.kg?kdaTxt(s.k,s.d,s.a):"-"}</div></div><div class="kpi"><div class="mu3">MVP</div><div class="v">${(rec.mvp&&rec.mvp[n])||0}回</div></div><div class="kpi"><div class="mu3">連勝・連敗</div><div class="v">${st.cur>0?st.cur+"連勝中":st.cur<0?(-st.cur)+"連敗中":"-"}</div></div></div>
    <div class="card">${chart}<div class="mu3" style="margin-top:4px">最高 ${rat.pk[n]}　最長連勝 ${st.bw}　最長連敗 ${st.bl}</div></div>
    ${ch.length?`<h3>チャンピオン</h3><table class="mini-t"><thead><tr><th>名前</th><th class="n">試合</th><th class="n">勝率</th><th class="n">KDA</th></tr></thead><tbody>${ch.map(([c,v])=>`<tr><td>${esc(c)}</td><td class="n">${v.g}</td><td class="n">${pct(v.w,v.g)}%</td><td class="n">${v.kg?kdaTxt(v.k,v.d,v.a):"-"}</td></tr>`).join("")}</tbody></table>`:""}
    ${rl.length?`<h3>ロール</h3>${rl.map(([r,v])=>`<div class="row" style="gap:10px;margin:3px 0"><b style="width:44px">${r}</b><div class="hbar sp"><i style="width:${pct(v.g,s.g)}%"></i></div><span class="mu num">${v.g}試合　${pct(v.w,v.g)}%</span></div>`).join("")}`:""}
@@ -1048,7 +1270,7 @@ function vHist(){
   if(!S.history.length)return `<div class="empty"><h3>履歴はまだありません</h3><div>保存した試合がここに並びます。あとから修正や削除もできます。</div></div>`;
   const items=shown.map(m=>{
     const no=S.history.indexOf(m)+1,open=UI.openM===m.id;
-    return `<div class="mt"><button class="sm-h" data-act="openm" data-id="${m.id}" aria-expanded="${open}"><span class="num mu3">#${no}</span><span><span class="mu3">${fmtDate(m.date)}　</span><span class="${m.winner==="blue"?"win-b":"win-r"}">${SIDE_JA[m.winner]}勝利</span></span><span class="pp">${m.blue.map(p=>esc(p.name)).join("・")} vs ${m.red.map(p=>esc(p.name)).join("・")}</span><span class="mu3">${open?"閉じる":"開く"}</span></button>${open?editorHTML(m,rat):""}</div>`;
+    return `<div class="mt"><button class="sm-h" data-act="openm" data-id="${m.id}" aria-expanded="${open}"><span class="num mu3">#${no}</span><span><span class="mu3">${fmtDate(m.date)}　</span><span class="${m.winner==="blue"?"win-b":"win-r"}">${SIDE_JA[m.winner]}勝利</span></span><span class="pp">${m.blue.map(p=>esc(p.name)).join("・")} vs ${m.red.map(p=>esc(p.name)).join("・")}${(()=>{const v=mvpOf(m,rat);return v?` ／ MVP ${esc(v.name)}`:"";})()}</span><span class="mu3">${open?"閉じる":"開く"}</span></button>${open?editorHTML(m,rat):""}</div>`;
   }).join("");
   return flt+(items||`<div class="empty">条件に合う試合がありません。</div>`)+(L.length>shown.length?`<div class="row" style="justify-content:center;margin-top:10px"><button class="btn" data-act="more">さらに表示（残り${L.length-shown.length}）</button></div>`:"");
 }
@@ -1192,7 +1414,7 @@ async function rpc(fn,body){
     return await r.json();
   }finally{clearTimeout(to);}
 }
-function editing(){const a=document.activeElement;return !!(a&&["INPUT","TEXTAREA","SELECT"].includes(a.tagName)&&$("main").contains(a));}
+function editing(){const a=document.activeElement;return !!(a&&["INPUT","TEXTAREA","SELECT"].includes(a.tagName)&&($("main").contains(a)||$("over").contains(a)));}
 function queuePush(){if(!SY.cfg)return;SY.ver++;SY.dirty=true;clearTimeout(SY.t);SY.t=setTimeout(syncNow,700);}
 function afterRemote(changed){if(!changed)return;if(editing())SY.needRender=true;else render();}
 async function syncNow(){
@@ -1273,6 +1495,109 @@ function syncCardHTML(){
     <textarea class="field" rows="6" readonly style="margin-top:6px;font-family:monospace;font-size:12px">${esc(SQL_SETUP)}</textarea>
     <p class="mu3">無料プランは、1週間まったくアクセスがないと一時停止します（Supabaseの画面から数クリックで再開でき、データは消えません）。</p>
    </details></div></div>`;
+}
+// ---------- 共有用の画像（PNG）を作る ----------
+const CARD_FONT='"Noto Sans JP","Hiragino Sans","Yu Gothic UI","Meiryo",system-ui,sans-serif';
+const CC={bg0:"#0a111e",bg1:"#16233f",line:"#2a3a5e",ink:"#e8edf8",ink2:"#a9b7d2",ink3:"#7f8fb0",blue:"#5b9bff",red:"#ff6b7a",gold:"#f1c45c",ok:"#3ecf8e",bad:"#ff6b7a"};
+function mkCanvas(w,h){const c=document.createElement("canvas"),r=2;c.width=w*r;c.height=h*r;const x=c.getContext("2d");x.scale(r,r);return{c,x,w,h};}
+function ctext(x,s,px,py,o={}){
+  x.font=`${o.w||500} ${o.s||20}px ${CARD_FONT}`;x.fillStyle=o.c||CC.ink;x.textAlign=o.a||"left";x.textBaseline="alphabetic";
+  let t=String(s);
+  if(o.max&&x.measureText(t).width>o.max){while(t.length>1&&x.measureText(t+"…").width>o.max)t=t.slice(0,-1);t+="…";}
+  x.fillText(t,px,py);return x.measureText(t).width;
+}
+function crect(x,px,py,w,h,r,fill){x.beginPath();if(x.roundRect)x.roundRect(px,py,w,h,r);else x.rect(px,py,w,h);x.fillStyle=fill;x.fill();}
+function cardBase(w,h,sub){
+  const k=mkCanvas(w,h),x=k.x,g=x.createLinearGradient(0,0,w,h);
+  g.addColorStop(0,CC.bg0);g.addColorStop(1,CC.bg1);x.fillStyle=g;x.fillRect(0,0,w,h);
+  crect(x,0,0,8,h,0,CC.gold);
+  ctext(x,"ろるぱーくカスタム",40,56,{s:22,w:800,c:CC.gold});
+  ctext(x,sub,w-40,56,{s:20,c:CC.ink2,a:"right"});
+  x.fillStyle=CC.line;x.fillRect(40,74,w-80,1);
+  ctext(x,"DGP＝ドパガキポイント　ver"+VER,40,h-24,{s:15,c:CC.ink3});
+  ctext(x,S.name,w-40,h-24,{s:15,c:CC.ink3,a:"right"});
+  return k;
+}
+function dcol(d){return d>0?CC.ok:d<0?CC.bad:CC.ink3;}
+function matchCard(m){
+  const {rat}=calc(),per=rat.per[m.id]||{},inf=rat.info[m.id]||{},mv=mvpOf(m,rat),no=S.history.indexOf(m)+1;
+  const rows=Math.max(m.blue.length,m.red.length,1),W=1200,H=262+rows*68+62;
+  const k=cardBase(W,H,`#${no} ・ ${m.date.replace(/-/g,"/")}`),x=k.x,wn=m.winner,wc=wn==="blue"?CC.blue:CC.red;
+  ctext(x,SIDE_JA[wn]+"の勝利",40,148,{s:60,w:800,c:wc});
+  if(inf.ab!=null){
+    ctext(x,`平均 ${Math.round(inf.ab)} vs ${Math.round(inf.ar)} DGP`,W-40,120,{s:22,c:CC.ink2,a:"right"});
+    const e=wn==="blue"?inf.eBlue:1-inf.eBlue;
+    ctext(x,`勝つ確率は ${Math.round(e*100)}% だった`,W-40,152,{s:22,c:CC.ink2,a:"right"});
+  }
+  const colW=550,xs=[40,610];
+  ["blue","red"].forEach((sd,ci)=>{
+    const x0=xs[ci],col=sd==="blue"?CC.blue:CC.red;
+    crect(x,x0,186,colW,50,6,sd==="blue"?"rgba(91,155,255,.18)":"rgba(255,107,122,.18)");
+    ctext(x,SIDE_JA[sd],x0+18,220,{s:26,w:800,c:col});
+    if(sd===wn)ctext(x,"WIN",x0+colW-18,220,{s:22,w:800,c:CC.gold,a:"right"});
+    m[sd].forEach((p,i)=>{
+      const y=250+i*68,e=per[p.name];
+      x.fillStyle=CC.line;x.fillRect(x0,y+68,colW,1);
+      ctext(x,p.role||"",x0+16,y+42,{s:17,w:700,c:CC.ink3});
+      const nw=ctext(x,p.name,x0+84,y+32,{s:27,w:800,max:200});
+      if(mv&&mv.name===p.name){crect(x,x0+84+nw+10,y+12,56,26,5,CC.gold);ctext(x,"MVP",x0+84+nw+38,y+31,{s:16,w:800,c:"#1b1405",a:"center"});}
+      const sub=[p.champ||"",hasKDA(p)?`${p.k}/${p.d}/${p.a}`:""].filter(Boolean).join("　");
+      ctext(x,sub,x0+84,y+57,{s:18,c:CC.ink2,max:260});
+      if(e){
+        ctext(x,e.after,x0+colW-16,y+34,{s:32,w:800,c:CC.gold,a:"right"});
+        ctext(x,`${dlTxt(e.d)}`,x0+colW-16,y+58,{s:19,w:800,c:dcol(e.d),a:"right"});
+        ctext(x,`${e.before} →`,x0+colW-100,y+34,{s:17,c:CC.ink3,a:"right"});
+      }
+    });
+  });
+  return k.c;
+}
+function sessionCard(ss){
+  const n=Math.min(ss.rows.length,10),W=1200,H=232+n*58+62,k=cardBase(W,H,ss.date.replace(/-/g,"/")),x=k.x;
+  ctext(x,ss.date===localDate()?"今日のまとめ":"カスタムまとめ",40,140,{s:54,w:800});
+  ctext(x,`${ss.n}試合`,W-40,140,{s:34,w:800,c:CC.gold,a:"right"});
+  const y0=170;
+  ctext(x,"勝敗",640,y0+16,{s:16,c:CC.ink3,a:"right"});ctext(x,"KDA",760,y0+16,{s:16,c:CC.ink3,a:"right"});ctext(x,"MVP",850,y0+16,{s:16,c:CC.ink3,a:"right"});ctext(x,"DGP増減",W-40,y0+16,{s:16,c:CC.ink3,a:"right"});
+  ss.rows.slice(0,n).forEach((r,i)=>{
+    const y=y0+34+i*58;
+    if(i===0)crect(x,40,y,W-80,54,6,"rgba(241,196,92,.12)");
+    x.fillStyle=CC.line;x.fillRect(40,y+56,W-80,1);
+    ctext(x,i+1,70,y+38,{s:28,w:800,c:i===0?CC.gold:CC.ink3,a:"center"});
+    ctext(x,r.name,110,y+38,{s:28,w:800,max:380});
+    ctext(x,`${r.w}勝${r.g-r.w}敗`,640,y+37,{s:24,w:600,c:CC.ink2,a:"right"});
+    ctext(x,r.kg?kdaTxt(r.k,r.d,r.a):"-",760,y+37,{s:24,w:600,c:CC.ink2,a:"right"});
+    ctext(x,r.mvp?"×"+r.mvp:"",850,y+37,{s:24,w:800,c:CC.gold,a:"right"});
+    ctext(x,dlTxt(r.net),W-40,y+40,{s:36,w:800,c:dcol(r.net),a:"right"});
+  });
+  return k.c;
+}
+function rankCard(names){
+  const {rat,stats}=calc(),n=Math.min(names.length,10),W=1200,H=232+n*60+62,k=cardBase(W,H,S.history.length+"試合の記録"),x=k.x;
+  ctext(x,"DGPランキング",40,140,{s:54,w:800});
+  const y0=170;
+  ctext(x,"DGP",520,y0+16,{s:16,c:CC.ink3,a:"right"});ctext(x,"戦績",700,y0+16,{s:16,c:CC.ink3,a:"right"});ctext(x,"勝率",800,y0+16,{s:16,c:CC.ink3,a:"right"});ctext(x,"直近5試合",900,y0+16,{s:16,c:CC.ink3});ctext(x,"KDA",W-40,y0+16,{s:16,c:CC.ink3,a:"right"});
+  names.slice(0,n).forEach((nm,i)=>{
+    const y=y0+34+i*60,s=stats[nm];
+    if(i===0)crect(x,40,y,W-80,56,6,"rgba(241,196,92,.12)");
+    x.fillStyle=CC.line;x.fillRect(40,y+58,W-80,1);
+    ctext(x,i+1,70,y+40,{s:30,w:800,c:i===0?CC.gold:CC.ink3,a:"center"});
+    ctext(x,nm,110,y+40,{s:29,w:800,max:300});
+    ctext(x,rat.rt[nm],520,y+42,{s:40,w:800,c:CC.gold,a:"right"});
+    ctext(x,`${s.w}勝${s.g-s.w}敗`,700,y+39,{s:23,w:600,c:CC.ink2,a:"right"});
+    ctext(x,pct(s.w,s.g)+"%",800,y+39,{s:23,w:600,c:CC.ink2,a:"right"});
+    s.res.slice(-5).forEach((w,j)=>crect(x,900+j*24,y+22,18,18,4,w?CC.ok:CC.bad));
+    ctext(x,s.kg?kdaTxt(s.k,s.d,s.a):"-",W-40,y+39,{s:25,w:600,c:CC.ink2,a:"right"});
+  });
+  return k.c;
+}
+function showImage(title,file,canvas){
+  UI.modal={kind:"img",title,file,url:canvas.toDataURL("image/png"),canvas};render();
+}
+async function copyImage(canvas){
+  try{
+    const blob=await new Promise(r=>canvas.toBlob(r,"image/png"));
+    await navigator.clipboard.write([new ClipboardItem({"image/png":blob})]);return true;
+  }catch(e){return false;}
 }
 // ---------- データの出し入れ ----------
 function backupJSON(){return JSON.stringify({app:"lolpark",ver:VER,exportedAt:new Date().toISOString(),cur:DB.cur,groups:DB.groups.map(g=>({id:g.id,name:g.name,players:g.players,history:g.history}))},null,1);}
@@ -1367,6 +1692,27 @@ document.addEventListener("click",e=>{
   switch(a){
     case"view":UI.view=d.v;UI.sheet=null;window.scrollTo(0,0);render();break;
     case"sub":UI.sub=d.v;render();break;
+    case"range":UI.range=d.v;render();break;
+    case"pm":UI.pm=d.v;render();break;
+    case"morechamp":UI.cn+=40;render();break;
+    case"swap":{
+      const me={t:d.t,i:+d.i};
+      if(!UI.swap){UI.swap=me;}
+      else if(UI.swap.t===me.t&&UI.swap.i===me.i){UI.swap=null;}
+      else{swapPlayers(UI.swap,me);UI.swap=null;}
+      render();break;}
+    case"bulkin":UI.modal={kind:"bulk"};UI.focus="bulkin-t";render();break;
+    case"bulkgo":{
+      const r=bulkApply($("bulkin-t").value);
+      if(!r.rows.length){$("bulkin-m").textContent="読み取れる行がありませんでした。「名前 チャンピオン 7/2/9」の形か確認してください。";break;}
+      UI.modal=null;render();
+      toast(r.rows.length+"人ぶんを入力しました"+(r.bad.length?`（読み取れなかった行：${r.bad.length}）`:"")+"。");break;}
+    case"closemodal":UI.modal=null;render();break;
+    case"imgmatch":{const m=S.history.find(x=>x.id==d.id);if(m)showImage("試合結果の画像","lolpark-match-"+m.date+".png",matchCard(m));break;}
+    case"imgsession":{const date=sessionDate();if(date){const ss=sessionSummary(S.history,calc().rat,date);showImage("今日のまとめの画像","lolpark-summary-"+date+".png",sessionCard(ss));}break;}
+    case"imgrank":showImage("ランキングの画像","lolpark-ranking-"+localDate()+".png",rankCard(ordered()));break;
+    case"imgcopy":copyImage(UI.modal.canvas).then(ok=>toast(ok?"画像をコピーしました。Discordにそのまま貼り付けできます。":"コピーできませんでした。「保存する」を使ってください。"));break;
+    case"copysession":{const date=sessionDate();if(date)copyText(sessionText(sessionSummary(S.history,calc().rat,date))).then(ok=>toast(ok?"コピーしました。":"コピーできませんでした。"));break;}
     case"add":addFromInput();break;
     case"addn":addNames(d.n);render();break;
     case"addlast":{const m=S.history[S.history.length-1];if(m)addNames([...m.blue,...m.red].map(p=>p.name).concat(m.spec||[]).join("、"));render();break;}
@@ -1445,6 +1791,7 @@ document.addEventListener("toggle",e=>{const d=e.target;if(d.dataset&&d.dataset.
 const numOrNull=v=>{v=String(v).replace(/[^\d]/g,"");return v===""?null:Math.min(99,+v);};
 document.addEventListener("input",e=>{
   const t=e.target;
+  if(t.id==="cq"){UI.cq=t.value;UI.cn=40;const p=t.selectionStart;render();const q=$("cq");if(q){q.focus();q.setSelectionRange(p,p);}return;}
   if(t.id==="hq"){UI.hf.q=t.value;UI.hf.n=30;const p=t.selectionStart;render();const q=$("hq");if(q){q.focus();q.setSelectionRange(p,p);}return;}
   if(t.dataset.f&&cur){
     const p=cur[t.dataset.t][+t.dataset.i],f=t.dataset.f;
@@ -1471,7 +1818,7 @@ document.addEventListener("paste",e=>{
 });
 document.addEventListener("keydown",e=>{
   const t=e.target;
-  if(e.key==="Escape"){if(UI.sheet){UI.sheet=null;render();}return;}
+  if(e.key==="Escape"){if(UI.modal){UI.modal=null;render();}else if(UI.sheet){UI.sheet=null;render();}return;}
   if(t.dataset&&t.dataset.f&&t.dataset.t&&t.tagName==="INPUT"&&!e.isComposing&&["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(e.key)){
     const F=["champ","k","d","a"],col=(t.dataset.t==="red"?4:0)+F.indexOf(t.dataset.f),row=+t.dataset.i;
     const txt=t.dataset.f==="champ";
