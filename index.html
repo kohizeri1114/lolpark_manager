@@ -322,6 +322,7 @@ dialog img{max-width:100%;height:auto;display:block;border-radius:var(--r)}
 .set .col{display:grid;gap:12px;align-content:start;min-width:0}
 @media(min-width:900px){.set{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;align-items:start}}
 .set .col{grid-template-columns:minmax(0,1fr)}
+.set .grp{grid-template-columns:minmax(0,1fr)}.set .add .field{min-width:0}.set .btn{white-space:normal}
 </style></head><body>
 <div class="ticker" aria-hidden="true"><div class="ticker-in" id="tk"></div></div>
 <header class="top"><div class="wrap top-in">
@@ -338,7 +339,7 @@ dialog img{max-width:100%;height:auto;display:block;border-radius:var(--r)}
 
 <script>
 // ===== 設定（ここだけ触れば、点数・お知らせ・パッチノートを変えられる） =====
-const VER="3.0.0";
+const VER="3.1.0";
 const RATE={start:1000,win:10,kda:5,kdaBase:2.5,elo:true,eloScale:400,kdaRole:{TOP:2.5,JG:3,MID:3,ADC:3,SUP:3.5},streak:{from:2,step:1,max:3}};
 const TEAM={variety:0.6,jitter:2.5,rolePenalty:12};
 const ANNOUNCE=[
@@ -370,7 +371,16 @@ const PATCH_NEW={v:"3.0.0",date:"2026-10-29",sec:[
     "試合の記録に、その試合で観戦だった人も残すようにした（休みが続いた人の優先出場に使う）。",
     "設定画面からデモデータを作って試せる（別の団体として作るので、今のデータには影響しない）。"]]
 ]};
-const PATCH=[PATCH_NEW].concat([{"v": "2.1.1", "date": "2026-10-29", "sec": [["チーム分け", ["結果画面で、各プレイヤーの名前の右に現在のレート（DGP）を表示。戦績がない人は初期値を薄い色で表示。観戦者にも表示。"]], ["修正", ["試合の日付が、日本時間の0時〜9時に保存すると前の日になる問題を修正（端末の日付で記録）。", "別のタブで保存した内容を自動で取り込むように。複数のタブを開いていても、片方の保存でもう片方の試合が消えないように修正。"]]]}, {"v": "2.1.0", "date": "2026-10-23", "sec": [["レート", ["レートの単位を「DGP（ドパガキポイント）」に変更。戦績・順位、履歴、チーム分けの数字に「DGP」を付けた。", "連勝ボーナスを追加。2連勝目から、勝つたびに +1、+2、+3 DGP と増える（4連勝目以降は +3 で頭打ち）。負けると連勝は0に戻る。", "レート推移グラフのツールチップに、連勝ボーナスの点数を表示。", "「チーム差補正」の呼び名を「TG補正（TeamGap補正）」に変更。チームバランス表示に、勝った場合・負けた場合のTG補正の増減も表示。TG補正は、レートバランスのON/OFFに関係なく常に適用される。"]], ["チーム分け", ["参加者を追加したとき、その団体に戦績がある名前には「既」、初めての名前には「新」を表示。", "結果画面でプレイヤーを移動したとき、「平均レート」の表示も移動後の編成で更新されるように修正。", "チャンピオン名の入力欄が読みにくかった問題を修正。", "ロールのプルダウンで Enter を押すと、別の入力欄へ飛んでしまう問題を修正。", "結果画面で、チームの人数が偏っているときや誰もいないときに警告を表示。", "観戦に移したプレイヤーをチームに戻しても、入力したチャンピオン・KDAが消えないように。", "保存前の結果画面を、団体の切り替え・タブの移動・ページの再読み込みをしても残すように。不要なときは「結果を破棄」で消せる。", "結果画面でプレイヤーを移動したりロールを変えたりしても、TOP→JG→MID→ADC→SUP の並びが崩れないように。", "ロール指定ありのとき、同じチームでロールが重複していたら警告を表示。", "結果画面の入力欄のレイアウトを変更。左側にロールとチームサイド、右上に「クリア」ボタン。", "ロールとチームサイドの文字を、中央揃えに修正。", "チーム分けの結果に、チームバランス（両チームの平均レート・差・期待勝率）を大きく表示。ロール指定・レートバランスのON/OFFに関わらず常に表示し、プレイヤーを移動すると更新される。"]], ["履歴", ["入力欄のレイアウトを、チーム分けの結果画面と同じに変更。", "試合を開いたとき、プレイヤーのチーム（ブルー／レッド）を後から変更できるように。DGPも計算し直される。"]], ["戦績・順位", ["選手の詳細を閉じられるように。「閉じる」ボタン、または同じ選手をもう一度タップ。", "画面の一番下に「レートの計算方法」を掲載。設定値と連動して自動で更新される。", "計算方法の説明で、「勝つ見込み」を「TG補正」「期待勝率」という言い方に変更。期待勝率の一覧も追加。", "全員のレート推移グラフを追加。直近10／30／50試合・全期間の切り替え、名前をタップして表示／非表示、上位8人だけの表示ができる。"]]]}, {"v": "2.0.0", "date": "2026-10-22", "sec": [["デザイン（UI全面改修）", ["硬派なダークUIへ全面見直し。"]], ["チーム分け & 試合履歴", ["チーム分け実行後に、プレイヤーを「ブルー ⇔ レッド ⇔ 観戦」へ自由に変更・移動できる機能を追加。", "チーム分け結果画面および試合履歴画面で、ロールを後から自由に変更・指定できるドロップダウンを追加。", "試合履歴の「年月日（日付）」による絞り込み欄を削除し、UIを簡素化。"]], ["戦績・グラフ", ["レート推移グラフの点にカーソルを乗せた際、遅延なしで即座にツールチップが表示されるように改修。", "ツールチップ内に「試合番号」「レート増減」「プレイしたロール」「ピックチャンピオン」「KDA」の超詳細情報を一覧表示。"]]]}, {"v": "1.1.0", "date": "2026-10-21", "sec": [["レート", ["プレイヤーごとのカスタムレートを追加。初期1000、勝てば+10・負ければ-10が基本。", "相手チームの強さで増減が変わるように。格上に勝つと大きく増え、格下に負けると大きく減る。", "KDAによる補正を追加。ロールごとの基準KDAと比べて最大±5。", "戦績の詳細画面にレートの推移グラフ表示を追加。", "履歴に、試合ごとの各プレイヤーのレート増減を表示。", "戦績の表を、レート順の並びに変更。"]], ["チーム分け", ["「レートバランス」を追加。両チームの平均レートが近くなる組み合わせを選ぶ。", "希望サイド（ブルー／レッド／観戦）と「優先出場」を追加。", "11人以上のとき、10人をランダムに選び、残りを観戦者に。", "「ロール指定」をスイッチ式に変更。"]], ["団体", ["LTK・WCSのように、団体ごとに参加者と戦績を分けて管理できるように。"]], ["戦績", ["連勝・連敗の表示と、最大連勝・最大連敗を追加。", "味方のとき・敵のときの勝率（相性）を、プレイヤーの詳細に追加。"]], ["設定", ["メンバー名の変更を追加。過去の戦績の名前もまとめて変わる。", "戦績のJSON書き出し・読み込みを追加。"]]]}]);
+const PATCH_31={v:"3.1.0",date:"2026-10-29",sec:[
+  ["共有",[
+    "「みんなで共有」を追加。設定画面でSupabase（無料のクラウドデータベース）につなぐと、戦績・参加者・いまのチーム分けを全員で共有できる。誰かが保存すると数秒で全員の画面に反映される。",
+    "招待リンクを開くだけで、同じ共有につながる。接続の手順は設定画面に書いてある。",
+    "同時に保存しても、試合は消えないように自動でまとめる。ネットにつながらないときは今まで通りその端末に保存し、つながったら送る。"]],
+  ["その他",[
+    "ドパガキポイント（DGP）の説明を設定画面とランキングに追加。",
+    "戦績入力で方向キー（↑↓←→）による欄の移動に対応。称号の条件一覧を殿堂に追加。設定画面を2列に整理。"]]
+]};
+const PATCH=[PATCH_31,PATCH_NEW].concat([{"v": "2.1.1", "date": "2026-10-29", "sec": [["チーム分け", ["結果画面で、各プレイヤーの名前の右に現在のレート（DGP）を表示。戦績がない人は初期値を薄い色で表示。観戦者にも表示。"]], ["修正", ["試合の日付が、日本時間の0時〜9時に保存すると前の日になる問題を修正（端末の日付で記録）。", "別のタブで保存した内容を自動で取り込むように。複数のタブを開いていても、片方の保存でもう片方の試合が消えないように修正。"]]]}, {"v": "2.1.0", "date": "2026-10-23", "sec": [["レート", ["レートの単位を「DGP（ドパガキポイント）」に変更。戦績・順位、履歴、チーム分けの数字に「DGP」を付けた。", "連勝ボーナスを追加。2連勝目から、勝つたびに +1、+2、+3 DGP と増える（4連勝目以降は +3 で頭打ち）。負けると連勝は0に戻る。", "レート推移グラフのツールチップに、連勝ボーナスの点数を表示。", "「チーム差補正」の呼び名を「TG補正（TeamGap補正）」に変更。チームバランス表示に、勝った場合・負けた場合のTG補正の増減も表示。TG補正は、レートバランスのON/OFFに関係なく常に適用される。"]], ["チーム分け", ["参加者を追加したとき、その団体に戦績がある名前には「既」、初めての名前には「新」を表示。", "結果画面でプレイヤーを移動したとき、「平均レート」の表示も移動後の編成で更新されるように修正。", "チャンピオン名の入力欄が読みにくかった問題を修正。", "ロールのプルダウンで Enter を押すと、別の入力欄へ飛んでしまう問題を修正。", "結果画面で、チームの人数が偏っているときや誰もいないときに警告を表示。", "観戦に移したプレイヤーをチームに戻しても、入力したチャンピオン・KDAが消えないように。", "保存前の結果画面を、団体の切り替え・タブの移動・ページの再読み込みをしても残すように。不要なときは「結果を破棄」で消せる。", "結果画面でプレイヤーを移動したりロールを変えたりしても、TOP→JG→MID→ADC→SUP の並びが崩れないように。", "ロール指定ありのとき、同じチームでロールが重複していたら警告を表示。", "結果画面の入力欄のレイアウトを変更。左側にロールとチームサイド、右上に「クリア」ボタン。", "ロールとチームサイドの文字を、中央揃えに修正。", "チーム分けの結果に、チームバランス（両チームの平均レート・差・期待勝率）を大きく表示。ロール指定・レートバランスのON/OFFに関わらず常に表示し、プレイヤーを移動すると更新される。"]], ["履歴", ["入力欄のレイアウトを、チーム分けの結果画面と同じに変更。", "試合を開いたとき、プレイヤーのチーム（ブルー／レッド）を後から変更できるように。DGPも計算し直される。"]], ["戦績・順位", ["選手の詳細を閉じられるように。「閉じる」ボタン、または同じ選手をもう一度タップ。", "画面の一番下に「レートの計算方法」を掲載。設定値と連動して自動で更新される。", "計算方法の説明で、「勝つ見込み」を「TG補正」「期待勝率」という言い方に変更。期待勝率の一覧も追加。", "全員のレート推移グラフを追加。直近10／30／50試合・全期間の切り替え、名前をタップして表示／非表示、上位8人だけの表示ができる。"]]]}, {"v": "2.0.0", "date": "2026-10-22", "sec": [["デザイン（UI全面改修）", ["硬派なダークUIへ全面見直し。"]], ["チーム分け & 試合履歴", ["チーム分け実行後に、プレイヤーを「ブルー ⇔ レッド ⇔ 観戦」へ自由に変更・移動できる機能を追加。", "チーム分け結果画面および試合履歴画面で、ロールを後から自由に変更・指定できるドロップダウンを追加。", "試合履歴の「年月日（日付）」による絞り込み欄を削除し、UIを簡素化。"]], ["戦績・グラフ", ["レート推移グラフの点にカーソルを乗せた際、遅延なしで即座にツールチップが表示されるように改修。", "ツールチップ内に「試合番号」「レート増減」「プレイしたロール」「ピックチャンピオン」「KDA」の超詳細情報を一覧表示。"]]]}, {"v": "1.1.0", "date": "2026-10-21", "sec": [["レート", ["プレイヤーごとのカスタムレートを追加。初期1000、勝てば+10・負ければ-10が基本。", "相手チームの強さで増減が変わるように。格上に勝つと大きく増え、格下に負けると大きく減る。", "KDAによる補正を追加。ロールごとの基準KDAと比べて最大±5。", "戦績の詳細画面にレートの推移グラフ表示を追加。", "履歴に、試合ごとの各プレイヤーのレート増減を表示。", "戦績の表を、レート順の並びに変更。"]], ["チーム分け", ["「レートバランス」を追加。両チームの平均レートが近くなる組み合わせを選ぶ。", "希望サイド（ブルー／レッド／観戦）と「優先出場」を追加。", "11人以上のとき、10人をランダムに選び、残りを観戦者に。", "「ロール指定」をスイッチ式に変更。"]], ["団体", ["LTK・WCSのように、団体ごとに参加者と戦績を分けて管理できるように。"]], ["戦績", ["連勝・連敗の表示と、最大連勝・最大連敗を追加。", "味方のとき・敵のときの勝率（相性）を、プレイヤーの詳細に追加。"]], ["設定", ["メンバー名の変更を追加。過去の戦績の名前もまとめて変わる。", "戦績のJSON書き出し・読み込みを追加。"]]]}]);
 // ===== /設定 =====
 // ===== <CORE> ===== 画面に依存しない計算だけをここに集める（テストしやすくするため）
 const ROLES=["TOP","JG","MID","ADC","SUP"];
@@ -634,6 +644,8 @@ const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
 const ROLE_JA={TOP:"TOP",JG:"JG",MID:"MID",ADC:"ADC",SUP:"SUP"};
 const SIDE_JA={blue:"ブルー",red:"レッド"};
 let DB,S,saveOK=true;
+const SY={cfg:null,rev:0,dirty:false,ver:0,busy:false,status:"off",err:"",at:0,needRender:false,t:null};
+let cur=null;
 
 function norm(d){
   if(!d||typeof d!=="object")d={};
@@ -655,8 +667,15 @@ function validMatch(m){return m&&m.id!=null&&Array.isArray(m.blue)&&Array.isArra
 function loadDB(){let raw=null;try{raw=localStorage.getItem(K);}catch(e){}let d=null;try{d=raw?JSON.parse(raw):null;}catch(e){}return norm(d);}
 let _rc=null;
 function setG(id){S=DB.groups.find(g=>g.id===id)||DB.groups[0];DB.cur=S.id;S.opt=S.opt||{role:true,bal:true};_rc=null;}
-function paintSave(){const e=$("sv");if(!e)return;e.className="save"+(saveOK?"":" bad");e.lastChild.textContent=saveOK?"保存済み":"保存できていません";}
-function save(){_rc=null;try{localStorage.setItem(K,JSON.stringify(DB));saveOK=true;}catch(e){saveOK=false;}paintSave();}
+function paintSave(){
+  const e=$("sv");if(!e)return;
+  let bad=!saveOK,t="保存済み";
+  if(!saveOK)t="保存できていません";
+  else if(SY.cfg){if(SY.status==="err"){bad=true;t="共有エラー（再試行中）";}else t=SY.busy||SY.dirty?"共有中（同期中…）":"共有中";}
+  e.className="save"+(bad?" bad":"");e.lastChild.textContent=t;
+}
+function persist(){_rc=null;try{localStorage.setItem(K,JSON.stringify(DB));saveOK=true;}catch(e){saveOK=false;}paintSave();}
+function save(){if(S)S.su=Date.now();persist();queuePush();}
 function calc(){
   if(_rc)return _rc;
   const rat=computeRatings(S.history),stats=computeStats(S.history),rec=computeRecords(S.history,rat,stats),titles=computeTitles(S.history,rat,stats,rec);
@@ -746,7 +765,6 @@ function spark(vals,w=84,h=28){
 // ---------- 画面の状態 ----------
 const UI={view:"play",sub:"board",props:null,done:null,bulk:false,openRm:new Set(),sel:null,slots:{},tbl:false,
   hf:{q:"",w:"",n:30},openM:null,arm:null,sheet:null,focus:null,toast:null,quick:true};
-let cur=null; // 今の対戦（下書き）
 const TABS=[
   ["play","対戦",'<path d="M6 4l12 8-12 8z"/>'],
   ["rank","ランキング",'<path d="M5 20v-7M12 20V5M19 20v-10"/>'],
@@ -903,7 +921,7 @@ function saveMatch(w){
 }
 function undoMatch(id){
   const i=S.history.findIndex(m=>m.id===id);if(i<0)return;
-  const m=S.history.splice(i,1)[0];
+  const m=S.history.splice(i,1)[0];(S.del=S.del||[]).push(m.id);
   cur={mode:m.mode||"free",blue:m.blue.map(p=>({...p})),red:m.red.map(p=>({...p})),spec:(m.spec||[]).slice(),pi:0};
   S.draft=cur;UI.done=null;UI.props=null;save();render();toast("取り消しました。入力はそのまま残っています。");
 }
@@ -1056,7 +1074,7 @@ function vSet(){
   const th=getTheme();
   const R=RATE,kb=Object.entries(R.kdaRole).map(([r,v])=>r+" "+v).join(" / ");
   const total=DB.groups.reduce((a,g)=>a+g.history.length,0);
-  return `<div class="set"><div class="col">  <div class="card"><h3>団体</h3><div class="grp">
+  return `<div class="set"><div class="col">${syncCardHTML()}  <div class="card"><h3>団体</h3><div class="grp">
     <div class="mu">いまの団体：<b>${esc(S.name)}</b>（${S.history.length}試合）。団体ごとに参加者・戦績・DGPが別になります。</div>
     <div class="add"><input class="field" id="gname" placeholder="新しい団体の名前"><button class="btn" data-act="gnew">作る</button></div>
     <div class="add"><input class="field" id="grename" value="${esc(S.name)}"><button class="btn" data-act="grename">名前を変える</button></div>
@@ -1082,6 +1100,180 @@ function vSet(){
 <div class="card" style="margin-top:12px"><h3>パッチノート</h3>${PATCH.map((p,i)=>`<details class="pv"${i===0?" open":""}><summary><b>ver${esc(p.v)}</b> <span class="mu3">${esc(p.date)}</span></summary>${p.sec.map(([t,a])=>`<h5>${esc(t)}</h5><ul>${a.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`).join("")}</details>`).join("")}</div>
 `;
 }
+// ---------- みんなで共有（Supabase） ----------
+const SQL_SETUP=[
+"create table if not exists rooms (",
+"  code text primary key,",
+"  data jsonb not null,",
+"  rev int not null default 1,",
+"  updated_at timestamptz not null default now()",
+");",
+"alter table rooms enable row level security;",
+"",
+"create or replace function get_room(p_code text) returns jsonb",
+"language sql security definer set search_path = public as $$",
+"  select jsonb_build_object('rev', rev, 'data', data) from rooms where code = p_code;",
+"$$;",
+"",
+"create or replace function put_room(p_code text, p_data jsonb, p_base int) returns jsonb",
+"language plpgsql security definer set search_path = public as $$",
+"declare r rooms%rowtype;",
+"begin",
+"  if p_code is null or length(p_code) < 8 then",
+"    return jsonb_build_object('ok', false, 'error', 'ルームコードが短すぎます');",
+"  end if;",
+"  if pg_column_size(p_data) > 8000000 then",
+"    return jsonb_build_object('ok', false, 'error', 'データが大きすぎます');",
+"  end if;",
+"  select * into r from rooms where code = p_code for update;",
+"  if not found then",
+"    insert into rooms(code, data, rev) values (p_code, p_data, 1);",
+"    return jsonb_build_object('ok', true, 'rev', 1);",
+"  end if;",
+"  if r.rev <> p_base then",
+"    return jsonb_build_object('ok', false, 'rev', r.rev, 'data', r.data);",
+"  end if;",
+"  update rooms set data = p_data, rev = r.rev + 1, updated_at = now() where code = p_code;",
+"  return jsonb_build_object('ok', true, 'rev', r.rev + 1);",
+"end $$;",
+"",
+"grant execute on function get_room(text) to anon, authenticated;",
+"grant execute on function put_room(text, jsonb, int) to anon, authenticated;"
+].join("\n");
+
+function loadSyncCfg(){try{const c=JSON.parse(localStorage.getItem("lolpark_sync")||"null");return c&&c.url&&c.key&&c.room?c:null;}catch(e){return null;}}
+function storeSyncCfg(c){try{if(c)localStorage.setItem("lolpark_sync",JSON.stringify(c));else localStorage.removeItem("lolpark_sync");}catch(e){}}
+function canon(v){
+  if(Array.isArray(v))return "["+v.map(canon).join(",")+"]";
+  if(v&&typeof v==="object")return "{"+Object.keys(v).sort().filter(k=>v[k]!==undefined).map(k=>JSON.stringify(k)+":"+canon(v[k])).join(",")+"}";
+  return JSON.stringify(v===undefined?null:v);
+}
+const delSorted=m=>[...m.values()].sort((x,y)=>String(x)<String(y)?-1:1);
+function payload(){
+  return{groups:DB.groups.map(g=>({id:g.id,name:g.name,players:g.players,history:g.history,del:delSorted(new Map((g.del||[]).map(x=>[String(x),x]))),su:g.su||0,draft:g.draft||null,opt:g.opt||{role:true,bal:true}})),
+    gdel:delSorted(new Map((DB.gdel||[]).map(x=>[String(x),x])))};
+}
+function pickNewer(a,b,key){
+  const x=a[key]||0,y=b[key]||0;
+  if(x!==y)return x>y?a:b;
+  return canon(a)>=canon(b)?a:b;
+}
+function mergeG(a,b){
+  const del=new Map();[...(a.del||[]),...(b.del||[])].forEach(x=>del.set(String(x),x));
+  const mm=new Map();
+  (b.history||[]).forEach(m=>mm.set(String(m.id),m));
+  (a.history||[]).forEach(m=>{const k=String(m.id),o=mm.get(k);mm.set(k,o?pickNewer(m,o,"u"):m);});
+  const history=[...mm.values()].filter(m=>!del.has(String(m.id))).sort((x,y)=>x.id-y.id);
+  const win=pickNewer(a,b,"su");
+  return{id:a.id,name:win.name,players:win.players||[],history,del:delSorted(del),su:Math.max(a.su||0,b.su||0),draft:win.draft||null,opt:win.opt||{role:true,bal:true}};
+}
+function remoteMerge(rd){
+  if(!rd||!Array.isArray(rd.groups))return false;
+  const before=canon(payload()),beforeDraft=canon(S.draft||null);
+  const gdel=new Map();[...(DB.gdel||[]),...(rd.gdel||[])].forEach(x=>gdel.set(String(x),x));
+  const L=new Map(DB.groups.map(g=>[g.id,g])),Rm=new Map(rd.groups.filter(g=>g&&g.id).map(g=>[g.id,g]));
+  const ids=[...new Set([...Rm.keys(),...L.keys()])].filter(id=>!gdel.has(String(id)));
+  const out=ids.map(id=>{const a=L.get(id),b=Rm.get(id);return a&&b?mergeG(a,b):(a||b);});
+  const keep=DB.cur,nd=norm({groups:out,cur:keep});
+  DB.groups=nd.groups;DB.gdel=delSorted(gdel);
+  setG(DB.groups.some(g=>g.id===keep)?keep:DB.groups[0].id);
+  cur=S.draft||null;if(cur&&!Array.isArray(cur.blue)){cur=null;S.draft=null;}
+  if(canon(S.draft||null)!==beforeDraft){UI.props=null;UI.done=null;}
+  persist();
+  return canon(payload())!==before;
+}
+async function rpc(fn,body){
+  const c=SY.cfg,h={"Content-Type":"application/json",apikey:c.key};
+  if(/^eyJ/.test(c.key))h.Authorization="Bearer "+c.key;
+  const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),12000);
+  try{
+    const r=await fetch(c.url.replace(/\/+$/,"")+"/rest/v1/rpc/"+fn,{method:"POST",headers:h,body:JSON.stringify(body),signal:ctl.signal});
+    if(!r.ok){let t="";try{t=(await r.json()).message||"";}catch(e){}throw new Error("HTTP "+r.status+(t?"："+t:""));}
+    return await r.json();
+  }finally{clearTimeout(to);}
+}
+function editing(){const a=document.activeElement;return !!(a&&["INPUT","TEXTAREA","SELECT"].includes(a.tagName)&&$("main").contains(a));}
+function queuePush(){if(!SY.cfg)return;SY.ver++;SY.dirty=true;clearTimeout(SY.t);SY.t=setTimeout(syncNow,700);}
+function afterRemote(changed){if(!changed)return;if(editing())SY.needRender=true;else render();}
+async function syncNow(){
+  if(!SY.cfg||SY.busy)return;
+  SY.busy=true;let changed=false;
+  try{
+    const code=SY.cfg.room,r=await rpc("get_room",{p_code:code});
+    if(!r){SY.dirty=true;SY.rev=0;}
+    else if(r.rev!==SY.rev){
+      const ch=remoteMerge(r.data);changed=changed||ch;SY.rev=r.rev;
+      if(canon(payload())!==canon(r.data)){SY.dirty=true;SY.ver++;}
+    }
+    for(let i=0;i<4&&SY.dirty;i++){
+      const v0=SY.ver,w=await rpc("put_room",{p_code:code,p_data:payload(),p_base:SY.rev});
+      if(w&&w.ok){SY.rev=w.rev;if(SY.ver===v0)SY.dirty=false;}
+      else if(w&&w.rev!=null){const ch=remoteMerge(w.data);changed=changed||ch;SY.rev=w.rev;SY.ver++;}
+      else throw new Error((w&&w.error)||"書き込みに失敗しました");
+    }
+    SY.status="ok";SY.at=Date.now();SY.err="";
+  }catch(e){SY.status="err";SY.err=e&&e.name==="AbortError"?"接続がタイムアウトしました":String((e&&e.message)||e);}
+  SY.busy=false;paintSave();afterRemote(changed);
+  if(UI.view==="set"&&!editing())render();
+}
+function checkKey(k){
+  if(/^sb_secret_/.test(k))return "これは秘密のキー（secret）です。公開用の「anon」または「publishable」キーを使ってください。";
+  if(/^eyJ/.test(k)){try{const p=JSON.parse(atob(k.split(".")[1].replace(/-/g,"+").replace(/_/g,"/")));if(p.role==="service_role")return "これは秘密のキー（service_role）です。公開用の「anon」キーを使ってください。";}catch(e){}}
+  return "";
+}
+function connectSync(c){
+  c.url=c.url.trim().replace(/\/+$/,"");c.key=c.key.trim();c.room=c.room.trim();
+  if(!/^https:\/\/[^\s/]+\.[^\s/]+/.test(c.url))return "URLは https://〜.supabase.co の形式で入力してください。";
+  if(!c.key)return "キーを入力してください。";
+  const ck=checkKey(c.key);if(ck)return ck;
+  if(c.room.length<8)return "ルームコードは8文字以上にしてください（「ルームコードを作る」で自動作成できます）。";
+  SY.cfg=c;storeSyncCfg(c);SY.rev=0;SY.dirty=true;SY.ver++;SY.status="ok";SY.err="";
+  syncNow();return "";
+}
+function newRoomCode(){
+  const a="abcdefghjkmnpqrstuvwxyz23456789",b=new Uint8Array(14);
+  (window.crypto||window.msCrypto).getRandomValues(b);
+  return [...b].map(x=>a[x%a.length]).join("");
+}
+function inviteLink(){
+  const c=SY.cfg;if(!c)return "";
+  const j=btoa(unescape(encodeURIComponent(JSON.stringify({u:c.url,k:c.key,r:c.room}))));
+  return location.href.split("#")[0]+"#join="+encodeURIComponent(j);
+}
+function applyJoinHash(){
+  const m=location.hash.match(/^#join=(.+)$/);if(!m)return false;
+  try{
+    const j=JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1])))));
+    try{history.replaceState(null,"",location.href.split("#")[0]);}catch(e){}
+    const err=connectSync({url:j.u,key:j.k,room:j.r});
+    return !err;
+  }catch(e){return false;}
+}
+function syncCardHTML(){
+  const c=SY.cfg||{url:"",key:"",room:""},on=!!SY.cfg;
+  const st=!on?"つながっていません（この端末だけに保存中）":SY.status==="err"?`エラー：${esc(SY.err)}（自動で再試行します）`:SY.at?`同期できています（最終 ${new Date(SY.at).toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit",second:"2-digit"})}）`:"接続中…";
+  return `<div class="card"><h3>みんなで共有</h3><div class="grp">
+   <div class="mu">戦績・参加者・いまのチーム分けを、同じルームコードの全員で共有します。誰かが保存すると数秒で全員の画面に反映されます。</div>
+   <div class="mu" style="color:${on&&SY.status==="err"?"var(--bad)":on?"var(--ok)":"var(--ink-3)"};font-weight:700">${st}</div>
+   <input class="field" id="sy-url" value="${esc(c.url)}" placeholder="Project URL（https://〜.supabase.co）" autocomplete="off">
+   <input class="field" id="sy-key" value="${esc(c.key)}" placeholder="anon / publishable キー" autocomplete="off">
+   <div class="add"><input class="field" id="sy-room" value="${esc(c.room)}" placeholder="ルームコード（8文字以上）" autocomplete="off"><button class="btn" data-act="syroom">ルームコードを作る</button></div>
+   <div class="row"><button class="btn" data-act="syconnect">${on?"設定を更新して再接続":"接続する"}</button>${on?`<button class="btn" data-act="syinvite">招待リンクをコピー</button><button class="btn ghost danger" data-act="sydisc">切断する</button>`:""}</div>
+   <div class="mu3" id="symsg"></div>
+   ${on?`<div class="mu3">招待リンクを開くと、キーとコードが自動で入ります。仲間内だけに送ってください（リンクを知っている人は書き込めます）。</div>`:""}
+   <details class="rule"><summary>はじめての設定手順（約10分）</summary>
+    <div class="mu" style="margin-top:6px;line-height:1.8">
+     <b>1.</b> <b>supabase.com</b> を開き「Start your project」から、GitHubアカウントでログイン。<br>
+     <b>2.</b> 「New project」を押す。名前は何でもOK（例: lolpark）。Database Passwordは「Generate」で作ってメモ。Regionは「Northeast Asia (Tokyo)」。作成して1〜2分待つ。<br>
+     <b>3.</b> 左メニューの「SQL Editor」→「New query」。下の「SQLをコピー」を押して貼り付け、右下の「Run」。「Success」と出ればOK。<br>
+     <b>4.</b> 左メニューの歯車「Project Settings」→「API Keys」（または「API」）を開き、<b>Project URL</b> と <b>anon（publishable）キー</b> をコピーして、上の欄に貼る。<span style="color:var(--bad)">「service_role」「secret」と書かれたキーは絶対に貼らないでください。</span><br>
+     <b>5.</b> 「ルームコードを作る」→「接続する」。つながったら「招待リンクをコピー」して仲間に送れば、開くだけで同じ共有につながります。
+    </div>
+    <div class="row" style="margin-top:8px"><button class="btn sm" data-act="sysql">SQLをコピー</button><span class="mu3">コピーできないときは、下の欄を全選択してコピー。</span></div>
+    <textarea class="field" rows="6" readonly style="margin-top:6px;font-family:monospace;font-size:12px">${esc(SQL_SETUP)}</textarea>
+    <p class="mu3">無料プランは、1週間まったくアクセスがないと一時停止します（Supabaseの画面から数クリックで再開でき、データは消えません）。</p>
+   </details></div></div>`;
+}
 // ---------- データの出し入れ ----------
 function backupJSON(){return JSON.stringify({app:"lolpark",ver:VER,exportedAt:new Date().toISOString(),cur:DB.cur,groups:DB.groups.map(g=>({id:g.id,name:g.name,players:g.players,history:g.history}))},null,1);}
 function markExported(){DB.meta.exp=DB.groups.reduce((a,g)=>a+g.history.length,0);save();}
@@ -1097,6 +1289,7 @@ function importData(d,mode){
   const inc=Array.isArray(d.groups)?d:{groups:[{id:"imp",name:"取り込み",players:d.players||[],history:d.history||[]}],single:true};
   const nd=norm({groups:inc.groups.map(g=>({...g})),cur:inc.cur});
   const nMatch=nd.groups.reduce((a,g)=>a+g.history.length,0);
+  if(mode==="replace"&&SY.cfg)return "共有中は「全部置き換える」は使えません。「追加する」を使うか、先に共有を切断してください。";
   if(mode==="replace"){
     if(inc.single&&!Array.isArray(d.groups)){S.players=nd.groups[0].players;S.history=nd.groups[0].history;S.draft=null;}
     else{DB=nd;DB.meta={exp:nMatch};}
@@ -1208,21 +1401,26 @@ document.addEventListener("click",e=>{
     case"hw":UI.hf.w=d.v;UI.hf.n=30;render();break;
     case"more":UI.hf.n+=30;render();break;
     case"openm":UI.openM=UI.openM==+d.id?null:+d.id;render();break;
-    case"setwin":{const m=S.history.find(x=>x.id==d.id);if(m){m.winner=d.v;save();render();}break;}
+    case"setwin":{const m=S.history.find(x=>x.id==d.id);if(m){m.winner=d.v;m.u=Date.now();save();render();}break;}
     case"delm":
-      if(arm("del"+d.id)){S.history=S.history.filter(x=>x.id!=d.id);UI.openM=null;UI.arm=null;save();render();toast("削除しました。");}
+      if(arm("del"+d.id)){(S.del=S.del||[]).push(+d.id);S.history=S.history.filter(x=>x.id!=d.id);UI.openM=null;UI.arm=null;save();render();toast("削除しました。");}
       else armSet("del"+d.id);break;
     case"gnew":{const v=$("gname").value.trim();if(!v)break;if(DB.groups.some(g=>g.name===v)){toast("同じ名前の団体があります。");break;}
       const g={id:"g"+uid(),name:v,players:[],history:[]};DB.groups.push(g);setG(g.id);cur=null;UI.props=null;UI.done=null;UI.sel=null;save();render();toast("「"+v+"」を作って切り替えました。");break;}
     case"grename":{const v=$("grename").value.trim();if(!v)break;if(DB.groups.some(g=>g!==S&&g.name===v)){toast("同じ名前の団体があります。");break;}S.name=v;save();render();toast("名前を変えました。");break;}
     case"gdel":
-      if(arm("gdel")){DB.groups=DB.groups.filter(g=>g!==S);setG(DB.groups[0].id);cur=S.draft||null;UI.props=null;UI.done=null;UI.sel=null;UI.arm=null;save();render();toast("削除しました。");}
+      if(arm("gdel")){(DB.gdel=DB.gdel||[]).push(S.id);DB.groups=DB.groups.filter(g=>g!==S);setG(DB.groups[0].id);cur=S.draft||null;UI.props=null;UI.done=null;UI.sel=null;UI.arm=null;save();render();toast("削除しました。");}
       else armSet("gdel");break;
     case"wipe":
-      if(arm("wipe")){S.players=[];S.history=[];S.draft=null;cur=null;UI.props=null;UI.done=null;UI.sel=null;UI.arm=null;save();render();toast("空にしました。");}
+      if(arm("wipe")){S.del=(S.del||[]).concat(S.history.map(m=>m.id));S.players=[];S.history=[];S.draft=null;cur=null;UI.props=null;UI.done=null;UI.sel=null;UI.arm=null;save();render();toast("空にしました。");}
       else armSet("wipe");break;
     case"theme":setTheme(d.v);render();break;
     case"rename":{const m=renameMember($("rn-from").value,$("rn-to").value);toast(m);break;}
+    case"syroom":$("sy-room").value=newRoomCode();break;
+    case"syconnect":{const e=connectSync({url:$("sy-url").value,key:$("sy-key").value,room:$("sy-room").value});if(e)$("symsg").textContent=e;else{toast("接続しました。同期しています…");render();}break;}
+    case"sydisc":SY.cfg=null;storeSyncCfg(null);SY.status="off";paintSave();render();toast("切断しました。データはこの端末に残っています。");break;
+    case"syinvite":copyText(inviteLink()).then(ok=>toast(ok?"招待リンクをコピーしました。仲間内だけに送ってください。":"コピーできませんでした。"));break;
+    case"sysql":copyText(SQL_SETUP).then(ok=>toast(ok?"SQLをコピーしました。":"コピーできませんでした。下の欄から選んでコピーしてください。"));break;
     case"backup":doBackup();break;
     case"backupcopy":copyText(backupJSON()).then(ok=>{if(ok)markExported();toast(ok?"コピーしました。メモ帳などに貼り付けて保存してください。":"コピーできませんでした。");render();});break;
     case"nudgeoff":DB.meta.exp=DB.groups.reduce((a,g)=>a+g.history.length,0);save();render();break;
@@ -1256,7 +1454,7 @@ document.addEventListener("input",e=>{
     S.draft=cur;save();const w=$("warns");if(w)w.innerHTML=warnsHTML();return;
   }
   if(t.dataset.e){
-    const m=S.history.find(x=>x.id==t.dataset.m);if(!m)return;
+    const m=S.history.find(x=>x.id==t.dataset.m);if(!m)return;m.u=Date.now();
     if(t.dataset.e==="date"){if(t.value)m.date=t.value;save();return;}
     const p=m[t.dataset.s][+t.dataset.i],f=t.dataset.e;
     if(f==="champ")p.champ=t.value;else if(f==="role")p.role=t.value;else{const v=numOrNull(t.value);p[f]=v;if(String(v??"")!==t.value)t.value=v==null?"":v;}
@@ -1297,13 +1495,21 @@ document.addEventListener("keydown",e=>{
 });
 window.addEventListener("storage",e=>{
   if(e.key!==K||!e.newValue)return;
-  try{const keep=DB.cur;DB=norm(JSON.parse(e.newValue));setG(DB.groups.some(g=>g.id===keep)?keep:DB.cur);cur=S.draft||null;_rc=null;render();}catch(err){}
+  try{const keep=DB.cur,gd=DB.gdel;DB=norm(JSON.parse(e.newValue));setG(DB.groups.some(g=>g.id===keep)?keep:DB.cur);cur=S.draft||null;_rc=null;render();}catch(err){}
 });
 // ---------- はじめる ----------
 applyTheme();
 DB=loadDB();setG(DB.cur);cur=S.draft||null;
 if(cur&&!Array.isArray(cur.blue)){cur=null;S.draft=null;}
+SY.cfg=loadSyncCfg();
+const joined=applyJoinHash();
 render();
+if(joined)toast("共有につなぎました。しばらくすると全員のデータが表示されます。");
+setInterval(()=>{if(SY.cfg&&!document.hidden)syncNow();},5000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)syncNow();});
+window.addEventListener("online",syncNow);
+document.addEventListener("focusout",()=>setTimeout(()=>{if(SY.needRender&&!editing()){SY.needRender=false;render();}},80));
+if(SY.cfg){SY.dirty=true;SY.ver++;syncNow();}
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
 
 </script></body></html>
