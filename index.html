@@ -1,1265 +1,1309 @@
 <!doctype html>
-<html lang="ja">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ろるぱーくカスタム管理アプリ</title>
-<style>
-:root {
-  --bg: #0d1117;
-  --bg-sub: #161b22;
-  --card: #161b22;
-  --card-hover: #1c2128;
-  --input-bg: #010409;
-  --tx: #c9d1d9;
-  --tx-sub: #8b949e;
-  --tx-mu: #6e7681;
-  --bd: #30363d;
-  --bd-focus: #58a6ff;
-  --bl: #388bfd;
-  --bl-bg: rgba(56, 139, 253, 0.1);
-  --bl-bd: #1f6feb;
-  --rd: #f85149;
-  --rd-bg: rgba(248, 81, 73, 0.1);
-  --rd-bd: #da3633;
-  --ac: #1f6feb;
-  --ac-hover: #388bfd;
-  --gold: #d29922;
-  --radius: 4px;
-  color-scheme: dark;
-  box-sizing: border-box;
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="color-scheme" content="dark light">
+<title>ろるぱーくカスタム管理アプリ</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>/* 配色: 夜の配信画面。青と赤はチームの色、金だけがDGP（点数）の色。
+   構成: 上に流れるお知らせ / 見出し+団体 / 4つの画面 / スマホは下に操作バー */
+:root{
+  --bg:#0a111e;--bg-2:#0d1626;--panel:#121c30;--panel-2:#17233b;--line:#243251;--line-2:#33466f;
+  --ink:#e8edf8;--ink-2:#a9b7d2;--ink-3:#8190b0;
+  --blue:#5b9bff;--blue-bg:rgba(91,155,255,.13);--blue-ln:rgba(91,155,255,.5);
+  --red:#ff6b7a;--red-bg:rgba(255,107,122,.13);--red-ln:rgba(255,107,122,.5);
+  --gold:#f1c45c;--gold-t:#f1c45c;--gold-ink:#1b1405;--gold-bg:rgba(241,196,92,.13);
+  --ok:#3ecf8e;--warn:#f5a524;--bad:#ff6b7a;
+  --s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#008300;--s7:#9085e9;--s8:#e66767;
+  --shadow:0 10px 32px rgba(0,0,0,.5);--r:4px;--rl:8px;
+  --f-body:"Noto Sans JP","Hiragino Sans","Yu Gothic UI","Meiryo",system-ui,sans-serif;
+  --f-num:"Barlow Condensed","Arial Narrow","Roboto Condensed","Hiragino Sans",system-ui,sans-serif;
+  color-scheme:dark;
 }
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
+  --bg:#e9eff8;--bg-2:#e1e9f5;--panel:#ffffff;--panel-2:#f2f6fb;--line:#d2ddee;--line-2:#b5c6e0;
+  --ink:#0e1a30;--ink-2:#44587a;--ink-3:#5d7092;
+  --blue:#1f63e0;--blue-bg:rgba(31,99,224,.09);--blue-ln:rgba(31,99,224,.45);
+  --red:#d6304a;--red-bg:rgba(214,48,74,.09);--red-ln:rgba(214,48,74,.45);
+  --gold:#e3a51d;--gold-t:#8a5d00;--gold-ink:#1b1405;--gold-bg:rgba(227,165,29,.16);
+  --ok:#12805a;--warn:#a65f00;--bad:#c42b3d;
+  --s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#008300;--s7:#6250d6;--s8:#e34948;
+  --shadow:0 10px 30px rgba(20,40,80,.16);color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#e9eff8;--bg-2:#e1e9f5;--panel:#ffffff;--panel-2:#f2f6fb;--line:#d2ddee;--line-2:#b5c6e0;
+  --ink:#0e1a30;--ink-2:#44587a;--ink-3:#5d7092;
+  --blue:#1f63e0;--blue-bg:rgba(31,99,224,.09);--blue-ln:rgba(31,99,224,.45);
+  --red:#d6304a;--red-bg:rgba(214,48,74,.09);--red-ln:rgba(214,48,74,.45);
+  --gold:#e3a51d;--gold-t:#8a5d00;--gold-ink:#1b1405;--gold-bg:rgba(227,165,29,.16);
+  --ok:#12805a;--warn:#a65f00;--bad:#c42b3d;
+  --s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#008300;--s7:#6250d6;--s8:#e34948;
+  --shadow:0 10px 30px rgba(20,40,80,.16);color-scheme:light}
+:root[data-theme="dark"]{color-scheme:dark}
 
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--tx);
-  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans JP", sans-serif;
-  min-height: 100vh;
-}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 14px/1.6 var(--f-body);min-height:100vh;
+  padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+@media(min-width:900px){body{padding-bottom:40px}}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:2px}
+b,strong{font-weight:700}
+.num{font-family:var(--f-num);font-weight:600;letter-spacing:.01em;font-variant-numeric:tabular-nums}
+.mu{color:var(--ink-2);font-size:12px;line-height:1.5}
+.mu3{color:var(--ink-3);font-size:12px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 
-.w {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 16px;
-}
+/* ---- 上に流れるお知らせ ---- */
+.ticker{overflow:hidden;white-space:nowrap;background:var(--bg-2);border-bottom:1px solid var(--line);color:var(--ink-2);font-size:12px;padding:5px 0}
+.ticker-in{display:inline-block;padding-left:100%;animation:tick var(--d,30s) linear infinite}
+.ticker:hover .ticker-in{animation-play-state:paused}
+@keyframes tick{to{transform:translateX(-100%)}}
 
-/* Header */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--bd);
+/* ---- 見出し ---- */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-in{display:flex;align-items:center;gap:14px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:baseline;gap:8px;margin-right:auto}
+.brand b{font-size:19px;font-weight:700;letter-spacing:.02em}
+.brand span{color:var(--ink-3);font-size:12px}
+.sel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:6px 28px 6px 10px;font-weight:500;min-height:34px;appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--ink-3) 50%),linear-gradient(135deg,var(--ink-3) 50%,transparent 50%);
+  background-position:calc(100% - 15px) 50%,calc(100% - 10px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+.save{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-3)}
+.save i{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+.save.bad{color:var(--bad);font-weight:700}.save.bad i{background:var(--bad)}
+.tabs{display:none}
+@media(min-width:900px){
+  .tabs{display:flex;gap:2px;margin-left:8px}
+  .tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:14px 14px 12px;font-weight:700;color:var(--ink-2)}
+  .tabs button:hover{color:var(--ink)}
+  .tabs button[aria-current=page]{color:var(--ink);border-color:var(--gold)}
 }
-h1 {
-  font-size: 18px;
-  font-weight: 700;
-  margin: 0;
-  color: #f0f6fc;
-}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(4,1fr);background:var(--panel);border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+.bar button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 7px;color:var(--ink-3);font-size:11px;font-weight:700}
+.bar button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bar button[aria-current=page]{color:var(--gold-t)}
+@media(min-width:900px){.bar{display:none}}
 
-.group-selector {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--bg-sub);
-  padding: 4px 8px;
-  border-radius: var(--radius);
-  border: 1px solid var(--bd);
-}
-.group-selector label {
-  font-size: 12px;
-  color: var(--tx-sub);
-}
-.group-selector select {
-  background: transparent;
-  border: none;
-  color: var(--tx);
-  font-weight: 600;
-  padding: 2px 4px;
-  outline: none;
-}
+main{padding-block:18px 28px}
+h2.sec{font-size:15px;font-weight:700;margin:0 0 10px;display:flex;align-items:center;gap:10px}
+h2.sec .mu{font-weight:400}
 
-/* Announce Bar */
-.ann {
-  overflow: hidden;
-  white-space: nowrap;
-  background: #1f6feb;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 6px 0;
-  border-radius: 0;
-  margin-bottom: 16px;
-}
-.annt {
-  display: inline-block;
-  padding-left: 100%;
-  animation: annm var(--d, 20s) linear infinite;
-}
-.ann:hover .annt { animation-play-state: paused; }
-@keyframes annm { to { transform: translateX(-100%); } }
-@media (prefers-reduced-motion: reduce) { .annt { animation: none; padding-left: 12px; } }
+/* ---- 部品 ---- */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--rl);padding:14px}
+.card+.card{margin-top:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sp{flex:1}
+.btn{border:1px solid var(--line-2);background:var(--panel-2);color:var(--ink);border-radius:var(--r);padding:7px 13px;font-weight:700;min-height:36px;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.btn:hover{border-color:var(--ink-3)}
+.btn.sm{padding:3px 9px;min-height:28px;font-size:12px}
+.btn.ghost{background:none;border-color:transparent;color:var(--ink-2)}.btn.ghost:hover{color:var(--ink);background:var(--panel-2)}
+.btn.blue{background:var(--blue);border-color:var(--blue);color:#06101f}
+.btn.red{background:var(--red);border-color:var(--red);color:#1f0509}
+.btn.danger{color:var(--bad)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.cta{position:relative;isolation:isolate;border:0;background:none;color:var(--gold-ink);font-weight:800;font-size:15px;padding:11px 26px;min-height:46px;letter-spacing:.02em}
+.cta::before{content:"";position:absolute;inset:0;background:var(--gold);transform:skewX(-9deg);z-index:-1;border-radius:2px;transition:filter .15s}
+.cta:hover::before{filter:brightness(1.08)}
+.cta:active::before{filter:brightness(.94)}
+.field{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:7px 10px;min-height:36px;min-width:0}
+.field::placeholder{color:var(--ink-3)}
+.field:focus{outline:none;border-color:var(--blue)}
+textarea.field{width:100%;resize:vertical}
+.chip{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:var(--panel-2);border-radius:999px;padding:1px 9px;font-size:12px;color:var(--ink-2);white-space:nowrap;min-height:24px}
+.chip.btnlike{cursor:pointer}.chip.btnlike:hover{border-color:var(--ink-3);color:var(--ink)}
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:0 6px;border-radius:3px;line-height:17px;border:1px solid}
+.tag.new{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 55%,transparent)}
+.tag.sit{color:var(--blue);border-color:var(--blue-ln)}
+.tag.gold{color:var(--gold-t);border-color:color-mix(in srgb,var(--gold-t) 55%,transparent);background:var(--gold-bg)}
+.tag.dim{color:var(--ink-3);border-color:var(--line)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.seg button{background:none;border:0;border-right:1px solid var(--line);padding:3px 9px;font-size:12px;font-weight:700;color:var(--ink-2);min-height:28px}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.seg button.b[aria-pressed=true]{background:var(--blue);color:#06101f}.seg button.r[aria-pressed=true]{background:var(--red);color:#1f0509}
+.sw{display:inline-flex;align-items:center;gap:9px;cursor:pointer;user-select:none;font-weight:700}
+.sw input{position:absolute;opacity:0;width:0;height:0}
+.sw i{position:relative;width:38px;height:22px;border-radius:999px;background:var(--line-2);flex:none;transition:background .15s}
+.sw i::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--panel);transition:transform .15s}
+.sw input:checked+i{background:var(--gold)}.sw input:checked+i::after{transform:translateX(16px);background:var(--gold-ink)}
+.sw input:focus-visible+i{outline:2px solid var(--blue);outline-offset:2px}
+.delta{font-family:var(--f-num);font-weight:700;font-variant-numeric:tabular-nums}
+.delta.up{color:var(--ok)}.delta.dn{color:var(--bad)}.delta.z{color:var(--ink-3)}
+.dgp{font-family:var(--f-num);font-weight:700;color:var(--gold-t);font-variant-numeric:tabular-nums}
+.dgp.none{color:var(--ink-3);font-weight:500}
+.dgp small{font-size:.62em;font-weight:600;margin-left:2px;opacity:.85}
+.empty{border:1px dashed var(--line-2);border-radius:var(--rl);padding:34px 20px;text-align:center;color:var(--ink-2)}
+.empty h3{margin:0 0 6px;font-size:16px;color:var(--ink)}
+.banner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px solid color-mix(in srgb,var(--warn) 55%,transparent);background:color-mix(in srgb,var(--warn) 10%,var(--panel));border-radius:var(--rl);padding:9px 12px;margin-bottom:12px;font-size:13px}
+.banner.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--panel))}
 
-/* Cards & Layout */
-.card {
-  background: var(--card);
-  border: 1px solid var(--bd);
-  border-radius: var(--radius);
-  padding: 14px;
-  margin-bottom: 12px;
-}
+/* ---- 対戦: 参加者とボード ---- */
+.stage{display:grid;gap:16px;align-items:start;grid-template-columns:minmax(0,1fr)}.stage>*,.set>*{min-width:0}
+@media(min-width:980px){.stage{grid-template-columns:340px minmax(0,1fr)}.side{position:sticky;top:72px}}
+.add{display:flex;gap:6px}.add .field{flex:1}
+.quick{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.rost{margin-top:10px;display:grid;gap:4px}
+.rm{border:1px solid var(--line);border-radius:var(--r);background:var(--bg)}
+.rm[open]{border-color:var(--line-2)}
+.rm>summary{list-style:none;display:flex;align-items:center;gap:8px;padding:6px 9px;cursor:pointer;min-height:38px}
+.rm>summary::-webkit-details-marker{display:none}
+.rm .nm{font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rm .tags{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto;justify-content:flex-end}
+.rm .ed{padding:4px 9px 10px;display:grid;gap:9px;border-top:1px solid var(--line)}
+.rm .ed .l{font-size:11.5px;color:var(--ink-3);margin-bottom:3px}
+.opts{margin-top:12px;display:grid;gap:11px}
+.opts .cta{width:100%}
 
-/* Navigation Tabs */
-.tabs {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 16px;
-  border-bottom: 1px solid var(--bd);
-  padding-bottom: 8px;
-}
-.tabs button {
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--tx-sub);
-  font-weight: 600;
-  font-size: 13px;
-  padding: 6px 12px;
-  border-radius: var(--radius);
-  cursor: pointer;
-}
-.tabs button:hover { color: var(--tx); background: var(--bg-sub); }
-.tabs button.on {
-  background: var(--bg-sub);
-  color: #f0f6fc;
-  border-color: var(--bd);
-}
+.plan{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.plan button{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:var(--rl);padding:9px 11px;display:grid;gap:4px}
+.plan button[aria-pressed=true]{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+.plan b{font-size:13px}.plan .d{font-size:12px;color:var(--ink-2)}
+@media(max-width:520px){.plan{grid-template-columns:1fr}}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:end;margin-bottom:12px}
+.vs .s{display:grid;gap:0}.vs .s.r{text-align:right}
+.vs .big{font-size:clamp(34px,6vw,54px);line-height:1;font-family:var(--f-num);font-weight:700;font-variant-numeric:tabular-nums}
+.vs .s.b .big{color:var(--blue)}.vs .s.r .big{color:var(--red)}
+.vs .big small{font-size:.3em;color:var(--ink-3);margin-left:4px;font-weight:600}
+.vs .mid{text-align:center;display:grid;gap:3px;justify-items:center;padding-bottom:4px}
+.vs .diff{font-weight:800;font-size:13px;padding:3px 12px;border-radius:999px;border:1px solid;white-space:nowrap}
+.diff.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 60%,transparent)}
+.diff.mid{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 60%,transparent)}
+.diff.ng{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 60%,transparent)}
+.gauge{height:8px;border-radius:4px;overflow:hidden;display:flex;gap:2px;margin:8px 0 3px}
+.gauge i{display:block;height:100%}.gauge .b{background:var(--blue)}.gauge .r{background:var(--red)}
+.gl{display:flex;justify-content:space-between;font-size:12px;font-weight:700}
+.gl span:first-child{color:var(--blue)}.gl span:last-child{color:var(--red)}
+.teams{display:grid;gap:12px}
+@media(min-width:760px){.teams{grid-template-columns:1fr 1fr}}
+.team{border:1px solid var(--line);border-radius:var(--rl);overflow:hidden;background:var(--panel)}
+.team.b{border-color:var(--blue-ln)}.team.r{border-color:var(--red-ln)}
+.th{position:relative;display:flex;align-items:center;gap:10px;padding:9px 14px;font-weight:800;font-size:15px}
+.team.b .th{background:var(--blue-bg);color:var(--blue)}.team.r .th{background:var(--red-bg);color:var(--red)}
+.th .tg{margin-left:auto;font-size:12px;font-weight:600;color:var(--ink-2);text-align:right}
+.th .tg b{font-family:var(--f-num);font-size:13px}
+.pl{display:grid;grid-template-columns:70px minmax(0,1fr);gap:4px 10px;padding:9px 12px;border-top:1px solid var(--line)}
+.pl .rl{display:flex;flex-direction:column;gap:5px}
+.pl select.mini{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:3px 2px;font-size:11.5px;font-weight:700;color:var(--ink-2);text-align:center;text-align-last:center;min-height:28px}
+.pl .hd{display:flex;align-items:center;gap:8px;min-width:0}
+.pl .hd .nm{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl .hd .dgp{font-size:15px}
+.pl .hd .x{margin-left:auto}
+.pl .in{display:flex;gap:5px;margin-top:5px;flex-wrap:nowrap}
+.pl .in .ch{flex:1;min-width:0}
+.pl .in .kn{width:48px;text-align:center;padding-inline:2px;flex:none;font-family:var(--f-num);font-weight:600;font-size:15px}
+.pl .qp{grid-column:2;display:flex;gap:4px;flex-wrap:wrap;margin-top:1px}
+.pl .qp .chip{font-size:11.5px;min-height:22px;padding:0 8px}
+.warns{margin-top:10px;display:grid;gap:5px}
+.warn{border:1px solid color-mix(in srgb,var(--warn) 60%,transparent);background:color-mix(in srgb,var(--warn) 10%,var(--panel));color:var(--ink);border-radius:var(--r);padding:7px 11px;font-size:12.5px}
+.spec{margin-top:12px}
+.dock{position:sticky;bottom:calc(64px + env(safe-area-inset-bottom,0px));margin-top:14px;z-index:10;display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:var(--rl);padding:9px}
+@media(min-width:900px){.dock{bottom:12px}}
+.dock .win{flex:1;min-width:150px}
 
-/* Form Controls */
-button, select, input, textarea {
-  font: inherit;
-  color: var(--tx);
-}
-button {
-  border: 1px solid var(--bd);
-  background: #21262d;
-  color: #c9d1d9;
-  border-radius: var(--radius);
-  padding: 6px 12px;
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-button:hover { background: #30363d; border-color: #8b949e; }
-button:active { background: #282e33; }
-button.pri {
-  background: #238636;
-  border-color: rgba(240,246,252,0.1);
-  color: #fff;
-}
-button.pri:hover { background: #2ea043; }
-button.b {
-  background: #1f6feb;
-  border-color: rgba(240,246,252,0.1);
-  color: #fff;
-}
-button.b:hover { background: #388bfd; }
-button.r {
-  background: #da3633;
-  border-color: rgba(240,246,252,0.1);
-  color: #fff;
-}
-button.r:hover { background: #f85149; }
-button.sm {
-  padding: 2px 6px;
-  font-size: 11px;
-}
+/* ---- リザルト ---- */
+.res-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.res-h h3{margin:0;font-size:22px}
+.res-h.b h3{color:var(--blue)}.res-h.r h3{color:var(--red)}
+.rtab{width:100%;border-collapse:collapse}
+.rtab th{font-size:11.5px;color:var(--ink-3);font-weight:500;text-align:left;padding:5px 8px}
+.rtab td{padding:7px 8px;border-top:1px solid var(--line);vertical-align:middle}
+.rtab .n{font-family:var(--f-num);font-weight:700;font-variant-numeric:tabular-nums;font-size:17px}
+.rtab tr.w td:first-child{box-shadow:inset 3px 0 0 var(--gold)}
+.parts{display:flex;gap:4px;flex-wrap:wrap}
+.parts .tag{font-family:var(--f-num);font-size:12px}
+.tw{overflow-x:auto}
 
-input[type=text], input[type=number], input:not([type]), select {
-  border: 1px solid var(--bd);
-  background: var(--input-bg);
-  border-radius: var(--radius);
-  padding: 6px 10px;
-  outline: none;
-  font-size: 13px;
+/* ---- ランキング ---- */
+.sub{display:flex;gap:4px;margin-bottom:12px;border-bottom:1px solid var(--line)}
+.sub button{background:none;border:0;border-bottom:2px solid transparent;padding:8px 12px;font-weight:700;color:var(--ink-2);margin-bottom:-1px}
+.sub button[aria-pressed=true]{color:var(--ink);border-color:var(--gold)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:14px}
+.kpi{border:1px solid var(--line);border-radius:var(--rl);padding:9px 12px;background:var(--panel)}
+.kpi .v{font-family:var(--f-num);font-size:24px;font-weight:700;line-height:1.15}
+.kpi .v.t{font-family:var(--f-body);font-size:16px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb{display:grid;gap:4px}
+.lr{display:grid;grid-template-columns:34px minmax(0,1.5fr) 92px minmax(0,1fr) 74px 74px 84px;gap:10px;align-items:center;padding:8px 12px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);width:100%;text-align:left}
+.lr:hover{border-color:var(--line-2);background:var(--panel-2)}
+.lr .rk{font-family:var(--f-num);font-size:20px;font-weight:700;color:var(--ink-3);text-align:center}
+.lr.r1 .rk{color:var(--gold-t)}
+.lr.r1{border-color:color-mix(in srgb,var(--gold-t) 45%,var(--line))}
+.lr .who{min-width:0}.lr .who b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lr .who .tt{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}
+.lr .pts{text-align:right}.lr .pts .dgp{font-size:26px;line-height:1}
+.lr .pts .delta{font-size:12px;display:block}
+.lr .rec{font-size:12px;color:var(--ink-2)}
+.lr .bar2{height:5px;border-radius:3px;background:var(--line);margin-top:4px;overflow:hidden}.lr .bar2 i{display:block;height:100%;background:var(--ink-3)}
+.lr .kda{font-family:var(--f-num);font-size:16px;font-weight:600;text-align:right}
+.form{display:flex;gap:3px;justify-content:flex-end}
+.form i{width:9px;height:9px;border-radius:2px;background:var(--line-2)}.form i.w{background:var(--ok)}.form i.l{background:var(--bad)}
+.lr svg.sp{width:84px;height:28px}
+.lhead{display:grid;grid-template-columns:34px minmax(0,1.5fr) 92px minmax(0,1fr) 74px 74px 84px;gap:10px;padding:0 12px 4px;font-size:11.5px;color:var(--ink-3)}
+@media(max-width:820px){
+  .lr{grid-template-columns:28px minmax(0,1fr) auto;grid-template-areas:"rk who pts" ". rec kda";row-gap:4px}
+  .lr .rk{grid-area:rk}.lr .who{grid-area:who}.lr .pts{grid-area:pts}.lr .recw{grid-area:rec}.lr .kda{grid-area:kda;text-align:right}
+  .lr .formw,.lr .spw{display:none}.lhead{display:none}
 }
-input[type=text]:focus, input[type=number]:focus, input:not([type]):focus, select:focus {
-  border-color: var(--bd-focus);
-}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;touch-action:pan-y}
+.chart text{font-family:var(--f-num);font-size:11px;fill:var(--ink-3)}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .ref{stroke:var(--line-2);stroke-width:1;stroke-dasharray:3 3}
+.chart .ln{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.chart .cur{stroke:var(--ink-3);stroke-width:1}
+.tip{position:absolute;pointer-events:none;z-index:5;min-width:140px;max-width:260px;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);padding:7px 10px;box-shadow:var(--shadow);font-size:12px;opacity:0}
+.tip.on{opacity:1}
+.tip .h{color:var(--ink-2);margin-bottom:4px}
+.tip .r{display:flex;align-items:center;gap:7px;line-height:1.55}
+.tip .r i{width:12px;height:0;border-top:2px solid;flex:none}
+.tip .r b{font-family:var(--f-num);font-size:15px;margin-left:auto;padding-left:10px}
+.pick{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}
+.pick button{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel-2);border-radius:999px;padding:2px 10px 2px 8px;font-size:12.5px;font-weight:600;color:var(--ink-2);min-height:28px}
+.pick button i{width:12px;border-top:2px solid var(--c,var(--ink-3));flex:none}
+.pick button[aria-pressed=true]{color:var(--ink);border-color:var(--c,var(--line-2))}
+.pick button[aria-pressed=false] i{border-top-style:dotted;opacity:.6}
+.fame{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.fc{border:1px solid var(--line);border-radius:var(--rl);background:var(--panel);padding:12px 14px;display:grid;gap:2px;align-content:start}
+.fc .k{font-size:12px;color:var(--ink-3)}
+.fc .v{font-family:var(--f-num);font-size:30px;font-weight:700;line-height:1.1;color:var(--gold-t)}
+.fc .v.t{font-family:var(--f-body);font-size:20px}
+.fc .w{font-weight:700}.fc .d{font-size:12px;color:var(--ink-2)}
 
-.row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.row input[type=text] { flex: 1; min-width: 140px; }
+/* ---- 選手の詳細 ---- */
+.shade{position:fixed;inset:0;background:rgba(3,8,18,.62);z-index:50}
+.sheet{position:fixed;z-index:51;background:var(--bg);border-left:1px solid var(--line-2);overflow:auto;box-shadow:var(--shadow);
+  right:0;top:0;bottom:0;width:min(560px,100%);padding:16px max(16px,env(safe-area-inset-right,0px)) 28px 16px;animation:slide .18s ease-out}
+@keyframes slide{from{transform:translateX(24px);opacity:0}}
+.sheet h3{margin:16px 0 6px;font-size:13px;color:var(--ink-2)}
+.ph{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.ph .nm{font-size:26px;font-weight:800;line-height:1.15}
+.ph .big{font-family:var(--f-num);font-size:52px;line-height:1;font-weight:700;color:var(--gold-t)}
+.mini-t{width:100%;border-collapse:collapse;font-size:13px}
+.mini-t th{font-weight:500;font-size:11.5px;color:var(--ink-3);text-align:left;padding:3px 6px}
+.mini-t td{padding:5px 6px;border-top:1px solid var(--line)}
+.mini-t td.n{font-family:var(--f-num);font-weight:600;font-size:15px;font-variant-numeric:tabular-nums;text-align:right}
+.mini-t th.n{text-align:right}
+.hbar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--line);gap:2px}
+.hbar i{display:block;background:var(--ink-3)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:520px){.two{grid-template-columns:1fr}}
 
-/* Chips */
-.chip {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-  border: 1px solid var(--bd);
-  border-radius: var(--radius);
-  padding: 3px 8px;
-  margin: 3px 4px 3px 0;
-  background: var(--input-bg);
-  font-size: 12px;
-}
-.chip select {
-  padding: 2px 4px;
-  font-size: 11px;
-}
-.chip .x {
-  border: 0;
-  background: none;
-  padding: 0 4px;
-  color: var(--tx-mu);
-  font-size: 12px;
-  cursor: pointer;
-}
-.chip .x:hover { color: var(--rd); }
+/* ---- 履歴 ---- */
+.flt{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.mt{border:1px solid var(--line);background:var(--panel);border-radius:var(--rl);margin-bottom:6px}
+.mt .sm-h{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:9px 12px;width:100%;background:none;border:0;text-align:left}
+.mt .sm-h .pp{font-size:12px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mt .win-b{color:var(--blue);font-weight:800}.mt .win-r{color:var(--red);font-weight:800}
+.mt .bd{padding:4px 12px 14px;border-top:1px solid var(--line)}
 
-.bal { margin-top: 12px; padding: 14px; border: 1px solid var(--bd); border-radius: var(--radius); background: var(--bg-sub); text-align: center; }
-.bal-t { font-size: 12px; color: var(--tx-sub); font-weight: 700; margin-bottom: 8px; }
-.bal-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; }
-.bal-n { font-size: 30px; font-weight: 800; line-height: 1.1; }
-.bal-n small { font-size: 12px; font-weight: 600; margin-left: 3px; }
-.bal-n.b { color: #58a6ff; } .bal-n.r { color: #ff7b72; }
-.dgp { font-size: 12px; font-weight: 700; color: #d29922; margin-left: 6px; white-space: nowrap; }
-.dgp small { font-size: 10px; font-weight: 600; margin-left: 1px; }
-.dgp.none { color: var(--tx-mu); }
-.bal-g { font-size: 12px; margin-top: 4px; color: var(--tx-sub); }
-.bal-l { font-size: 12px; color: var(--tx-sub); font-weight: 700; margin-bottom: 2px; }
-.bal-d { font-size: 13px; font-weight: 800; padding: 4px 10px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
-.bal-d b { font-size: 20px; }
-.bal-d.ok { color: #3fb950; border-color: #238636; background: rgba(63,185,80,.12); }
-.bal-d.mid { color: #d29922; border-color: #9e6a03; background: rgba(210,153,34,.12); }
-.bal-d.ng { color: #f85149; border-color: #da3633; background: rgba(248,81,73,.12); }
-.bal-bar { display: flex; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 12px; }
-.bal-bar i { display: block; } .bal-bar .b { background: #1f6feb; } .bal-bar .r { background: #da3633; }
-.bal-s { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-top: 4px; }
-.warn { margin-top: 10px; padding: 8px 10px; border: 1px solid #9e6a03; background: rgba(210,153,34,.12); color: #d29922; border-radius: var(--radius); font-size: 12px; font-weight: 600; }
-.gchip { padding: 2px 8px; font-size: 12px; margin: 3px 4px 3px 0; gap: 6px; }
-.gchip i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
-.g-dot { cursor: pointer; transition: r 0.1s ease; }
-.chart-node:hover .g-dot { r: 6; stroke: #fff; stroke-width: 2; }
-.tag { font-size: 10px; font-weight: 700; padding: 0 5px; border-radius: 3px; line-height: 16px; margin-right: 2px; }
-.tag.old { background: rgba(63,185,80,.15); color: #3fb950; border: 1px solid #238636; }
-.tag.new { background: rgba(210,153,34,.15); color: #d29922; border: 1px solid #9e6a03; }
-.mu { color: var(--tx-sub); font-size: 12px; line-height: 1.4; }
+/* ---- 設定 ---- */
+.set{display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}input[type=file].field{width:100%}
+@media(min-width:900px){.set{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}.set .wide{grid-column:1/-1}.set .card+.card{margin-top:0}}
+.set h3{margin:0 0 8px;font-size:15px}
+.set .grp{display:grid;gap:8px}
+details.rule{border-top:1px solid var(--line);padding:8px 0}
+details.rule summary{cursor:pointer;font-weight:700}
+details.rule p,details.rule .tw{margin:6px 0 0;color:var(--ink-2);font-size:13px}
+.pv{border-top:1px solid var(--line);padding:10px 0}
+.pv h4{margin:0 0 4px;font-size:14px}.pv h5{margin:8px 0 2px;font-size:12px;color:var(--ink-2)}
+.pv ul{margin:0;padding-left:18px;color:var(--ink-2);font-size:13px}
 
-/* Switches */
-.sw {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  user-select: none;
-  font-size: 13px;
-  font-weight: 600;
-}
-.sw input { position: absolute; opacity: 0; width: 0; height: 0; }
-.sw i {
-  position: relative;
-  width: 36px;
-  height: 20px;
-  border-radius: 10px;
-  background: #30363d;
-  flex: none;
-}
-.sw i::after {
-  content: "";
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #c9d1d9;
-}
-.sw input:checked + i { background: #1f6feb; }
-.sw input:checked + i::after { left: 18px; background: #fff; }
+/* ---- トースト・モーダル ---- */
+.toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:80;display:flex;gap:12px;align-items:center;background:var(--ink);color:var(--bg);border-radius:var(--rl);padding:9px 14px;box-shadow:var(--shadow);font-weight:600;max-width:calc(100% - 32px)}
+.toast button{background:none;border:0;color:var(--gold);font-weight:800;padding:2px 4px}
+@media(min-width:900px){.toast{bottom:28px}}
+@media(prefers-reduced-motion:reduce){.ticker-in{animation:none;padding-left:12px}.sheet{animation:none}}
+dialog{border:1px solid var(--line-2);background:var(--panel);color:var(--ink);border-radius:var(--rl);padding:16px;max-width:min(560px,calc(100% - 32px));box-shadow:var(--shadow)}
+dialog::backdrop{background:rgba(3,8,18,.62)}
+dialog img{max-width:100%;height:auto;display:block;border-radius:var(--r)}
 
-/* Teams Layout */
-.teams {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 10px;
-}
-@media(max-width:640px) { .teams { grid-template-columns: 1fr; } }
+@media(max-width:520px){.pl{grid-template-columns:58px minmax(0,1fr);padding:9px 10px}.pl .in .kn{width:38px}.pl .in{gap:4px}}
 
-.team {
-  border-radius: var(--radius);
-  padding: 12px;
-  border: 1px solid;
-  background: var(--bg-sub);
-}
-.team.bl { border-color: var(--bl-bd); }
-.team.rd { border-color: var(--rd-bd); }
-.team h3 {
-  margin: 0 0 10px;
-  font-size: 14px;
-  font-weight: 700;
-}
-.bl h3 { color: #58a6ff; }
-.rd h3 { color: #ff7b72; }
+.set,.set>*{min-width:0}.set{max-width:760px;margin:0 auto;grid-template-columns:minmax(0,1fr)!important}.set .wide{grid-column:auto}.set .card+.card{margin-top:0}
 
-.slot {
-  display: grid;
-  grid-template-columns: 76px 1fr;
-  gap: 8px;
-  align-items: start;
-  margin-bottom: 8px;
-  background: var(--input-bg);
-  padding: 6px 8px;
-  border-radius: var(--radius);
-  border: 1px solid var(--bd);
-}
-.slot-side { display: flex; flex-direction: column; gap: 4px; }
-.slot-side select { width: 100%; }
-.slot-main { min-width: 0; }
-.slot-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  margin-bottom: 4px;
-}
-.role-sel {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--tx-sub);
-  background: var(--bg-sub);
-  border: 1px solid var(--bd);
-  border-radius: var(--radius);
-  padding: 3px 2px;
-  text-align: center;
-  text-align-last: center;
-  cursor: pointer;
-  outline: none;
-}
-.role-sel:focus {
-  border-color: var(--bd-focus);
-}
-.team-mv-sel {
-  font-weight: 700;
-  text-align: center;
-  text-align-last: center;
-  font-size: 11px;
-  color: var(--tx-sub);
-  background: var(--bg-sub);
-  border: 1px solid var(--bd);
-  border-radius: var(--radius);
-  padding: 3px 2px;
-  cursor: pointer;
-  outline: none;
-}
-.slot .in {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-  grid-column: 2;
-  margin-top: 2px;
-}
-.slot .in input { width: 100%; font-size: 13px; color: #f0f6fc; }
-::placeholder { color: var(--tx-mu); opacity: 1; }
-.slot .in input.n { width: 44px; padding: 4px; text-align: center; }
-
-/* Tables */
-.tw { overflow-x: auto; margin-top: 6px; }
-table { border-collapse: collapse; width: 100%; font-size: 13px; }
-th {
-  background: var(--input-bg);
-  color: var(--tx-sub);
-  font-weight: 600;
-  font-size: 11px;
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--bd);
-  text-align: left;
-  white-space: nowrap;
-}
-td {
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--bd);
-  text-align: left;
-  white-space: nowrap;
-}
-tr.cl { cursor: pointer; }
-tr.cl:hover { background: var(--card-hover); }
-
-/* Rank */
-.rank-num {
-  font-weight: 700;
-  font-size: 12px;
-  color: var(--tx-sub);
-}
-.rank-1 { color: #d29922; }
-.rank-2 { color: #c9d1d9; }
-.rank-3 { color: #f0883e; }
-
-/* SVG Chart & Instant Tooltip */
-.chart-container {
-  margin-top: 12px;
-  background: var(--input-bg);
-  border: 1px solid var(--bd);
-  border-radius: var(--radius);
-  padding: 10px;
-}
-.chart-title {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--tx-sub);
-  margin-bottom: 6px;
-}
-.chart-svg {
-  width: 100%;
-  height: auto;
-  display: block;
-  overflow: visible;
-}
-.chart-guide {
-  stroke: var(--bd);
-  stroke-dasharray: 2,2;
-  stroke-width: 1;
-}
-.chart-label {
-  font-size: 9px;
-  fill: var(--tx-mu);
-  text-anchor: end;
-}
-.chart-line {
-  stroke: #58a6ff;
-  stroke-width: 2;
-}
-.node-dot {
-  fill: #58a6ff;
-  cursor: pointer;
-  transition: r 0.1s ease;
-}
-.chart-node:hover .node-dot {
-  r: 6;
-  fill: #fff;
-}
-.chart-tt {
-  opacity: 0;
-  transition: opacity 0.05s ease;
-  pointer-events: none;
-}
-.chart-node:hover .chart-tt {
-  opacity: 1;
-}
-.tt-bg {
-  fill: #161b22;
-  stroke: var(--bd);
-  stroke-width: 1;
-}
-.tt-text {
-  font-size: 9.5px;
-  fill: #c9d1d9;
-  text-anchor: middle;
-  dominant-baseline: middle;
-}
-.tt-bold {
-  font-weight: 700;
-  fill: #f0f6fc;
-}
-.tt-sub {
-  fill: #8b949e;
-}
-
-/* Accordion & Patch Notes */
-#pn summary { cursor: pointer; font-weight: 700; font-size: 13px; color: var(--tx-sub); }
-.patch-ver { margin-top: 8px; border-top: 1px solid var(--bd); padding-top: 8px; }
-.patch-ver:first-child { border-top: none; padding-top: 4px; }
-.patch-ver summary { cursor: pointer; font-weight: 700; font-size: 13px; color: #58a6ff; }
-.patch-body { padding: 4px 0 0 8px; }
-.patch-body .ph { font-weight: 700; margin-top: 6px; color: #f0f6fc; font-size: 12px; }
-.patch-body ul { list-style: none; margin: 4px 0 0; padding-left: 1em; }
-.patch-body li { margin: 2px 0; color: var(--tx-sub); font-size: 12px; }
-.patch-body li::before { content: "- "; color: var(--tx-mu); }
-
-details.mt { border-bottom: 1px solid var(--bd); padding: 8px 0; }
-details.mt summary { cursor: pointer; font-weight: 600; }
-</style>
-</head>
-<body>
-
-<div id="ann" class="ann" hidden><div id="annt" class="annt"></div></div>
-
-<div class="w">
-  <div class="header">
-    <h1>ろるぱーくカスタム管理アプリ</h1>
-    <div class="group-selector">
-      <label>団体:</label>
-      <select id="gs"></select>
-    </div>
-  </div>
-
-  <details class="card" id="pn">
-    <summary id="pns">パッチノート</summary>
-    <div id="pnb" style="margin-top:6px"></div>
-  </details>
-
-  <div class="tabs">
-    <button id="t1" class="on">チーム分け</button>
-    <button id="t2">戦績・順位</button>
-    <button id="t3">試合履歴</button>
-    <button id="t4">設定</button>
-  </div>
-
-  <!-- TAB 1: チーム分け -->
-  <div id="p1">
-    <div class="card">
-      <div class="row">
-        <input id="nm" type="text" list="names" placeholder="参加メンバーの名前を入力（Enterで追加）" maxlength="20">
-        <button class="pri" id="add">追加</button>
-      </div>
-      <div id="pl" style="margin-top:8px"></div>
-      <div class="mu" id="cnt" style="margin-top:6px"></div>
-    </div>
-
-    <div class="card">
-      <div class="row" style="margin-bottom:8px">
-        <label class="sw"><input type="checkbox" id="swr"><i></i>ロール指定</label>
-        <label class="sw"><input type="checkbox" id="swb"><i></i>レートバランス</label>
-        <button class="pri" id="go" style="margin-left:auto">チーム分け実行</button>
-      </div>
-      <div class="mu">
-        ※希望ロール・希望サイドが優先されます。11人以上のときは10人をランダム選出し観戦者を決定します。「優先出場」にチェックした人は優先されます。「レートバランス」を入れると両チームの平均レートが最も近い組み合わせを選びます。
-      </div>
-    </div>
-
-    <div id="res"></div>
-  </div>
-
-  <!-- TAB 2: 戦績 -->
-  <div id="p2" hidden>
-    <div class="card"><div class="tw" id="st"></div></div>
-    <div class="card" id="dt" hidden></div>
-    <div class="card" id="ag"></div>
-    <div class="card" id="rl"></div>
-  </div>
-
-  <!-- TAB 3: 履歴 -->
-  <div id="p3" hidden>
-    <div class="card">
-      <div class="row">
-        <select id="fp"></select>
-        <input id="fc" type="text" list="champs" placeholder="チャンピオン" style="max-width:130px">
-        <select id="fm">
-          <option value="">ロール有無</option>
-          <option value="role">ロールあり</option>
-          <option value="free">ロールなし</option>
-        </select>
-        <button id="fx">クリア</button>
-      </div>
-      <div class="mu" id="fn" style="margin-top:6px"></div>
-    </div>
-    <div class="card">
-      <div class="mu" id="mm">各試合を開いて、ロール・チャンピオン・KDAの修正、勝敗の変更、試合の削除ができます。</div>
-      <div id="mh" style="margin-top:6px"></div>
-    </div>
-  </div>
-
-  <!-- TAB 4: 設定 -->
-  <div id="p4" hidden>
-    <div class="card">
-      <b>団体の管理</b>
-      <div class="row" style="margin-top:8px">
-        <input id="gn" type="text" placeholder="団体名（例: LTK）" maxlength="20">
-        <button id="ga">追加</button>
-        <button id="gr">名前変更</button>
-        <button id="gd">削除</button>
-      </div>
-      <div class="mu" id="gm" style="margin-top:6px">団体ごとに参加者・戦績が別管理されます。切り替えは画面右上の「団体」で行います。</div>
-    </div>
-
-    <div class="card">
-      <b>メンバー名の変更・統合</b>
-      <div class="row" style="margin-top:8px">
-        <select id="ro"></select>
-        <span class="mu">→</span>
-        <input id="rv" type="text" placeholder="新しい名前" maxlength="20">
-        <button id="rn">変更</button>
-      </div>
-      <div class="mu" id="rm" style="margin-top:6px">過去の戦績の名前もまとめて変わります。既存の名前に指定すると戦績が統合されます。</div>
-    </div>
-
-    <div class="card">
-      <b>バックアップ・データ移行</b>
-      <div class="row" style="margin-top:8px">
-        <button id="ex">JSONを書き出し</button>
-        <label class="mu" style="cursor:pointer">ファイル読込: <input id="im" type="file" accept=".json,application/json"></label>
-      </div>
-      <details id="io" style="margin-top:8px">
-        <summary class="mu">テキストでコピー／貼り付け</summary>
-        <textarea id="ta" rows="6" style="width:100%;margin-top:6px;border:1px solid var(--bd);background:var(--input-bg);color:var(--tx);border-radius:var(--radius);padding:8px;font-family:monospace"></textarea>
-        <div class="row" style="margin-top:6px">
-          <button id="sh">現在のデータを表示</button>
-          <button id="ld">貼り付けた内容を読み込む</button>
-        </div>
-      </details>
-      <div class="mu" id="msg" style="margin-top:6px">読み込みは既存データに追加されます（同じ試合は重複しません）</div>
-    </div>
-  </div>
-</div>
-
+.set{max-width:none!important;margin:0!important;display:grid!important;gap:12px!important;grid-template-columns:minmax(0,1fr)!important}
+.set .col{display:grid;gap:12px;align-content:start;min-width:0}
+@media(min-width:900px){.set{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;align-items:start}}
+.set .col{grid-template-columns:minmax(0,1fr)}
+</style></head><body>
+<div class="ticker" aria-hidden="true"><div class="ticker-in" id="tk"></div></div>
+<header class="top"><div class="wrap top-in">
+  <div class="brand"><b>ろるぱーくカスタム</b><span id="ver"></span></div>
+  <nav class="tabs" id="tabs" aria-label="画面"></nav>
+  <select class="sel" id="grp" aria-label="団体を切り替え"></select>
+  <div class="save" id="sv" role="status"><i></i><span>保存済み</span></div>
+</div></header>
+<main class="wrap" id="main"></main>
+<nav class="bar" id="bar" aria-label="画面"></nav>
+<div id="over"></div>
+<div id="toast" role="status" aria-live="polite"></div>
 <datalist id="champs"></datalist>
-<datalist id="names"></datalist>
 
 <script>
-// ▼ 上部に流れるアナウンス
+// ===== 設定（ここだけ触れば、点数・お知らせ・パッチノートを変えられる） =====
+const VER="3.0.0";
+const RATE={start:1000,win:10,kda:5,kdaBase:2.5,elo:true,eloScale:400,kdaRole:{TOP:2.5,JG:3,MID:3,ADC:3,SUP:3.5},streak:{from:2,step:1,max:3}};
+const TEAM={variety:0.6,jitter:2.5,rolePenalty:12};
 const ANNOUNCE=[
-  "ろるぱーくカスタム管理アプリ ver2.1.1",
+  "ろるぱーくカスタム管理アプリ ver"+VER,
   "試合後はチャンピオンとKDAを入力して、勝敗を保存しよう",
   "欲しい機能があったらつよしにDMしてね",
   "【実績】『逆ドラゴンスレイヤー』...どな",
 ];
-const ANNOUNCE_SPEED=0.35;
-// streak: 連勝ボーナス（from連勝目から、勝つたびにstepずつ増え、最大max。負けるとリセット）
-const RATE={start:1000,win:10,kda:5,kdaBase:2.5,elo:true,eloScale:400,kdaRole:{TOP:2.5,JG:3,MID:3,ADC:3,SUP:3.5},streak:{from:2,step:1,max:3}};
-const PATCH=[
- {v:"2.1.1",date:"2026-10-29",sec:[
-  ["チーム分け",[
-   "結果画面で、各プレイヤーの名前の右に現在のレート（DGP）を表示。戦績がない人は初期値を薄い色で表示。観戦者にも表示。"]],
-  ["修正",[
-   "試合の日付が、日本時間の0時〜9時に保存すると前の日になる問題を修正（端末の日付で記録）。",
-   "別のタブで保存した内容を自動で取り込むように。複数のタブを開いていても、片方の保存でもう片方の試合が消えないように修正。"]]
- ]},
- {v:"2.1.0",date:"2026-10-23",sec:[
-  ["レート",[
-   "レートの単位を「DGP（ドパガキポイント）」に変更。戦績・順位、履歴、チーム分けの数字に「DGP」を付けた。",
-   "連勝ボーナスを追加。2連勝目から、勝つたびに +1、+2、+3 DGP と増える（4連勝目以降は +3 で頭打ち）。負けると連勝は0に戻る。",
-   "レート推移グラフのツールチップに、連勝ボーナスの点数を表示。",
-   "「チーム差補正」の呼び名を「TG補正（TeamGap補正）」に変更。チームバランス表示に、勝った場合・負けた場合のTG補正の増減も表示。TG補正は、レートバランスのON/OFFに関係なく常に適用される。"]],
-  ["チーム分け",[
-   "参加者を追加したとき、その団体に戦績がある名前には「既」、初めての名前には「新」を表示。",
-   "結果画面でプレイヤーを移動したとき、「平均レート」の表示も移動後の編成で更新されるように修正。",
-   "チャンピオン名の入力欄が読みにくかった問題を修正。",
-   "ロールのプルダウンで Enter を押すと、別の入力欄へ飛んでしまう問題を修正。",
-   "結果画面で、チームの人数が偏っているときや誰もいないときに警告を表示。",
-   "観戦に移したプレイヤーをチームに戻しても、入力したチャンピオン・KDAが消えないように。",
-   "保存前の結果画面を、団体の切り替え・タブの移動・ページの再読み込みをしても残すように。不要なときは「結果を破棄」で消せる。",
-   "結果画面でプレイヤーを移動したりロールを変えたりしても、TOP→JG→MID→ADC→SUP の並びが崩れないように。",
-   "ロール指定ありのとき、同じチームでロールが重複していたら警告を表示。",
-   "結果画面の入力欄のレイアウトを変更。左側にロールとチームサイド、右上に「クリア」ボタン。",
-   "ロールとチームサイドの文字を、中央揃えに修正。",
-   "チーム分けの結果に、チームバランス（両チームの平均レート・差・期待勝率）を大きく表示。ロール指定・レートバランスのON/OFFに関わらず常に表示し、プレイヤーを移動すると更新される。"]],
-  ["履歴",[
-   "入力欄のレイアウトを、チーム分けの結果画面と同じに変更。",
-   "試合を開いたとき、プレイヤーのチーム（ブルー／レッド）を後から変更できるように。DGPも計算し直される。"]],
-  ["戦績・順位",[
-   "選手の詳細を閉じられるように。「閉じる」ボタン、または同じ選手をもう一度タップ。",
-   "画面の一番下に「レートの計算方法」を掲載。設定値と連動して自動で更新される。",
-   "計算方法の説明で、「勝つ見込み」を「TG補正」「期待勝率」という言い方に変更。期待勝率の一覧も追加。",
-   "全員のレート推移グラフを追加。直近10／30／50試合・全期間の切り替え、名前をタップして表示／非表示、上位8人だけの表示ができる。"]]
- ]},
- {v:"2.0.0",date:"2026-10-22",sec:[
-  ["デザイン（UI全面改修）",[
-   "硬派なダークUIへ全面見直し。"]],
-  ["チーム分け & 試合履歴",[
-   "チーム分け実行後に、プレイヤーを「ブルー ⇔ レッド ⇔ 観戦」へ自由に変更・移動できる機能を追加。",
-   "チーム分け結果画面および試合履歴画面で、ロールを後から自由に変更・指定できるドロップダウンを追加。",
-   "試合履歴の「年月日（日付）」による絞り込み欄を削除し、UIを簡素化。"]],
-  ["戦績・グラフ",[
-   "レート推移グラフの点にカーソルを乗せた際、遅延なしで即座にツールチップが表示されるように改修。",
-   "ツールチップ内に「試合番号」「レート増減」「プレイしたロール」「ピックチャンピオン」「KDA」の超詳細情報を一覧表示。"]]
- ]},
- {v:"1.1.0",date:"2026-10-21",sec:[
-  ["レート",[
-   "プレイヤーごとのカスタムレートを追加。初期1000、勝てば+10・負ければ-10が基本。",
-   "相手チームの強さで増減が変わるように。格上に勝つと大きく増え、格下に負けると大きく減る。",
-   "KDAによる補正を追加。ロールごとの基準KDAと比べて最大±5。",
-   "戦績の詳細画面にレートの推移グラフ表示を追加。",
-   "履歴に、試合ごとの各プレイヤーのレート増減を表示。",
-   "戦績の表を、レート順の並びに変更。"]],
-  ["チーム分け",[
-   "「レートバランス」を追加。両チームの平均レートが近くなる組み合わせを選ぶ。",
-   "希望サイド（ブルー／レッド／観戦）と「優先出場」を追加。",
-   "11人以上のとき、10人をランダムに選び、残りを観戦者に。",
-   "「ロール指定」をスイッチ式に変更。"]],
-  ["団体",[
-   "LTK・WCSのように、団体ごとに参加者と戦績を分けて管理できるように。"]],
-  ["戦績",[
-   "連勝・連敗の表示と、最大連勝・最大連敗を追加。",
-   "味方のとき・敵のときの勝率（相性）を、プレイヤーの詳細に追加。"]],
-  ["設定",[
-   "メンバー名の変更を追加。過去の戦績の名前もまとめて変わる。",
-   "戦績のJSON書き出し・読み込みを追加。"]]
- ]}
-];
-const R=["TOP","JG","MID","ADC","SUP"];
-const K="lolsplit_v1";
-let DB={groups:[],cur:""},S;
-let cur=null;
-try{const x=localStorage.getItem(K);if(x){const d=JSON.parse(x);DB=d.groups?d:{groups:[{id:"g1",name:"デフォルト",players:d.players||[],history:d.history||[]}],cur:"g1"};}}catch(e){}
-if(!DB.groups.length)DB={groups:[{id:"g1",name:"デフォルト",players:[],history:[]}],cur:"g1"};
-const setG=id=>{S=DB.groups.find(g=>g.id===id)||DB.groups[0];DB.cur=S.id;if(!S.players)S.players=[];if(!S.history)S.history=[];};
-setG(DB.cur);
-const save=()=>{try{localStorage.setItem(K,JSON.stringify(DB))}catch(e){}};
-const $=i=>document.getElementById(i);
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const mode=()=>$("swr").checked?"role":"free";
+const PATCH_NEW={v:"3.0.0",date:"2026-10-29",sec:[
+  ["デザイン・操作",[
+    "画面を全面的に作り直し。画面は「対戦」「ランキング」「履歴」「設定」の4つに整理。スマホでは下のバーで切り替え。",
+    "ダーク／ライトは端末の設定に自動で合わせる（設定画面で固定も可能）。"]],
+  ["対戦",[
+    "参加者の追加が速くなった。過去に出た人は名前をタップするだけ、「前回のメンバー」で一括追加、カンマや改行で区切った名前をまとめて貼り付けも可能。",
+    "チーム分けの結果をA/B/Cの3案で表示し、バランスを見比べて選べる。期待勝率のゲージと、勝った場合・負けた場合のTG補正を表示。",
+    "ロール指定の希望が通るチーム分けを優先するように。直前と同じ組み合わせは出にくくなり、続けて観戦した人が優先して出場。",
+    "KDAは「5/2/7」のように貼り付けると3つの欄に自動で入る。過去に使ったチャンピオンはワンタップで入力。Enterまたは方向キー（↑↓←→）で入力欄を移動。",
+    "保存すると、各自のDGPの増減（TG・KDA・連勝の内訳つき）をその場で表示。「サイドを入れ替えて再戦」と「取り消し」に対応。",
+    "チーム分けをDiscordに貼れる文章としてコピーできる。"]],
+  ["記録",[
+    "ランキングに直近5試合の勝敗、平均KDA、DGPの推移を一覧で表示。名前を押すと、チャンピオン別・ロール別の戦績、相性の良い／悪い相手、直近の試合が見られる。",
+    "全員のDGP推移グラフは色を人に固定し、8人まで同時に表示。表でも確認できる。",
+    "「殿堂」に最高DGP、最長連勝、番狂わせ、KDAの記録、人気チャンピオンなどを表示。称号も自動で付き、条件の説明も見られる。",
+    "履歴は検索・絞り込みに対応し、開いたときだけ編集欄を作る形にして軽くした。"]],
+  ["データ",[
+    "ver2.1.1までの保存データはそのまま引き継がれる（同じ保存場所を使用）。",
+    "バックアップを全団体まとめて書き出し・取り込みできる。10試合ぶん増えるとバックアップのお知らせを表示。",
+    "保存に失敗したときは、画面上部に赤い表示を出す。ブラウザにデータの保護を依頼するように。",
+    "試合の記録に、その試合で観戦だった人も残すようにした（休みが続いた人の優先出場に使う）。",
+    "設定画面からデモデータを作って試せる（別の団体として作るので、今のデータには影響しない）。"]]
+]};
+const PATCH=[PATCH_NEW].concat([{"v": "2.1.1", "date": "2026-10-29", "sec": [["チーム分け", ["結果画面で、各プレイヤーの名前の右に現在のレート（DGP）を表示。戦績がない人は初期値を薄い色で表示。観戦者にも表示。"]], ["修正", ["試合の日付が、日本時間の0時〜9時に保存すると前の日になる問題を修正（端末の日付で記録）。", "別のタブで保存した内容を自動で取り込むように。複数のタブを開いていても、片方の保存でもう片方の試合が消えないように修正。"]]]}, {"v": "2.1.0", "date": "2026-10-23", "sec": [["レート", ["レートの単位を「DGP（ドパガキポイント）」に変更。戦績・順位、履歴、チーム分けの数字に「DGP」を付けた。", "連勝ボーナスを追加。2連勝目から、勝つたびに +1、+2、+3 DGP と増える（4連勝目以降は +3 で頭打ち）。負けると連勝は0に戻る。", "レート推移グラフのツールチップに、連勝ボーナスの点数を表示。", "「チーム差補正」の呼び名を「TG補正（TeamGap補正）」に変更。チームバランス表示に、勝った場合・負けた場合のTG補正の増減も表示。TG補正は、レートバランスのON/OFFに関係なく常に適用される。"]], ["チーム分け", ["参加者を追加したとき、その団体に戦績がある名前には「既」、初めての名前には「新」を表示。", "結果画面でプレイヤーを移動したとき、「平均レート」の表示も移動後の編成で更新されるように修正。", "チャンピオン名の入力欄が読みにくかった問題を修正。", "ロールのプルダウンで Enter を押すと、別の入力欄へ飛んでしまう問題を修正。", "結果画面で、チームの人数が偏っているときや誰もいないときに警告を表示。", "観戦に移したプレイヤーをチームに戻しても、入力したチャンピオン・KDAが消えないように。", "保存前の結果画面を、団体の切り替え・タブの移動・ページの再読み込みをしても残すように。不要なときは「結果を破棄」で消せる。", "結果画面でプレイヤーを移動したりロールを変えたりしても、TOP→JG→MID→ADC→SUP の並びが崩れないように。", "ロール指定ありのとき、同じチームでロールが重複していたら警告を表示。", "結果画面の入力欄のレイアウトを変更。左側にロールとチームサイド、右上に「クリア」ボタン。", "ロールとチームサイドの文字を、中央揃えに修正。", "チーム分けの結果に、チームバランス（両チームの平均レート・差・期待勝率）を大きく表示。ロール指定・レートバランスのON/OFFに関わらず常に表示し、プレイヤーを移動すると更新される。"]], ["履歴", ["入力欄のレイアウトを、チーム分けの結果画面と同じに変更。", "試合を開いたとき、プレイヤーのチーム（ブルー／レッド）を後から変更できるように。DGPも計算し直される。"]], ["戦績・順位", ["選手の詳細を閉じられるように。「閉じる」ボタン、または同じ選手をもう一度タップ。", "画面の一番下に「レートの計算方法」を掲載。設定値と連動して自動で更新される。", "計算方法の説明で、「勝つ見込み」を「TG補正」「期待勝率」という言い方に変更。期待勝率の一覧も追加。", "全員のレート推移グラフを追加。直近10／30／50試合・全期間の切り替え、名前をタップして表示／非表示、上位8人だけの表示ができる。"]]]}, {"v": "2.0.0", "date": "2026-10-22", "sec": [["デザイン（UI全面改修）", ["硬派なダークUIへ全面見直し。"]], ["チーム分け & 試合履歴", ["チーム分け実行後に、プレイヤーを「ブルー ⇔ レッド ⇔ 観戦」へ自由に変更・移動できる機能を追加。", "チーム分け結果画面および試合履歴画面で、ロールを後から自由に変更・指定できるドロップダウンを追加。", "試合履歴の「年月日（日付）」による絞り込み欄を削除し、UIを簡素化。"]], ["戦績・グラフ", ["レート推移グラフの点にカーソルを乗せた際、遅延なしで即座にツールチップが表示されるように改修。", "ツールチップ内に「試合番号」「レート増減」「プレイしたロール」「ピックチャンピオン」「KDA」の超詳細情報を一覧表示。"]]]}, {"v": "1.1.0", "date": "2026-10-21", "sec": [["レート", ["プレイヤーごとのカスタムレートを追加。初期1000、勝てば+10・負ければ-10が基本。", "相手チームの強さで増減が変わるように。格上に勝つと大きく増え、格下に負けると大きく減る。", "KDAによる補正を追加。ロールごとの基準KDAと比べて最大±5。", "戦績の詳細画面にレートの推移グラフ表示を追加。", "履歴に、試合ごとの各プレイヤーのレート増減を表示。", "戦績の表を、レート順の並びに変更。"]], ["チーム分け", ["「レートバランス」を追加。両チームの平均レートが近くなる組み合わせを選ぶ。", "希望サイド（ブルー／レッド／観戦）と「優先出場」を追加。", "11人以上のとき、10人をランダムに選び、残りを観戦者に。", "「ロール指定」をスイッチ式に変更。"]], ["団体", ["LTK・WCSのように、団体ごとに参加者と戦績を分けて管理できるように。"]], ["戦績", ["連勝・連敗の表示と、最大連勝・最大連敗を追加。", "味方のとき・敵のときの勝率（相性）を、プレイヤーの詳細に追加。"]], ["設定", ["メンバー名の変更を追加。過去の戦績の名前もまとめて変わる。", "戦績のJSON書き出し・読み込みを追加。"]]]}]);
+// ===== /設定 =====
+// ===== <CORE> ===== 画面に依存しない計算だけをここに集める（テストしやすくするため）
+const ROLES=["TOP","JG","MID","ADC","SUP"];
+const clone=o=>JSON.parse(JSON.stringify(o));
+const mean=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0;
+const hasKDA=p=>p.k!=null&&p.d!=null&&p.a!=null;
+const kdaOf=(k,d,a)=>(k+a)/Math.max(d,1);
+const expected=(own,opp,scale)=>1/(1+Math.pow(10,(opp-own)/scale));
 
-function tab(n){for(let i=1;i<=4;i++){$("p"+i).hidden=i!=n;$("t"+i).className=i==n?"on":"";}if(n>1)stats();}
-[1,2,3,4].forEach(i=>$("t"+i).onclick=()=>tab(i));
+function shuffle(a,rng=Math.random){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function mulberry32(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 
-function addP(){
-  const v=$("nm").value.trim();if(!v)return;
-  if(S.players.some(p=>p.name===v)){$("nm").select();return;}
-  S.players.push({name:v,pref:"",side:""});$("nm").value="";save();pl();
-}
-$("add").onclick=addP;
-$("nm").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing){setTimeout(addP,0);}});
-function pl(){dl();
-  const known=new Set();S.history.forEach(m=>[...m.blue,...m.red].forEach(x=>known.add(x.name)));
-  const tag=n=>known.has(n)?'<span class="tag old" title="この団体に戦績あり">既</span>':'<span class="tag new" title="この団体に戦績なし（初めての名前）">新</span>';
-  $("pl").innerHTML=S.players.map((p,i)=>`<span class="chip">${tag(p.name)}${esc(p.name)}<select data-i="${i}" data-k="pref"><option value="">ロール指定なし</option>${R.map(r=>`<option${p.pref===r?" selected":""}>${r}</option>`).join("")}</select><select data-i="${i}" data-k="side"><option value="">サイド指定なし</option><option value="blue"${p.side==="blue"?" selected":""}>ブルー</option><option value="red"${p.side==="red"?" selected":""}>レッド</option><option value="spec"${p.side==="spec"?" selected":""}>観戦</option></select><label class="mu" style="font-size:11px;cursor:pointer"><input type="checkbox" data-i="${i}" data-k="prio"${p.prio?" checked":""}>優先出場</label><button class="x" data-d="${i}">✕</button></span>`).join("");
-  $("cnt").textContent=`${S.players.length}人`+(()=>{const w=S.players.filter(p=>p.side==="spec").length,a=S.players.length-w,s=w+Math.max(0,a-10);return s?`（出場${S.players.length-s}人、観戦${s}人）`:"";})();
-}
-$("pl").addEventListener("change",e=>{if(e.target.dataset.k){S.players[e.target.dataset.i][e.target.dataset.k]=e.target.type==="checkbox"?e.target.checked:e.target.value;save();}});
-$("pl").addEventListener("click",e=>{if(e.target.dataset.d!=null){S.players.splice(e.target.dataset.d,1);save();pl();}});
-
-const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
-function assign(team,useRole){
-  if(!useRole)return team.map(p=>({name:p.name,role:""}));
-  const left=R.slice(),out=[],rest=[];
-  team.forEach(p=>{if(p.pref&&left.includes(p.pref)){out.push({name:p.name,role:p.pref});left.splice(left.indexOf(p.pref),1);}else rest.push(p);});
-  rest.forEach(p=>{const r=left.splice(Math.floor(Math.random()*left.length),1)[0];out.push({name:p.name,role:r});});
-  return out.sort((a,b)=>R.indexOf(a.role)-R.indexOf(b.role));
-}
-$("go").onclick=()=>{
-  const sw=S.players.filter(p=>p.side==="spec"),pool=S.players.filter(p=>p.side!=="spec");
-  if(pool.length<2){$("res").innerHTML='<div class="card">観戦希望を除いて2人以上必要です。</div>';return;}
-  const pr=shuf(pool.filter(p=>p.prio)),ot=shuf(pool.filter(p=>!p.prio)),order=pr.concat(ot),ps=order.slice(0,10),spec=order.slice(10).concat(shuf(sw)),n=ps.length,h=Math.ceil(n/2),ur=mode()==="role";
-  const bs=n%2&&Math.random()<.5?n-h:h,rs=n-bs,bal=$("swb").checked,pw=bal?power():{},sc=p=>pw[p.name]||0,sum=t=>t.reduce((a,p)=>a+sc(p),0);
-  const mk=()=>{let B=ps.filter(p=>p.side==="blue"),Rd=ps.filter(p=>p.side==="red"),rest=ps.filter(p=>p.side!=="blue"&&p.side!=="red");rest=rest.concat(B.splice(bs),Rd.splice(rs));shuf(rest);while(B.length<bs)B.push(rest.pop());while(Rd.length<rs)Rd.push(rest.pop());return{B,Rd};};
-  let best=mk(),info="";
-  if(bal){const c=[];for(let i=0;i<300;i++){const x=mk();x.d=Math.abs(sum(x.B)-sum(x.Rd));c.push(x);}c.sort((a,b)=>a.d-b.d);best=c[Math.floor(Math.random()*Math.min(5,c.length))];const av=t=>Math.round(t.reduce((a,p)=>a+sc(p),0)/Math.max(1,t.length)+RATE.start);info="平均レート ブルー "+av(best.B)+" / レッド "+av(best.Rd)+"（差 "+Math.abs(av(best.B)-av(best.Rd))+"）";}
-  const B=best.B,Rd=best.Rd;
-  cur={mode:ur?"role":"free",blue:assign(B,ur),red:assign(Rd,ur),spec:spec.map(p=>({name:p.name,role:"",champ:"",k:null,d:null,a:null})),bal:info,balOn:bal};
-  show();
-};
-
-function balBox(){
-  if(!cur||(!cur.blue.length&&!cur.red.length))return "";
-  const pw=power(),av=t=>t.length?Math.round(t.reduce((a,p)=>a+(pw[p.name]||0),0)/t.length+RATE.start):RATE.start,b=av(cur.blue),r=av(cur.red),d=Math.abs(b-r);
-  const eb=Math.round(100/(1+Math.pow(10,(r-b)/RATE.eloScale))),er=100-eb;
-  const ev=(own,opp,w)=>{const x=RATE.elo?Math.round(2*RATE.win*((w?1:0)-1/(1+Math.pow(10,(opp-own)/RATE.eloScale)))):(w?RATE.win:-RATE.win);return x>0?"+"+x:""+x;};
-  const tg=(own,opp)=>`勝ち <b style="color:#3fb950">${ev(own,opp,1)}</b>　負け <b style="color:#f85149">${ev(own,opp,0)}</b>`;
-  const cls=d<=20?"ok":d<=50?"mid":"ng",lab=d<=20?"ほぼ互角":d<=50?"やや差あり":"差が大きい";
-  const hi=b===r?"":b>r?"ブルーが上":"レッドが上";
-  return `<div class="bal"><div class="bal-t">チームバランス（平均レート）${$("swb").checked?"　※レートバランスON":""}</div>
-  <div class="bal-row"><div><div class="bal-l">ブルー</div><div class="bal-n b">${b}<small>DGP</small></div><div class="bal-g">${tg(b,r)}</div></div>
-  <div class="bal-d ${cls}">差 <b>${d}</b> DGP<br>${lab}${hi?"（"+hi+"）":""}</div>
-  <div><div class="bal-l">レッド</div><div class="bal-n r">${r}<small>DGP</small></div><div class="bal-g">${tg(r,b)}</div></div></div>
-  <div class="bal-bar"><i class="b" style="width:${eb}%"></i><i class="r" style="width:${er}%"></i></div>
-  <div class="mu" style="margin-top:8px">${RATE.elo?"TG補正（TeamGap補正）：この平均レート差で試合をしたときの、勝敗によるDGPの増減です（KDA補正・連勝ボーナスは別）。保存すると自動で適用されます。":"TG補正は無効です。"}</div>
-  <div class="bal-s"><span style="color:#58a6ff">ブルー 期待勝率 ${eb}%</span><span style="color:#ff7b72">レッド ${er}%</span></div></div>`;
-}
-function balText(){const pw=power(),av=t=>Math.round(t.reduce((a,p)=>a+(pw[p.name]||0),0)/Math.max(1,t.length)+RATE.start),b=av(cur.blue),r=av(cur.red);return "平均レート ブルー "+b+" DGP / レッド "+r+" DGP（差 "+Math.abs(b-r)+" DGP）";}
-const ri=r=>{const i=R.indexOf(r);return i<0?99:i;};
-function sortTeams(){["blue","red"].forEach(sd=>cur[sd].sort((a,b)=>ri(a.role)-ri(b.role)));}
-function warnHTML(){
-  const b=cur.blue.length,r=cur.red.length,w=[];
-  if(!b||!r)w.push((!b&&!r?"両チーム":!b?"ブルー":"レッド")+"に誰もいません。このまま保存すると、勝敗やレートが正しく記録されません。");
-  else if(Math.abs(b-r)>1)w.push("人数が偏っています（ブルー"+b+"人／レッド"+r+"人）。");
-  if(cur.mode==="role")["blue","red"].forEach(sd=>{const c={};cur[sd].forEach(p=>{if(p.role)c[p.role]=(c[p.role]||0)+1;});const d=Object.keys(c).filter(k=>c[k]>1);if(d.length)w.push((sd==="blue"?"ブルー":"レッド")+"のロールが重複しています（"+d.join("・")+"）。");});
-  return w.length?`<div class="warn">${w.map(x=>"⚠ "+esc(x)).join("<br>")}</div>`:"";
-}
-function syncCurInputs(){
-  if(!cur)return;
-  document.querySelectorAll("#res [data-s]").forEach(el=>{
-    const sd=el.dataset.s, i=el.dataset.i, f=el.dataset.f;
-    if(cur[sd] && cur[sd][i]){
-      const v=el.value.trim();
-      if(f==="champ"||f==="role") cur[sd][i][f]=v;
-      else cur[sd][i][f]=v===""?null:Number(v);
-    }
-  });
+// 連勝・連敗（res: 勝ちならtrueの配列。古い順）
+function streakOf(res){
+  let run=0,last=null,bw=0,bl=0;
+  for(const x of res){if(x===last)run++;else{run=1;last=x;}if(x)bw=Math.max(bw,run);else bl=Math.max(bl,run);}
+  return{cur:res.length?(last?run:-run):0,bw,bl};
 }
 
-function dgpTag(name,RT,known){
-  const has=known.has(name),v=RT.rt[name]??RATE.start;
-  return `<span class="dgp${has?"":" none"}" title="${has?"現在のレート":"この団体の戦績なし（初期値）"}">${v}<small>DGP</small></span>`;
-}
-function knownSet(){const k=new Set();S.history.forEach(m=>[...m.blue,...m.red].forEach(x=>k.add(x.name)));return k;}
-function slot(side,t){
-  const RT=rate(),kn=knownSet();
-  return t.map((p,i)=>`<div class="slot">
-    <div class="slot-side">
-      <select class="role-sel" data-s="${side}" data-i="${i}" data-f="role">
-        <option value=""${!p.role?" selected":""}>FREE</option>
-        ${R.map(r=>`<option value="${r}"${p.role===r?" selected":""}>${r}</option>`).join("")}
-      </select>
-      <select class="team-mv-sel" data-mv-side="${side}" data-mv-i="${i}">
-        <option value="blue"${side==="blue"?" selected":""}>ブルー</option>
-        <option value="red"${side==="red"?" selected":""}>レッド</option>
-        <option value="spec">観戦へ</option>
-      </select>
-    </div>
-    <div class="slot-main">
-      <div class="slot-top"><span><b>${esc(p.name)}</b>${dgpTag(p.name,RT,kn)}</span><button class="sm" data-clear="1" title="チャンピオンとKDAを空にします">クリア</button></div>
-      <div class="in">
-        <input data-s="${side}" data-i="${i}" data-f="champ" type="text" placeholder="チャンピオン" value="${esc(p.champ||"")}" list="champs" style="flex:1;min-width:100px">
-        <input class="n" data-s="${side}" data-i="${i}" data-f="k" type="number" min="0" placeholder="K" value="${p.k!=null?p.k:""}">
-        <input class="n" data-s="${side}" data-i="${i}" data-f="d" type="number" min="0" placeholder="D" value="${p.d!=null?p.d:""}">
-        <input class="n" data-s="${side}" data-i="${i}" data-f="a" type="number" min="0" placeholder="A" value="${p.a!=null?p.a:""}">
-      </div>
-    </div>
-  </div>`).join("");
-}
-
-function specListHTML(spec){
-  if(!spec || !spec.length) return "";
-  const RT=rate(),kn=knownSet();
-  return `<div class="card" style="margin-top:12px">
-    <b>観戦</b>:
-    ${spec.map((sp, i)=>`<span class="chip">${esc(sp.name)}${dgpTag(sp.name,RT,kn)}
-      <button class="sm b" data-spec-to="blue" data-spec-i="${i}">+ブルー</button>
-      <button class="sm r" data-spec-to="red" data-spec-i="${i}">+レッド</button>
-    </span>`).join(" ")}
-  </div>`;
-}
-
-function localDate(){const d=new Date(),p=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate());}
-function show(sv=true){S.draft=cur;if(sv)save();
-  $("res").innerHTML=`<div class="teams"><div class="team bl"><h3>ブルーサイド</h3>${slot("blue",cur.blue)}</div><div class="team rd"><h3>レッドサイド</h3>${slot("red",cur.red)}</div></div>
-  ${balBox()}
-  ${warnHTML()}
-  ${specListHTML(cur.spec)}
-  <div class="card" style="margin-top:12px"><div class="mu">試合後にロール・チャンピオン・KDAを入力して勝敗を保存すると戦績に反映されます（入力は任意）。</div>
-  <div class="row" style="margin-top:10px"><button class="b" data-w="blue">ブルー勝利で保存</button><button class="r" data-w="red">レッド勝利で保存</button><button data-x="discard" style="margin-left:auto">結果を破棄</button></div></div>`;
-}
-
-$("res").addEventListener("change",e=>{
-  if(e.target.dataset.f==="role"){syncCurInputs();sortTeams();show();return;}
-  if(e.target.dataset.mvSide!=null){
-    syncCurInputs();
-    const fromSide=e.target.dataset.mvSide;
-    const idx=Number(e.target.dataset.mvI);
-    const toSide=e.target.value;
-    if(fromSide===toSide) return;
-
-    const [p]=cur[fromSide].splice(idx,1);
-    if(toSide==="spec"){
-      cur.spec.push(p);
-    } else {
-      cur[toSide].push(p);
-    }
-    sortTeams();
-    show();
-  }
-});
-
-let discArm=false;
-$("res").addEventListener("click",e=>{
-  if(e.target.dataset.x==="discard"){
-    const b=e.target;
-    if(!discArm){discArm=true;b.textContent="本当に破棄";setTimeout(()=>{discArm=false;if(b.isConnected)b.textContent="結果を破棄";},4000);return;}
-    discArm=false;cur=null;S.draft=null;save();$("res").innerHTML="";return;
-  }
-  if(e.target.dataset.clear!=null){
-    const sl=e.target.closest(".slot");
-    sl.querySelectorAll(".in input").forEach(i=>i.value="");
-    syncCurInputs();S.draft=cur;save();
-    sl.querySelector('input[data-f="champ"]').focus();return;
-  }
-  if(e.target.dataset.specTo!=null){
-    syncCurInputs();
-    const toSide=e.target.dataset.specTo;
-    const idx=Number(e.target.dataset.specI);
-    const sp=cur.spec.splice(idx, 1)[0];
-    cur[toSide].push(sp);
-    sortTeams();
-    show();
-    return;
-  }
-
-  const w=e.target.dataset.w;if(!w||!cur)return;
-  syncCurInputs();
-  const m={id:Date.now(),date:localDate(),mode:cur.mode,winner:w,blue:cur.blue.map(x=>({...x})),red:cur.red.map(x=>({...x}))};
-  S.history.push(m);S.draft=null;save();cur=null;gl();dl();
-  $("res").innerHTML='<div class="card">保存しました。「戦績」タブで確認できます。</div>';
-});
-
-function agg(){
-  const A={};
-  S.history.forEach(m=>["blue","red"].forEach(side=>m[side].forEach(p=>{
-    const a=A[p.name]||(A[p.name]={g:0,w:0,k:0,d:0,a:0,kg:0,ch:{},ro:{},res:[]});
-    a.g++;const win=m.winner===side;if(win)a.w++;a.res.push(win);
-    if(p.k!=null&&p.d!=null&&p.a!=null){a.k+=p.k;a.d+=p.d;a.a+=p.a;a.kg++;}
-    if(p.champ){const c=a.ch[p.champ]||(a.ch[p.champ]={g:0,w:0});c.g++;if(win)c.w++;}
-    if(p.role){const r=a.ro[p.role]||(a.ro[p.role]={g:0,w:0});r.g++;if(win)r.w++;}
-  })));
-  return A;
-}
-let openId=null,delArm=null;
-function power(){const o={},RT=rate();Object.keys(RT.rt).forEach(n=>o[n]=RT.rt[n]-RATE.start);return o;}
-function rate(){
-  const rt={},pk={},dl={},ls={},ht={},ws={},cr=n=>rt[n]??RATE.start;
-  S.history.forEach((m,mi0)=>{dl[m.id]={};
-    const av=t=>t.length?t.reduce((a,p)=>a+cr(p.name),0)/t.length:RATE.start,ab=av(m.blue),ar=av(m.red),up=[];
-    ["blue","red"].forEach(sd=>m[sd].forEach(p=>{
+// ---------- DGP（レート）の計算 ----------
+// 1試合の増減 = TG補正（勝敗＋チーム差） + KDA補正 + 連勝ボーナス
+function computeRatings(history,R=RATE){
+  const rt={},pk={},ws={},series={},per={},info={};
+  const cr=n=>rt[n]??R.start;
+  history.forEach((m,mx)=>{
+    const av=t=>t.length?t.reduce((a,p)=>a+cr(p.name),0)/t.length:R.start;
+    const ab=av(m.blue),ar=av(m.red),up=[];
+    per[m.id]={};
+    info[m.id]={mx,ab,ar,eBlue:expected(ab,ar,R.eloScale),winner:m.winner};
+    for(const sd of["blue","red"])for(const p of m[sd]){
       const win=m.winner===sd?1:0,own=sd==="blue"?ab:ar,opp=sd==="blue"?ar:ab;
-      let d=RATE.elo?Math.round(2*RATE.win*(win-1/(1+Math.pow(10,(opp-own)/RATE.eloScale)))):(win?RATE.win:-RATE.win);
-      if(p.k!=null&&p.d!=null&&p.a!=null){const base=RATE.kdaRole[p.role]??RATE.kdaBase,kda=(p.k+p.a)/Math.max(p.d,1);d+=Math.round(Math.max(-RATE.kda,Math.min(RATE.kda,(kda-base)*2)));}
-      ws[p.name]=win?(ws[p.name]||0)+1:0;let sb=0;if(win&&ws[p.name]>=RATE.streak.from)sb=Math.min(RATE.streak.max,(ws[p.name]-RATE.streak.from+1)*RATE.streak.step);d+=sb;up.push([p.name,d,p,sb]);
-    }));
-    up.forEach(([n,d,p,sb])=>{
-      const v=cr(n)+d;rt[n]=v;pk[n]=Math.max(pk[n]??RATE.start,v);dl[m.id][n]=d;
-      (ls[n]||(ls[n]=[])).push(d);
-      if(!ht[n])ht[n]=[{v:RATE.start,role:"",champ:"",k:null,d:null,a:null,diff:0,mi:mi0}];
-      ht[n].push({v,role:p.role||"FREE",champ:p.champ||"-",k:p.k,d:p.d,a:p.a,diff:d,sb,mi:mi0+1});
-    });
-  });
-  return{rt,pk,dl,ls,ht};
-}
-
-// レート推移用のSVGグラフ（詳細情報ツールチップ対応）
-function graphSVG(arr){
-  if(!arr||arr.length<2)return'<div class="mu" style="margin-top:8px">1試合以上記録があるとレート推移グラフが表示されます。</div>';
-  const W=360,H=150,pT=30,pB=25,pL=40,pR=25;
-  const w=W-pL-pR,h=H-pT-pB;
-  const vals=arr.map(x=>x.v);
-  const min=Math.min(...vals,RATE.start)-10,max=Math.max(...vals,RATE.start)+10;
-  const rng=(max-min)||1;
-  const gx=i=>pL+(i/(arr.length-1))*w;
-  const gy=v=>pT+h-((v-min)/rng)*h;
-  const pts=arr.map((item,i)=>`${gx(i).toFixed(1)},${gy(item.v).toFixed(1)}`).join(" ");
-  const y1000=gy(RATE.start).toFixed(1);
-
-  const nodes=arr.map((item,i)=>{
-    const cx=gx(i);
-    const cy=gy(item.v);
-
-    if(i===0){
-      const txt=`初期レート: ${item.v}`;
-      const ty = cy < pT + 20 ? cy + 18 : cy - 12;
-      return `<g class="chart-node">
-        <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="3.5" class="node-dot"/>
-        <g class="chart-tt">
-          <rect x="${(cx-45).toFixed(1)}" y="${(ty-10).toFixed(1)}" width="90" height="18" rx="3" class="tt-bg"/>
-          <text x="${cx.toFixed(1)}" y="${(ty+1).toFixed(1)}" class="tt-text">${txt}</text>
-        </g>
-      </g>`;
+      const tg=R.elo?Math.round(2*R.win*(win-expected(own,opp,R.eloScale))):(win?R.win:-R.win);
+      let kd=0;
+      if(hasKDA(p)){const base=R.kdaRole[p.role]??R.kdaBase;kd=Math.round(Math.max(-R.kda,Math.min(R.kda,(kdaOf(p.k,p.d,p.a)-base)*2)));}
+      ws[p.name]=win?(ws[p.name]||0)+1:0;
+      let sb=0;if(win&&ws[p.name]>=R.streak.from)sb=Math.min(R.streak.max,(ws[p.name]-R.streak.from+1)*R.streak.step);
+      up.push({p,sd,win,tg,kd,sb,d:tg+kd+sb,streak:ws[p.name]});
     }
-
-    const diffStr=item.diff>0?`+${item.diff}`:`${item.diff}`;
-    const line1=`#${i}: ${item.v} (${diffStr})`;
-    const line2=`${item.role||"FREE"} / ${item.champ||"-"}`;
-    const kdaStr=(item.k!=null && item.d!=null && item.a!=null)? `${item.k}/${item.d}/${item.a}` : "KDA未入力";
-    const line3=`KDA: ${kdaStr}`;
-
-    const ttW=110, ttH=item.sb>0?54:42;
-    let ty = cy - ttH - 6;
-    if(ty < 4) ty = cy + 10;
-
-    let tx = cx - ttW/2;
-    if(tx < 4) tx = 4;
-    if(tx + ttW > W - 4) tx = W - ttW - 4;
-
-    return `<g class="chart-node">
-      <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="3.5" class="node-dot"/>
-      <g class="chart-tt">
-        <rect x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" width="${ttW}" height="${ttH}" rx="3" class="tt-bg"/>
-        <text x="${(tx + ttW/2).toFixed(1)}" y="${(ty + 9).toFixed(1)}" class="tt-text tt-bold">${line1}</text>
-        <text x="${(tx + ttW/2).toFixed(1)}" y="${(ty + 21).toFixed(1)}" class="tt-text">${line2}</text>
-        <text x="${(tx + ttW/2).toFixed(1)}" y="${(ty + 32).toFixed(1)}" class="tt-text tt-sub">${line3}</text>
-        ${item.sb>0?`<text x="${(tx + ttW/2).toFixed(1)}" y="${(ty + 44).toFixed(1)}" class="tt-text tt-bold" style="fill:#d29922">連勝ボーナス +${item.sb}</text>`:""}
-      </g>
-    </g>`;
-  }).join("");
-
-  return `<div class="chart-container">
-    <div class="chart-title">レート推移（点にホバーで詳細）　単位: DGP</div>
-    <svg viewBox="0 0 ${W} ${H}" class="chart-svg">
-      <line x1="${pL}" y1="${y1000}" x2="${W-pR}" y2="${y1000}" class="chart-guide"/>
-      <text x="${pL-6}" y="${Number(y1000)+3}" class="chart-label">${RATE.start}</text>
-      <text x="${pL-6}" y="${gy(max)+3}" class="chart-label">${max}</text>
-      <text x="${pL-6}" y="${gy(min)+3}" class="chart-label">${min}</text>
-      <polyline fill="none" class="chart-line" points="${pts}"/>
-      ${nodes}
-    </svg>
-  </div>`;
+    for(const u of up){
+      const n=u.p.name,before=cr(n),v=before+u.d;
+      rt[n]=v;pk[n]=Math.max(pk[n]??R.start,v);
+      per[m.id][n]={before,after:v,d:u.d,tg:u.tg,kd:u.kd,sb:u.sb,win:!!u.win,side:u.sd,streak:u.streak};
+      if(!series[n])series[n]=[{v:R.start,mi:mx,diff:0,init:true}];
+      series[n].push({v,mi:mx+1,diff:u.d,tg:u.tg,kd:u.kd,sb:u.sb,win:!!u.win,role:u.p.role||"",champ:u.p.champ||"",k:u.p.k,d:u.p.d,a:u.p.a,mid:m.id,date:m.date});
+    }
+  });
+  return{rt,pk,series,per,info};
 }
 
-function stk(r){let run=0,last=null,bw=0,bl=0;r.forEach(x=>{if(x===last)run++;else{run=1;last=x;}if(x)bw=Math.max(bw,run);else bl=Math.max(bl,run);});return{cur:r.length?(last?run:-run):0,bw,bl};}
-function stkT(r){const c=stk(r).cur;return c>=2?`<span style="color:#58a6ff;font-weight:700">${c}連勝</span>`:c<=-2?`<span style="color:#f85149;font-weight:700">${-c}連敗</span>`:"-";}
-function pairs(n){const al={},en={};S.history.forEach(m=>{const sd0=m.blue.some(p=>p.name===n)?"blue":m.red.some(p=>p.name===n)?"red":null;if(!sd0)return;const win=m.winner===sd0;["blue","red"].forEach(sd=>m[sd].forEach(p=>{if(p.name===n)return;const o=sd===sd0?al:en,c=o[p.name]||(o[p.name]={g:0,w:0});c.g++;if(win)c.w++;}));});return{al,en};}
-function fillP(){const set=new Set();S.history.forEach(m=>[...m.blue,...m.red].forEach(p=>set.add(p.name)));const c=$("fp").value;$("fp").innerHTML='<option value="">全員</option>'+[...set].map(n=>`<option${n===c?" selected":""}>${esc(n)}</option>`).join("");}
-function fillRo(){const set=new Set(S.players.map(p=>p.name));S.history.forEach(m=>[...m.blue,...m.red].forEach(p=>set.add(p.name)));const c=$("ro").value;$("ro").innerHTML='<option value="">変更する人</option>'+[...set].map(n=>`<option${n===c?" selected":""}>${esc(n)}</option>`).join("");}
-function pass(m,F){const ps=[...m.blue,...m.red];return(!F.m||m.mode===F.m)&&(!F.p&&!F.c||ps.some(x=>(!F.p||x.name===F.p)&&(!F.c||(x.champ||"").includes(F.c))));}
-function mh(){const RT=rate(),dt=(id,n)=>{const d=RT.dl[id]&&RT.dl[id][n];return d==null?"":`<span class="mu" style="color:${d>=0?"#58a6ff":"#f85149"};font-weight:700">${d>0?"+"+d:d} DGP</span>`;};
-  const side=(t,sd,id)=>t.map((p,i)=>`<div class="slot">
-    <div class="slot-side">
-      <select class="role-sel" data-s="${sd}" data-i="${i}" data-f="role">
-        <option value=""${!p.role?" selected":""}>FREE</option>
-        ${R.map(r=>`<option value="${r}"${p.role===r?" selected":""}>${r}</option>`).join("")}
-      </select>
-      <select class="team-mv-sel" data-mv-side="${sd}" data-mv-i="${i}">
-        <option value="blue"${sd==="blue"?" selected":""}>ブルー</option>
-        <option value="red"${sd==="red"?" selected":""}>レッド</option>
-      </select>
-    </div>
-    <div class="slot-main">
-      <div class="slot-top"><span><b>${esc(p.name)}</b> ${dt(id,p.name)}</span><button class="sm" data-clear="1" title="チャンピオンとKDAを空にします（「変更を保存」で確定）">クリア</button></div>
-      <div class="in">
-        <input data-f="champ" type="text" data-s="${sd}" data-i="${i}" placeholder="チャンピオン" list="champs" value="${esc(p.champ||"")}" style="flex:1;min-width:100px">
-        ${["k","d","a"].map(f=>`<input class="n" data-f="${f}" data-s="${sd}" data-i="${i}" type="number" min="0" placeholder="${f.toUpperCase()}" value="${p[f]==null?"":p[f]}">`).join("")}
-      </div>
-    </div>
-  </div>`).join("");
-  fillP();const F={p:$("fp").value,c:$("fc").value.trim(),m:$("fm").value},L=S.history.filter(m=>pass(m,F)).reverse();$("fn").textContent=L.length+" / "+S.history.length+"試合";
-  $("mh").innerHTML=L.length?L.map(m=>`<details class="mt" data-id="${m.id}"${m.id===openId?" open":""}><summary>${esc(m.date)}　<b style="color:${m.winner==="blue"?"#58a6ff":"#f85149"}">${m.winner==="blue"?"ブルー":"レッド"}勝利</b>　<span class="mu">${m.mode==="role"?"ロールあり":"ロールなし"}</span></summary><div class="teams" style="margin:8px 0"><div class="team bl"><h3>ブルー</h3>${side(m.blue,"blue",m.id)}</div><div class="team rd"><h3>レッド</h3>${side(m.red,"red",m.id)}</div></div><div class="row" style="margin-bottom:6px"><button class="pri" data-a="save">変更を保存</button><button data-a="flip">勝敗を逆にする</button><button class="r" data-a="del">削除</button></div></details>`).join(""):'<div class="mu">まだ記録がありません。</div>';
+// ---------- 集計（戦績・相性・チャンピオン） ----------
+function computeStats(history){
+  const S={};
+  const get=n=>S[n]||(S[n]={name:n,g:0,w:0,k:0,d:0,a:0,kg:0,champs:{},roles:{},res:[],partners:{},rivals:{},first:-1,last:-1});
+  history.forEach((m,mx)=>{
+    for(const sd of["blue","red"]){
+      const team=m[sd],opp=m[sd==="blue"?"red":"blue"],win=m.winner===sd;
+      for(const p of team){
+        const a=get(p.name);a.g++;if(win)a.w++;a.res.push(win);a.last=mx;if(a.first<0)a.first=mx;
+        const kd=hasKDA(p);
+        if(kd){a.k+=p.k;a.d+=p.d;a.a+=p.a;a.kg++;}
+        if(p.champ){const c=a.champs[p.champ]||(a.champs[p.champ]={g:0,w:0,k:0,d:0,a:0,kg:0});c.g++;if(win)c.w++;if(kd){c.k+=p.k;c.d+=p.d;c.a+=p.a;c.kg++;}}
+        if(p.role){const r=a.roles[p.role]||(a.roles[p.role]={g:0,w:0});r.g++;if(win)r.w++;}
+        for(const q of team)if(q.name!==p.name){const t=a.partners[q.name]||(a.partners[q.name]={g:0,w:0});t.g++;if(win)t.w++;}
+        for(const q of opp){const t=a.rivals[q.name]||(a.rivals[q.name]={g:0,w:0});t.g++;if(win)t.w++;}
+      }
+    }
+  });
+  return S;
 }
-const GCOL=["#58a6ff","#f85149","#3fb950","#d29922","#bc8cff","#f778ba","#39c5cf","#ffa657","#7ee787","#a5d6ff","#ff7b72","#d2a8ff"];
-let gWin=30,gShow=null;
-function allGraph(){
-  const RT=rate(),names=Object.keys(RT.ht),N=S.history.length,el=$("ag");
-  if(!names.length){el.innerHTML='<b>全員のレート推移</b><div class="mu" style="margin-top:6px">試合が記録されるとグラフが表示されます。</div>';return;}
-  const col=n=>GCOL[names.indexOf(n)%GCOL.length],rank=names.slice().sort((a,b)=>RT.rt[b]-RT.rt[a]);
-  const shown=new Set(gShow?gShow.filter(n=>names.includes(n)):rank.slice(0,8));
-  const xmin=gWin>0?Math.max(0,N-gWin):0,span=Math.max(1,N-xmin),dense=span>60;
-  const ser={};let lo=RATE.start,hi=RATE.start;
+// 直近の試合を連続で観戦している回数（休みが続いた人を次の抽選で優先するため）
+function sitStreaks(history,names){
+  const o={};
+  for(const n of names){
+    let c=0;
+    for(let i=history.length-1;i>=0;i--){
+      const m=history[i];
+      if(m.blue.some(p=>p.name===n)||m.red.some(p=>p.name===n))break;
+      if((m.spec||[]).includes(n))c++;else break;
+    }
+    o[n]=c;
+  }
+  return o;
+}
+
+// ---------- 記録の殿堂 ----------
+function computeRecords(history,rat,stats){
+  const out={};
+  let peak=null;for(const n in rat.pk)if(!peak||rat.pk[n]>peak.v)peak={name:n,v:rat.pk[n]};
+  out.peak=peak;
+  let ls=null;for(const n in stats){const b=streakOf(stats[n].res).bw;if(b>0&&(!ls||b>ls.v))ls={name:n,v:b};}
+  out.longStreak=ls;
+  let up=null;
+  history.forEach((m,mx)=>{
+    const i=rat.info[m.id];if(!i||!m.blue.length||!m.red.length)return;
+    const eW=m.winner==="blue"?i.eBlue:1-i.eBlue;
+    if(!up||eW<up.e)up={e:eW,m,mx,ab:i.ab,ar:i.ar};
+  });
+  out.upset=up;
+  let bk=null,mk=null,gain=null,loss=null;
+  history.forEach((m,mx)=>{
+    for(const sd of["blue","red"])for(const p of m[sd]){
+      if(hasKDA(p)){
+        const v=kdaOf(p.k,p.d,p.a);
+        if(p.k+p.a>=8&&(!bk||v>bk.v))bk={v,p,m,mx};
+        if(!mk||p.k>mk.v)mk={v:p.k,p,m,mx};
+      }
+      const e=rat.per[m.id]&&rat.per[m.id][p.name];
+      if(e){if(!gain||e.d>gain.v)gain={v:e.d,name:p.name,m,mx};if(!loss||e.d<loss.v)loss={v:e.d,name:p.name,m,mx};}
+    }
+  });
+  out.bestKDA=bk;out.mostKills=mk;out.bigGain=gain;out.bigLoss=loss;
+  let mg=null,bw=null;
+  for(const n in stats){const s=stats[n];if(!mg||s.g>mg.v)mg={name:n,v:s.g};if(s.g>=5){const r=s.w/s.g;if(!bw||r>bw.v)bw={name:n,v:r,g:s.g};}}
+  out.mostGames=mg;out.bestWin=bw;
+  const ch={};
+  for(const n in stats)for(const c in stats[n].champs){const t=ch[c]||(ch[c]={g:0,w:0});t.g+=stats[n].champs[c].g;t.w+=stats[n].champs[c].w;}
+  let mc=null,bc=null;
+  for(const c in ch){if(!mc||ch[c].g>mc.g)mc={name:c,g:ch[c].g};if(ch[c].g>=4){const r=ch[c].w/ch[c].g;if(!bc||r>bc.v)bc={name:c,v:r,g:ch[c].g};}}
+  out.topChamp=mc;out.bestChamp=bc;
+  return out;
+}
+
+// ---------- 称号（自動で付く、遊びの勲章） ----------
+function computeTitles(history,rat,stats,rec){
+  const T={};const add=(n,key,label,desc)=>(T[n]||(T[n]=[])).push({key,label,desc});
+  const names=Object.keys(stats);
+  const rank=names.slice().sort((a,b)=>rat.rt[b]-rat.rt[a]||stats[b].g-stats[a].g);
+  if(rank.length>=3&&stats[rank[0]].g>=5)add(rank[0],"king","首位","現在DGP1位（5試合以上）");
   names.forEach(n=>{
-    if(!shown.has(n))return;
-    const a=RT.ht[n],pts=a.filter(p=>p.mi>=xmin);if(!pts.length)return;
-    const prev=a.filter(p=>p.mi<xmin).pop(),arr=prev&&pts[0].mi>xmin?[{...prev,mi:xmin,pre:1},...pts]:pts;
-    ser[n]=arr;arr.forEach(p=>{lo=Math.min(lo,p.v);hi=Math.max(hi,p.v);});
+    const s=stats[n],st=streakOf(s.res);
+    if(st.cur>=3)add(n,"hot",st.cur+"連勝中","現在3連勝以上");
+    if(rec.longStreak&&rec.longStreak.name===n&&rec.longStreak.v>=4)add(n,"streak","最長連勝 "+rec.longStreak.v,"団体内の最長連勝記録");
+    const rg=Object.entries(s.roles),rn=rg.reduce((a,[,v])=>a+v.g,0);
+    if(rn>=6){const [r,v]=rg.sort((a,b)=>b[1].g-a[1].g)[0];if(v.g/rn>=0.7)add(n,"role",r+"専","ロール指定の試合の7割以上が"+r);}
+    const cg=Object.entries(s.champs),cn=cg.reduce((a,[,v])=>a+v.g,0);
+    if(cn>=6){const [c,v]=cg.sort((a,b)=>b[1].g-a[1].g)[0];if(v.g/cn>=0.5)add(n,"champ",c+"一筋","チャンピオンが記録された試合の半分以上が"+c);}
+    if(cn>=12&&cg.length>=8)add(n,"wide","雑食",cg.length+"種類のチャンピオンを使用");
+    if(st.bl>=3){ // 3連敗以上のあとに勝ったことがある
+      let run=0,comeback=false;for(const x of s.res){if(x){if(run>=3)comeback=true;run=0;}else run++;}
+      if(comeback)add(n,"back","不屈","3連敗以上のあとに勝利");
+    }
+    const last5=history.slice(-5);
+    if(history.length>=5&&last5.every(m=>m.blue.some(p=>p.name===n)||m.red.some(p=>p.name===n)))add(n,"present","皆勤","直近5試合すべてに出場");
   });
-  const W=480,H=280,pL=42,pR=12,pT=12,pB=26,gx=x=>pL+((x-xmin)/span)*(W-pL-pR);
-  lo-=8;hi+=8;
-  const gy=v=>pT+(H-pT-pB)*(1-(v-lo)/(hi-lo)),rg=hi-lo,step=[10,20,50,100,200,500,1000].find(s=>rg/s<=5)||2000;
-  let grid="",xl="",lines="",nodes="";
-  for(let v=Math.ceil(lo/step)*step;v<=hi;v+=step)grid+=`<line x1="${pL}" y1="${gy(v).toFixed(1)}" x2="${W-pR}" y2="${gy(v).toFixed(1)}" class="chart-guide"/><text x="${pL-5}" y="${(gy(v)+3).toFixed(1)}" class="chart-label" style="font-size:11px">${v}</text>`;
-  grid+=`<line x1="${pL}" y1="${gy(RATE.start).toFixed(1)}" x2="${W-pR}" y2="${gy(RATE.start).toFixed(1)}" class="chart-guide" style="stroke:#6e7681"/>`;
-  const xs=Math.max(1,Math.ceil(span/6));
-  for(let x=xmin;x<=N;x+=xs)xl+=`<text x="${gx(x).toFixed(1)}" y="${H-8}" class="chart-label" style="font-size:11px;text-anchor:middle">${x}</text>`;
-  Object.keys(ser).forEach(n=>{
-    const arr=ser[n],c=col(n);
-    lines+=`<polyline fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity=".9" points="${arr.map(p=>gx(p.mi).toFixed(1)+","+gy(p.v).toFixed(1)).join(" ")}"/>`;
-    arr.forEach((p,i)=>{
-      if(p.pre)return;
-      const last=i===arr.length-1;if(dense&&!last)return;
-      const cx=gx(p.mi),cy=gy(p.v);
-      if(dense){nodes+=`<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="3.5" fill="${c}"/>`;return;}
-      const t2=p.role===""?`参加前 ${p.v} DGP`:`#${p.mi}試合目  ${p.v} DGP (${p.diff>0?"+"+p.diff:p.diff})`;
-      const ttW=160,ttH=36;let ty=cy-ttH-8;if(ty<2)ty=cy+10;const tx=Math.max(2,Math.min(W-ttW-2,cx-ttW/2));
-      nodes+=`<g class="chart-node"><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="3" fill="${c}" class="g-dot"/><g class="chart-tt"><rect x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" width="${ttW}" height="${ttH}" rx="3" class="tt-bg"/><text x="${(tx+ttW/2).toFixed(1)}" y="${(ty+14).toFixed(1)}" class="tt-text tt-bold" style="font-size:11px">${esc(n)}</text><text x="${(tx+ttW/2).toFixed(1)}" y="${(ty+28).toFixed(1)}" class="tt-text" style="font-size:11px">${t2}</text></g></g>`;
+  const kdaRank=names.filter(n=>stats[n].kg>=5).sort((a,b)=>kdaOf(stats[b].k,stats[b].d,stats[b].a)-kdaOf(stats[a].k,stats[a].d,stats[a].a));
+  if(kdaRank.length>=3)add(kdaRank[0],"kda","KDAの鬼","KDA入力5試合以上の中で平均KDA最高");
+  if(rec.upset&&rec.upset.e<0.45){
+    const w=rec.upset.m[rec.upset.m.winner];w.forEach(p=>add(p.name,"upset","番狂わせ","団体内で最も期待勝率の低い試合に勝利"));
+  }
+  return T;
+}
+
+// ---------- チーム編成エンジン ----------
+const popcount=m=>{let c=0;while(m){c+=m&1;m>>=1;}return c;};
+function rolePerms(k){
+  const out=[],used=[false,false,false,false,false],cur=[];
+  (function rec(){
+    if(cur.length===k){out.push(cur.slice());return;}
+    for(let r=0;r<5;r++)if(!used[r]){used[r]=true;cur.push(r);rec();cur.pop();used[r]=false;}
+  })();
+  return out;
+}
+// 希望ロールを最大限かなえる割り当てだけを残す
+function bestPerms(team){
+  const k=Math.min(team.length,5),pr=team.map(p=>ROLES.indexOf(p.pref));
+  const perms=rolePerms(k);let best=-1,keep=[];
+  for(const pm of perms){let s=0;for(let i=0;i<k;i++)if(pm[i]===pr[i])s++;if(s>best){best=s;keep=[pm];}else if(s===best)keep.push(pm);}
+  return{perms:keep,score:best};
+}
+function assignRoles(B,R,dg,balance,rng){
+  const bb=bestPerms(B),rr=bestPerms(R);
+  const lanes=(team,pm)=>{const o=[null,null,null,null,null];pm.forEach((r,i)=>{o[r]=dg(team[i].name);});return o;};
+  let pickB,pickR,bestCost=Infinity;
+  if(!balance){pickB=bb.perms[Math.floor(rng()*bb.perms.length)];pickR=rr.perms[Math.floor(rng()*rr.perms.length)];}
+  else{
+    const lb=bb.perms.map(p=>lanes(B,p)),lr=rr.perms.map(p=>lanes(R,p));let ties=0;
+    for(let i=0;i<lb.length;i++)for(let j=0;j<lr.length;j++){
+      let c=0;for(let r=0;r<5;r++)if(lb[i][r]!=null&&lr[j][r]!=null)c+=Math.abs(lb[i][r]-lr[j][r]);
+      if(c<bestCost-1e-9){bestCost=c;pickB=bb.perms[i];pickR=rr.perms[j];ties=1;}
+      else if(Math.abs(c-bestCost)<=1e-9){ties++;if(rng()<1/ties){pickB=bb.perms[i];pickR=rr.perms[j];}}
+    }
+  }
+  const mk=(team,pm)=>team.map((p,i)=>({name:p.name,role:ROLES[pm[i]]})).sort((a,b)=>ROLES.indexOf(a.role)-ROLES.indexOf(b.role));
+  const blue=mk(B,pickB),red=mk(R,pickR);
+  const lb=lanes(B,pickB),lr=lanes(R,pickR),laneList=[];let laneDiff=0;
+  for(let r=0;r<5;r++)if(lb[r]!=null&&lr[r]!=null){const d=lb[r]-lr[r];laneList.push({role:ROLES[r],b:lb[r],r:lr[r],diff:d});laneDiff+=Math.abs(d);}
+  return{blue,red,lanes:laneList,laneDiff,prefHit:bb.score+rr.score};
+}
+/* players: [{name,pref,side,prio}]  rating: {name:DGP}  prev: 直前の試合 {blue:[名前],red:[名前]} */
+function proposeTeams(o){
+  const {players,rating={},mode="free",balance=false,prev=null,sit={},rng=Math.random,slots=10,count=3,T=TEAM}=o;
+  const dg=n=>rating[n]??RATE.start;
+  const pool=players.filter(p=>p.side!=="spec"),wantSpec=players.filter(p=>p.side==="spec");
+  if(pool.length<2)return{error:"観戦希望を除いて2人以上必要です。"};
+  const ord=pool.map(p=>({p,a:p.prio?1:0,b:sit[p.name]||0,c:rng()})).sort((x,y)=>y.a-x.a||y.b-x.b||y.c-x.c);
+  const chosen=ord.slice(0,slots).map(x=>x.p),over=ord.slice(slots).map(x=>x.p);
+  const spec=[...over,...shuffle(wantSpec,rng)];
+  const n=chosen.length,names=chosen.map(p=>p.name),d=chosen.map(p=>dg(p.name));
+  const sizes=n%2?[Math.ceil(n/2),Math.floor(n/2)]:[n/2],full=(1<<n)-1;
+  const pside=chosen.map(p=>p.side==="blue"?1:p.side==="red"?2:0);
+  const prevTeam={};if(prev){(prev.blue||[]).forEach(x=>prevTeam[x]="b");(prev.red||[]).forEach(x=>prevTeam[x]="r");}
+  const cands=[];
+  for(let m=1;m<full;m++){
+    if(!sizes.includes(popcount(m)))continue;
+    let viol=0;for(let i=0;i<n;i++){const inB=(m>>i)&1;if(pside[i]===1&&!inB)viol++;else if(pside[i]===2&&inB)viol++;}
+    cands.push({m,viol});
+  }
+  const minV=Math.min(...cands.map(c=>c.viol)),ok=cands.filter(c=>c.viol===minV);
+  const side=m=>{const B=[],R=[];for(let i=0;i<n;i++)((m>>i)&1?B:R).push(chosen[i]);return{B,R};};
+  const metrics=m=>{
+    const {B,R}=side(m),aB=mean(B.map(p=>dg(p.name))),aR=mean(R.map(p=>dg(p.name)));
+    let rep=0;if(prev)for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){
+      if(((m>>i)&1)===((m>>j)&1)&&prevTeam[names[i]]&&prevTeam[names[i]]===prevTeam[names[j]])rep++;
+    }
+    let miss=0;
+    if(mode==="role"&&prefCount)miss=prefCount-(bestPerms(B).score+bestPerms(R).score);
+    return{aB,aR,diff:Math.abs(aB-aR),rep,miss};
+  };
+  const prefCount=chosen.filter(p=>ROLES.includes(p.pref)).length;
+  let picks=[];
+  if(!balance){
+    const all=ok.map(c=>({m:c.m,...metrics(c.m)})),mm=Math.min(...all.map(x=>x.miss)),best=all.filter(x=>x.miss===mm);
+    picks=[best[Math.floor(rng()*best.length)]];
+  }else{
+    const scored=ok.map(c=>{const x=metrics(c.m);return{m:c.m,...x,score:x.diff+T.variety*x.rep+T.rolePenalty*x.miss+rng()*T.jitter};}).sort((a,b)=>a.score-b.score);
+    const seen=new Set(),uniq=[];
+    for(const c of scored){const k=Math.min(c.m,full^c.m);if(seen.has(k))continue;seen.add(k);uniq.push(c);}
+    const far=(a,b)=>Math.min(popcount(a^b),popcount(a^(full^b)));
+    for(const c of uniq){if(picks.length>=count)break;if(picks.every(p=>far(p.m,c.m)>=4))picks.push(c);}
+    for(const c of uniq){if(picks.length>=count)break;if(!picks.includes(c))picks.push(c);}
+  }
+  const proposals=picks.map(c=>{
+    const {B,R}=side(c.m);
+    let blue,red,lanes=[],laneDiff=0;
+    if(mode==="role"){const a=assignRoles(B,R,dg,balance,rng);blue=a.blue;red=a.red;lanes=a.lanes;laneDiff=a.laneDiff;}
+    else{blue=B.map(p=>({name:p.name,role:""}));red=R.map(p=>({name:p.name,role:""}));}
+    const aB=mean(blue.map(p=>dg(p.name))),aR=mean(red.map(p=>dg(p.name)));
+    return{blue,red,aB,aR,diff:Math.abs(aB-aR),expB:expected(aB,aR,RATE.eloScale),rep:c.rep||0,lanes,laneDiff,violations:minV};
+  });
+  if(balance)proposals.sort((a,b)=>a.diff-b.diff);
+  return{proposals,spec:spec.map(p=>p.name),chosen:names,violations:minV};
+}
+
+// ---------- 文字列まわり ----------
+// 表記ゆれ（大文字小文字・全角半角・ひらがな/カタカナ）を同じキーにする
+function normKey(s){
+  return String(s).normalize("NFKC").toLowerCase().replace(/\s+/g,"").replace(/[ぁ-ゖ]/g,c=>String.fromCharCode(c.charCodeAt(0)+0x60));
+}
+function parseKDA(text){
+  const m=String(text).trim().match(/^(\d{1,3})\s*[\/\-,.\s・]\s*(\d{1,3})\s*[\/\-,.\s・]\s*(\d{1,3})$/);
+  return m?[+m[1],+m[2],+m[3]]:null;
+}
+function localDate(d=new Date()){const p=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate());}
+// ===== </CORE> =====
+
+
+const K="lolsplit_v1";
+const $=i=>document.getElementById(i);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+const ROLE_JA={TOP:"TOP",JG:"JG",MID:"MID",ADC:"ADC",SUP:"SUP"};
+const SIDE_JA={blue:"ブルー",red:"レッド"};
+let DB,S,saveOK=true;
+
+function norm(d){
+  if(!d||typeof d!=="object")d={};
+  if(!Array.isArray(d.groups))d={groups:[{id:"g1",name:"デフォルト",players:d.players||[],history:d.history||[]}],cur:"g1"};
+  const seen=new Set();
+  d.groups=d.groups.filter(g=>g&&typeof g==="object").map(g=>{
+    if(!g.id||seen.has(g.id))g.id="g"+uid();seen.add(g.id);
+    g.name=String(g.name||"無題");
+    g.players=(Array.isArray(g.players)?g.players:[]).filter(p=>p&&p.name).map(p=>({name:String(p.name),pref:p.pref||"",side:p.side||"",prio:!!p.prio}));
+    g.history=(Array.isArray(g.history)?g.history:[]).filter(validMatch);
+    return g;
+  });
+  if(!d.groups.length)d.groups=[{id:"g1",name:"デフォルト",players:[],history:[]}];
+  if(!d.groups.some(g=>g.id===d.cur))d.cur=d.groups[0].id;
+  if(!d.meta)d.meta={exp:d.groups.reduce((a,g)=>a+g.history.length,0)};
+  return d;
+}
+function validMatch(m){return m&&m.id!=null&&Array.isArray(m.blue)&&Array.isArray(m.red)&&(m.winner==="blue"||m.winner==="red")&&[...m.blue,...m.red].every(p=>p&&p.name);}
+function loadDB(){let raw=null;try{raw=localStorage.getItem(K);}catch(e){}let d=null;try{d=raw?JSON.parse(raw):null;}catch(e){}return norm(d);}
+let _rc=null;
+function setG(id){S=DB.groups.find(g=>g.id===id)||DB.groups[0];DB.cur=S.id;S.opt=S.opt||{role:true,bal:true};_rc=null;}
+function paintSave(){const e=$("sv");if(!e)return;e.className="save"+(saveOK?"":" bad");e.lastChild.textContent=saveOK?"保存済み":"保存できていません";}
+function save(){_rc=null;try{localStorage.setItem(K,JSON.stringify(DB));saveOK=true;}catch(e){saveOK=false;}paintSave();}
+function calc(){
+  if(_rc)return _rc;
+  const rat=computeRatings(S.history),stats=computeStats(S.history),rec=computeRecords(S.history,rat,stats),titles=computeTitles(S.history,rat,stats,rec);
+  return _rc={rat,stats,rec,titles};
+}
+const dgpOf=n=>{const r=calc().rat.rt[n];return r==null?RATE.start:r;};
+const dgpH=(n,big)=>{const r=calc().rat.rt[n];return `<span class="dgp${r==null?" none":""}">${r==null?RATE.start:r}<small>DGP</small></span>`;};
+const dl=(d,z)=>d>0?`<span class="delta up">+${d}</span>`:d<0?`<span class="delta dn">${String(d).replace("-","−")}</span>`:`<span class="delta z">±0</span>`;
+const pct=(a,b)=>b?Math.round(a/b*100):0;
+const kdaTxt=(k,d,a)=>kdaOf(k,d,a).toFixed(2);
+const nowStamp=()=>localDate();
+const fmtDate=s=>{const m=String(s).match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${+m[2]}/${+m[3]}`:esc(s);};
+const lastTeams=()=>{const m=S.history[S.history.length-1];return m?{blue:m.blue.map(p=>p.name),red:m.red.map(p=>p.name)}:null;};
+function allChamps(){const s=new Set();DB.groups.forEach(g=>g.history.forEach(m=>[...m.blue,...m.red].forEach(p=>p.champ&&s.add(p.champ))));return[...s].sort();}
+function recentChamps(name,n=4){
+  const out=[],seen=new Set(),h=S.history;
+  for(let i=h.length-1;i>=0&&out.length<n;i--)for(const p of[...h[i].blue,...h[i].red])if(p.name===name&&p.champ&&!seen.has(p.champ)){seen.add(p.champ);out.push(p.champ);}
+  return out;
+}
+function copyText(t){
+  return new Promise(res=>{
+    const fb=()=>{try{const a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.appendChild(a);a.select();const ok=document.execCommand("copy");a.remove();res(ok);}catch(e){res(false);}};
+    try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(()=>res(true),fb);return;}}catch(e){}
+    fb();
+  });
+}
+
+// ---------- グラフ（折れ線） ----------
+const CH={};
+function niceTicks(lo,hi,n=5){
+  const span=Math.max(hi-lo,10),raw=span/n,p=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/p;
+  const st=(f<1.5?1:f<3?2:f<7?5:10)*p,a=Math.floor(lo/st)*st,b=Math.ceil(hi/st)*st,t=[];
+  for(let v=a;v<=b+1e-9;v+=st)t.push(Math.round(v*100)/100);
+  return t;
+}
+// series: [{name,slot,pts:[{x,y,diff,label}]}]
+function lineChart(id,series,o={}){
+  const W=720,H=o.h||300,P={l:46,r:18,t:14,b:26};
+  const all=series.flatMap(s=>s.pts);
+  if(!all.length)return "";
+  const xmax=Math.max(1,...all.map(p=>p.x)),ys=all.map(p=>p.y).concat(o.ref!=null?[o.ref]:[]);
+  const ticks=niceTicks(Math.min(...ys)-4,Math.max(...ys)+4),y0=ticks[0],y1=ticks[ticks.length-1];
+  const X=x=>P.l+(x/xmax)*(W-P.l-P.r),Y=y=>P.t+(1-(y-y0)/(y1-y0||1))*(H-P.t-P.b);
+  CH[id]={W,H,P,xmax,X,Y,series,unit:o.unit||"試合後"};
+  let g="";
+  ticks.forEach(t=>{g+=`<line class="grid" x1="${P.l}" x2="${W-P.r}" y1="${Y(t)}" y2="${Y(t)}"/><text x="${P.l-7}" y="${Y(t)+4}" text-anchor="end">${t}</text>`;});
+  const xt=niceTicks(0,xmax,6).filter(v=>v>=0&&v<=xmax&&Number.isInteger(v));
+  xt.forEach(t=>{g+=`<text x="${X(t)}" y="${H-7}" text-anchor="middle">${t}</text>`;});
+  if(o.ref!=null)g+=`<line class="ref" x1="${P.l}" x2="${W-P.r}" y1="${Y(o.ref)}" y2="${Y(o.ref)}"/>`;
+  let ln="",dots="";
+  series.forEach(s=>{
+    const c=`var(--s${s.slot})`;
+    ln+=`<polyline class="ln" style="stroke:${c}" points="${s.pts.map(p=>X(p.x).toFixed(1)+","+Y(p.y).toFixed(1)).join(" ")}"/>`;
+    const e=s.pts[s.pts.length-1];
+    dots+=`<circle cx="${X(e.x).toFixed(1)}" cy="${Y(e.y).toFixed(1)}" r="4.5" style="fill:${c};stroke:var(--panel);stroke-width:2"/>`;
+  });
+  return `<div class="chart" data-ch="${id}"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.label||"DGPの推移")}">${g}<line class="cur" y1="${P.t}" y2="${H-P.b}" x1="0" x2="0" style="display:none"/>${ln}${dots}</svg><div class="tip"></div></div>`;
+}
+function chartHover(e){
+  const c=e.target.closest&&e.target.closest(".chart[data-ch]");
+  document.querySelectorAll(".chart .tip.on").forEach(t=>{if(!c||t.parentNode!==c){t.classList.remove("on");const l=t.parentNode.querySelector(".cur");if(l)l.style.display="none";}});
+  if(!c)return;
+  const d=CH[c.dataset.ch];if(!d)return;
+  const svg=c.querySelector("svg"),r=svg.getBoundingClientRect();
+  const px=(e.clientX-r.left)/r.width*d.W;
+  let x=Math.round((px-d.P.l)/(d.W-d.P.l-d.P.r)*d.xmax);x=Math.max(0,Math.min(d.xmax,x));
+  const cur=c.querySelector(".cur");cur.setAttribute("x1",d.X(x));cur.setAttribute("x2",d.X(x));cur.style.display="";
+  const rows=[];
+  d.series.forEach(s=>{let q=null;for(const p of s.pts)if(p.x<=x)q=p;if(q)rows.push({s,q,at:q.x===x});});
+  rows.sort((a,b)=>b.q.y-a.q.y);
+  const tip=c.querySelector(".tip");
+  tip.innerHTML=`<div class="h">${x===0?"開始時":x+" "+d.unit}</div>`+rows.map(o=>`<div class="r"><i style="border-color:var(--s${o.s.slot})"></i><span>${esc(o.s.name)}</span><b>${o.q.y}</b>${o.at&&o.q.diff!=null&&o.q.x>0?dl(o.q.diff):""}</div>`).join("");
+  tip.classList.add("on");
+  const cw=c.clientWidth,tw=tip.offsetWidth,lx=d.X(x)/d.W*cw;
+  tip.style.left=Math.max(0,Math.min(cw-tw,lx+14>cw-tw?lx-tw-14:lx+14))+"px";tip.style.top="8px";
+}
+document.addEventListener("pointermove",chartHover);
+document.addEventListener("pointerdown",chartHover);
+
+function spark(vals,w=84,h=28){
+  if(vals.length<2)return `<svg class="sp" viewBox="0 0 ${w} ${h}" aria-hidden="true"></svg>`;
+  const lo=Math.min(...vals),hi=Math.max(...vals),sp=hi-lo||1;
+  const pts=vals.map((v,i)=>[(i/(vals.length-1))*(w-6)+3,h-4-((v-lo)/sp)*(h-8)]);
+  const up=vals[vals.length-1]>=vals[0];
+  return `<svg class="sp" viewBox="0 0 ${w} ${h}" aria-hidden="true"><polyline points="${pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ")}" fill="none" style="stroke:${up?"var(--ok)":"var(--bad)"}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${pts[pts.length-1][0].toFixed(1)}" cy="${pts[pts.length-1][1].toFixed(1)}" r="2.6" style="fill:${up?"var(--ok)":"var(--bad)"}"/></svg>`;
+}
+// ---------- 画面の状態 ----------
+const UI={view:"play",sub:"board",props:null,done:null,bulk:false,openRm:new Set(),sel:null,slots:{},tbl:false,
+  hf:{q:"",w:"",n:30},openM:null,arm:null,sheet:null,focus:null,toast:null,quick:true};
+let cur=null; // 今の対戦（下書き）
+const TABS=[
+  ["play","対戦",'<path d="M6 4l12 8-12 8z"/>'],
+  ["rank","ランキング",'<path d="M5 20v-7M12 20V5M19 20v-10"/>'],
+  ["hist","履歴",'<circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/>'],
+  ["set","設定",'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>'],
+];
+const arm=(key)=>UI.arm===key;
+function armSet(key){UI.arm=key;clearTimeout(armSet.t);armSet.t=setTimeout(()=>{UI.arm=null;render();},4000);render();}
+function toast(msg,act,fn){
+  const el=$("toast");clearTimeout(UI.toast);
+  el.innerHTML=msg?`<div class="toast"><span>${esc(msg)}</span>${act?`<button data-act="toastact">${esc(act)}</button>`:""}</div>`:"";
+  UI.toastFn=fn||null;
+  if(msg)UI.toast=setTimeout(()=>{el.innerHTML="";},act?9000:2600);
+}
+
+function render(){
+  const foc=document.activeElement&&document.activeElement.id;
+  $("ver").textContent="ver"+VER;
+  const tk=$("tk");tk.textContent=ANNOUNCE.join("　　　◆　　　");tk.style.setProperty("--d",Math.max(24,ANNOUNCE.join("").length*0.7)+"s");
+  $("grp").innerHTML=DB.groups.map(g=>`<option value="${esc(g.id)}"${g.id===DB.cur?" selected":""}>${esc(g.name)}（${g.history.length}試合）</option>`).join("");
+  const tabs=TABS.map(([k,l,ic])=>`<button data-act="view" data-v="${k}"${UI.view===k?' aria-current="page"':""}>${l}</button>`).join("");
+  $("tabs").innerHTML=tabs;
+  $("bar").innerHTML=TABS.map(([k,l,ic])=>`<button data-act="view" data-v="${k}"${UI.view===k?' aria-current="page"':""}><svg viewBox="0 0 24 24" aria-hidden="true">${ic}</svg>${l}</button>`).join("");
+  const dc=$("champs");dc.innerHTML=allChamps().map(c=>`<option value="${esc(c)}">`).join("");
+  let h=banners();
+  h+=UI.view==="play"?vPlay():UI.view==="rank"?vRank():UI.view==="hist"?vHist():vSet();
+  $("main").innerHTML=h;
+  paintSave();
+  $("over").innerHTML=UI.sheet?sheetHTML(UI.sheet):"";
+  if(UI.focus){const f=$(UI.focus);if(f){f.focus();}UI.focus=null;}
+  else if(foc&&$(foc)&&["INPUT","SELECT","TEXTAREA"].includes($(foc).tagName)){$(foc).focus();}
+}
+function banners(){
+  let h="";
+  if(!saveOK)h+=`<div class="banner bad"><b>保存できていません。</b><span>ブラウザの保存領域がいっぱいか、保存が禁止されています。いまのうちに設定画面からバックアップを書き出してください。</span><button class="btn sm" data-act="view" data-v="set">設定へ</button></div>`;
+  const total=DB.groups.reduce((a,g)=>a+g.history.length,0);
+  if(saveOK&&total-(DB.meta.exp||0)>=10)h+=`<div class="banner"><span>前回のバックアップから <b>${total-DB.meta.exp}</b> 試合ふえました。ブラウザのデータは消えることがあるので、書き出しておくと安心です。</span><span class="sp"></span><button class="btn sm" data-act="backup">いま書き出す</button><button class="btn sm ghost" data-act="nudgeoff">あとで</button></div>`;
+  return h;
+}
+
+// ---------- 対戦 ----------
+function playerObj(n){return S.players.find(p=>p.name===n);}
+function vPlay(){
+  const {rat,stats}=calc();
+  const sit=sitStreaks(S.history,S.players.map(p=>p.name));
+  const inRoster=new Set(S.players.map(p=>p.name));
+  const known=Object.keys(stats).filter(n=>!inRoster.has(n)).sort((a,b)=>stats[b].last-stats[a].last);
+  const lm=S.history[S.history.length-1];
+  const lastNames=lm?[...lm.blue,...lm.red,...(lm.spec||[]).map(n=>({name:n}))].map(p=>p.name).filter(n=>!inRoster.has(n)):[];
+  let L=`<div class="card"><h2 class="sec">参加者<span class="mu">${S.players.length}人${S.players.length>10?"（10人まで出場、あとは観戦）":""}</span></h2>
+   <div class="add"><input class="field" id="nm" placeholder="名前を入力して Enter" autocomplete="off" enterkeyhint="done"><button class="btn" data-act="add">追加</button></div>
+   <div class="row" style="margin-top:6px"><button class="btn sm ghost" data-act="bulk">${UI.bulk?"閉じる":"まとめて貼り付け"}</button>${lastNames.length>1?`<button class="btn sm ghost" data-act="addlast">前回のメンバーを追加（${lastNames.length}人）</button>`:""}${S.players.length?`<button class="btn sm ghost danger" data-act="clearroster">全員はずす</button>`:""}</div>
+   ${UI.bulk?`<div style="margin-top:6px"><textarea class="field" id="bulkt" rows="3" placeholder="名前をカンマ・読点・改行で区切って貼り付け"></textarea><button class="btn sm" data-act="bulkadd" style="margin-top:6px">追加する</button></div>`:""}
+   ${known.length?`<div class="quick">${known.slice(0,16).map(n=>`<button class="chip btnlike" data-act="addn" data-n="${esc(n)}">＋ ${esc(n)}</button>`).join("")}</div>`:""}
+   <div class="rost">${S.players.length?S.players.map(p=>rosterRow(p,stats,sit)).join(""):`<div class="mu" style="padding:10px 2px">今日の参加者を追加してください。2人から分けられます。</div>`}</div>
+   <div class="opts">
+     <label class="sw"><input type="checkbox" data-opt="role"${S.opt.role?" checked":""}><i></i>ロールも決める</label>
+     <label class="sw"><input type="checkbox" data-opt="bal"${S.opt.bal?" checked":""}><i></i>DGPでバランスを取る</label>
+     <button class="cta" data-act="gen"${S.players.length<2?" disabled":""}>チーム分け</button>
+   </div></div>`;
+  let R="";
+  if(UI.done&&!cur)R=resultHTML(UI.done);
+  else if(cur)R=boardHTML();
+  else R=`<div class="empty"><h3>${S.history.length?"次の試合を始めましょう":"はじめての試合を始めましょう"}</h3><div>参加者を入れて「チーム分け」を押すと、ここに結果が出ます。</div>${S.history.length?"":`<div style="margin-top:10px"><button class="btn sm" data-act="demo">デモデータで試してみる</button></div>`}</div>`;
+  return `<div class="stage"><div class="side">${L}</div><div>${R}</div></div>`;
+}
+function rosterRow(p,stats,sit){
+  const n=p.name,isNew=!stats[n],open=UI.openRm.has(n),s=sit[n]||0;
+  const tg=[];
+  if(isNew)tg.push('<span class="tag new">新</span>');
+  if(p.prio)tg.push('<span class="tag gold">優先</span>');
+  if(p.side==="spec")tg.push('<span class="tag dim">観戦希望</span>');else if(p.side)tg.push(`<span class="tag sit">${SIDE_JA[p.side]}</span>`);
+  if(p.pref)tg.push(`<span class="tag dim">${p.pref}</span>`);
+  if(s>0)tg.push(`<span class="tag dim">休み${s}</span>`);
+  return `<details class="rm" data-rm="${esc(n)}"${open?" open":""}><summary><span class="nm">${esc(n)}</span>${dgpH(n)}<span class="tags">${tg.join("")}</span></summary>
+   <div class="ed"><div><div class="l">ロールの希望</div><div class="seg">${["","TOP","JG","MID","ADC","SUP"].map(r=>`<button data-act="pref" data-n="${esc(n)}" data-v="${r}" aria-pressed="${p.pref===r}">${r||"なし"}</button>`).join("")}</div></div>
+   <div><div class="l">サイドの希望</div><div class="seg">${[["","なし",""],["blue","ブルー","b"],["red","レッド","r"],["spec","観戦",""]].map(([v,l,c])=>`<button class="${c}" data-act="side" data-n="${esc(n)}" data-v="${v}" aria-pressed="${p.side===v}">${l}</button>`).join("")}</div></div>
+   <div class="row"><label class="sw"><input type="checkbox" data-prio="${esc(n)}"${p.prio?" checked":""}><i></i>優先して出場</label><span class="sp"></span><button class="btn sm danger" data-act="rm" data-n="${esc(n)}">はずす</button></div></div></details>`;
+}
+function addNames(txt){
+  const names=String(txt).split(/[,、，\n\r\t]+/).map(s=>s.trim()).filter(Boolean);
+  let a=0,dup=[];
+  const exist=new Map(S.players.map(p=>[normKey(p.name),p.name]));
+  const known=new Map(Object.keys(calc().stats).map(n=>[normKey(n),n]));
+  for(let n of names){
+    const k=normKey(n);
+    if(exist.has(k)){dup.push(exist.get(k));continue;}
+    if(known.has(k))n=known.get(k); // 表記ゆれは過去の名前に寄せる
+    S.players.push({name:n,pref:"",side:"",prio:false});exist.set(k,n);a++;
+  }
+  if(a){save();}
+  return{a,dup};
+}
+function gen(){
+  const {rat}=calc(),role=!!S.opt.role,bal=!!S.opt.bal;
+  const sit=sitStreaks(S.history,S.players.map(p=>p.name));
+  const res=proposeTeams({players:S.players,rating:rat.rt,mode:role?"role":"free",balance:bal,prev:lastTeams(),sit,count:3});
+  if(res.error){toast(res.error);return;}
+  UI.props={res,role,bal};UI.done=null;pickPlan(0);
+}
+function pickPlan(i){
+  const {res,role}=UI.props,p=res.proposals[i];
+  const mk=x=>({name:x.name,role:x.role||"",champ:"",k:null,d:null,a:null});
+  cur={mode:role?"role":"free",blue:p.blue.map(mk),red:p.red.map(mk),spec:res.spec.slice(),pi:i,bal:UI.props.bal};
+  S.draft=cur;UI.pi=i;save();render();
+}
+const avgOf=t=>t.length?t.reduce((a,p)=>a+dgpOf(p.name),0)/t.length:RATE.start;
+function boardHTML(){
+  const aB=avgOf(cur.blue),aR=avgOf(cur.red),eB=expected(aB,aR,RATE.eloScale),diff=Math.abs(aB-aR);
+  const dc=diff<=25?"ok":diff<=60?"mid":"ng";
+  let plans="";
+  if(UI.props&&UI.props.res.proposals.length>1)plans=`<div class="plan">${UI.props.res.proposals.map((p,i)=>`<button data-act="plan" data-i="${i}" aria-pressed="${UI.pi===i}"><b>${"ABC"[i]}案</b><span class="d">平均差 ${p.diff.toFixed(1)}　期待勝率 ${Math.round(p.expB*100)}%${UI.props.role?`<br>ロール差 ${p.laneDiff.toFixed(0)}`:""}</span></button>`).join("")}</div>`;
+  const tgw=e=>Math.round(2*RATE.win*(1-e)),tgl=e=>Math.round(2*RATE.win*(0-e));
+  const vs=`<div class="vs"><div class="s b"><span class="mu">ブルー平均</span><span class="big">${Math.round(aB)}<small>DGP</small></span></div>
+   <div class="mid"><span class="diff ${dc}">平均差 ${diff.toFixed(1)}</span></div>
+   <div class="s r"><span class="mu">レッド平均</span><span class="big">${Math.round(aR)}<small>DGP</small></span></div></div>
+   <div class="gauge" aria-hidden="true"><i class="b" style="width:${(eB*100).toFixed(1)}%"></i><i class="r" style="width:${((1-eB)*100).toFixed(1)}%"></i></div>
+   <div class="gl"><span>期待勝率 ${Math.round(eB*100)}%</span><span>${Math.round((1-eB)*100)}%</span></div>`;
+  const team=(sd,eT)=>`<section class="team ${sd==="blue"?"b":"r"}" aria-label="${SIDE_JA[sd]}チーム"><div class="th">${SIDE_JA[sd]}<span class="tg">勝てば TG<b> ${dlTxt(tgw(eT))}</b><br>負ければ TG<b> ${dlTxt(tgl(eT))}</b></span></div>${cur[sd].map((p,i)=>plRow(sd,p,i)).join("")}</section>`;
+  const spec=cur.spec.length?`<div class="spec"><span class="mu">観戦：</span> ${cur.spec.map(n=>`<span class="chip">${esc(n)}</span>`).join(" ")} <span class="mu3">（次の抽選で優先されます）</span></div>`:"";
+  return `${plans}<div class="card" style="padding:14px 14px 12px">${vs}</div>
+   <div class="teams" style="margin-top:12px">${team("blue",eB)}${team("red",1-eB)}</div>${spec}
+   <div class="warns" id="warns">${warnsHTML()}</div>
+   <div class="dock"><button class="btn blue win" data-act="win" data-w="blue">ブルー勝利を保存</button><button class="btn red win" data-act="win" data-w="red">レッド勝利を保存</button>
+   <button class="btn" data-act="regen">${UI.props?"もう一度分ける":"組み直す"}</button><button class="btn ghost" data-act="discord">Discord用にコピー</button>
+   <button class="btn ghost danger" data-act="discard">${arm("discard")?"もう一度押して破棄":"破棄"}</button></div>`;
+}
+const dlTxt=d=>d>0?"+"+d:d<0?String(d).replace("-","−"):"±0";
+function plRow(sd,p,i){
+  const rc=recentChamps(p.name,3);
+  return `<div class="pl"><div class="rl">${cur.mode==="role"?`<select class="mini" data-f="role" data-t="${sd}" data-i="${i}" aria-label="${esc(p.name)}のロール">${["","TOP","JG","MID","ADC","SUP"].map(r=>`<option value="${r}"${p.role===r?" selected":""}>${r||"—"}</option>`).join("")}</select>`:""}</div>
+   <div><div class="hd"><span class="nm">${esc(p.name)}</span>${dgpH(p.name)}</div>
+   <div class="in"><input class="field ch" list="champs" data-f="champ" data-t="${sd}" data-i="${i}" value="${esc(p.champ)}" placeholder="チャンピオン" aria-label="${esc(p.name)}のチャンピオン" autocomplete="off">
+   ${["k","d","a"].map(f=>`<input class="field kn" inputmode="numeric" data-f="${f}" data-t="${sd}" data-i="${i}" value="${p[f]==null?"":p[f]}" placeholder="${f.toUpperCase()}" aria-label="${esc(p.name)}の${f.toUpperCase()}" maxlength="3">`).join("")}</div></div>
+   ${rc.length&&!p.champ?`<div class="qp">${rc.map(c=>`<button class="chip btnlike" data-act="qc" data-t="${sd}" data-i="${i}" data-c="${esc(c)}">${esc(c)}</button>`).join("")}</div>`:""}</div>`;
+}
+function warnsHTML(){
+  if(!cur)return "";
+  const w=[];
+  for(const sd of["blue","red"]){
+    if(cur.mode==="role"){const rs=cur[sd].map(p=>p.role).filter(Boolean),d=rs.filter((r,i)=>rs.indexOf(r)!==i);if(d.length)w.push(`${SIDE_JA[sd]}のロールが重複しています（${[...new Set(d)].join("・")}）。`);}
+    cur[sd].forEach(p=>{const n=[p.k,p.d,p.a].filter(x=>x!=null).length;if(n&&n<3)w.push(`${p.name} のKDAが途中までです。K/D/Aの3つがそろうと反映されます。`);});
+  }
+  return w.map(x=>`<div class="warn">${esc(x)}</div>`).join("");
+}
+function cleanP(p){
+  const full=p.k!=null&&p.d!=null&&p.a!=null;
+  return{name:p.name,role:p.role||"",champ:(p.champ||"").trim(),k:full?p.k:null,d:full?p.d:null,a:full?p.a:null};
+}
+function saveMatch(w){
+  const m={id:Date.now(),date:nowStamp(),mode:cur.mode,winner:w,blue:cur.blue.map(cleanP),red:cur.red.map(cleanP),spec:cur.spec.slice()};
+  S.history.push(m);S.draft=null;cur=null;UI.props=null;UI.done=m.id;save();render();
+  toast("保存しました","取り消す",()=>undoMatch(m.id));
+}
+function undoMatch(id){
+  const i=S.history.findIndex(m=>m.id===id);if(i<0)return;
+  const m=S.history.splice(i,1)[0];
+  cur={mode:m.mode||"free",blue:m.blue.map(p=>({...p})),red:m.red.map(p=>({...p})),spec:(m.spec||[]).slice(),pi:0};
+  S.draft=cur;UI.done=null;UI.props=null;save();render();toast("取り消しました。入力はそのまま残っています。");
+}
+function resultHTML(id){
+  const {rat}=calc(),m=S.history.find(x=>x.id===id);if(!m)return "";
+  const per=rat.per[m.id]||{},wn=m.winner,ww=SIDE_JA[wn];
+  const rows=sd=>m[sd].map(p=>{
+    const e=per[p.name];if(!e)return "";
+    const parts=[`<span class="tag dim">TG ${dlTxt(e.tg)}</span>`];
+    if(hasKDA(p))parts.push(`<span class="tag dim">KDA ${dlTxt(e.kd)}</span>`);
+    if(e.sb)parts.push(`<span class="tag gold">連勝 +${e.sb}</span>`);
+    return `<tr class="${sd===wn?"w":""}"><td><b>${esc(p.name)}</b>${p.role?` <span class="mu3">${p.role}</span>`:""}${p.champ?` <span class="mu3">${esc(p.champ)}</span>`:""}${hasKDA(p)?` <span class="mu3 num">${p.k}/${p.d}/${p.a}</span>`:""}</td>
+     <td><div class="parts">${parts.join("")}</div></td><td class="n"><span class="mu3">${e.before} →</span> <span class="dgp">${e.after}</span></td><td class="n">${dl(e.d)}</td></tr>`;
+  }).join("");
+  const tbl=sd=>`<h3 class="sec" style="margin:14px 0 4px;color:var(--${sd==="blue"?"blue":"red"})">${SIDE_JA[sd]}${sd===wn?"　WIN":""}</h3><div class="tw"><table class="rtab"><thead><tr><th>名前</th><th>内訳</th><th>DGP</th><th>増減</th></tr></thead><tbody>${rows(sd)}</tbody></table></div>`;
+  return `<div class="card"><div class="res-h ${wn==="blue"?"b":"r"}"><h3>${ww}の勝利</h3><span class="mu">${S.history.length}試合目・${fmtDate(m.date)}</span></div>${tbl("blue")}${tbl("red")}
+   <div class="row" style="margin-top:14px"><button class="btn" data-act="rematch">サイドを入れ替えて再戦</button><button class="btn ghost" data-act="newround">次の試合へ</button><button class="btn ghost" data-act="undo" data-id="${m.id}">取り消す</button></div></div>`;
+}
+function rematch(){
+  const m=S.history[S.history.length-1];if(!m)return;
+  const mk=p=>({name:p.name,role:p.role||"",champ:"",k:null,d:null,a:null});
+  cur={mode:m.mode||"free",blue:m.red.map(mk),red:m.blue.map(mk),spec:(m.spec||[]).slice(),pi:0};
+  UI.props=null;UI.done=null;S.draft=cur;save();render();
+}
+function discordText(){
+  const {rat}=calc();
+  const line=(p)=>`${p.role?p.role.padEnd(3," ")+" ":""}${p.name}（${dgpOf(p.name)}）`;
+  const aB=Math.round(avgOf(cur.blue)),aR=Math.round(avgOf(cur.red));
+  return `【カスタム ${S.history.length+1}試合目】\n🔵 ブルー（平均 ${aB} DGP）\n${cur.blue.map(line).join("\n")}\n\n🔴 レッド（平均 ${aR} DGP）\n${cur.red.map(line).join("\n")}`+(cur.spec.length?`\n\n観戦: ${cur.spec.join("、")}`:"");
+}
+// ---------- ランキング ----------
+function ordered(){const {rat,stats}=calc();return Object.keys(stats).sort((a,b)=>rat.rt[b]-rat.rt[a]||stats[b].g-stats[a].g);}
+function vRank(){
+  const {rat,stats,rec,titles}=calc(),names=ordered();
+  const sub=[["lb","順位"],["ch","推移"],["hof","殿堂"]];
+  let h=`<div class="sub" role="group" aria-label="表示">${sub.map(([k,l])=>`<button data-act="sub" data-v="${k}" aria-pressed="${UI.sub===k||(k==="lb"&&!["ch","hof"].includes(UI.sub))}">${l}</button>`).join("")}</div>`;
+  if(!names.length)return h+`<div class="empty"><h3>まだ記録がありません</h3><div>「対戦」で試合を保存すると、ここに順位が出ます。</div><div style="margin-top:10px"><button class="btn sm" data-act="demo">デモデータで試してみる</button></div></div>`;
+  const kp=`<div class="kpis"><div class="kpi"><div class="mu3">試合数</div><div class="v">${S.history.length}</div></div><div class="kpi"><div class="mu3">参加した人</div><div class="v">${names.length}</div></div>
+   <div class="kpi"><div class="mu3">1位</div><div class="v t">${esc(names[0])}</div></div><div class="kpi"><div class="mu3">最高DGP</div><div class="v">${rec.peak?rec.peak.v:"-"}</div></div></div>`;
+  if(UI.sub==="ch")return h+chartView(names);
+  if(UI.sub==="hof")return h+hallView();
+  const rows=names.map((n,i)=>{
+    const s=stats[n],ser=rat.series[n],last=ser[ser.length-1],st=streakOf(s.res),tt=(titles[n]||[]).slice(0,2);
+    return `<button class="lr${i===0?" r1":""}" data-act="player" data-n="${esc(n)}"><span class="rk">${i+1}</span>
+     <span class="who"><b>${esc(n)}</b><span class="tt">${tt.map(t=>`<span class="tag gold">${esc(t.label)}</span>`).join("")}</span></span>
+     <span class="pts"><span class="dgp">${rat.rt[n]}</span>${dl(last.diff)}</span>
+     <span class="recw rec">${s.w}勝${s.g-s.w}敗　${pct(s.w,s.g)}%<span class="bar2"><i style="width:${pct(s.w,s.g)}%"></i></span></span>
+     <span class="formw form" aria-label="直近の勝敗">${s.res.slice(-5).map(x=>`<i class="${x?"w":"l"}"></i>`).join("")}</span>
+     <span class="kda">${s.kg?kdaTxt(s.k,s.d,s.a):"-"}</span>
+     <span class="spw">${spark(ser.map(p=>p.v))}</span></button>`;
+  }).join("");
+  return h+kp+`<div class="lhead"><span></span><span>名前</span><span style="text-align:right">DGP</span><span>戦績</span><span style="text-align:right">直近5</span><span style="text-align:right">KDA</span><span>推移</span></div><div class="lb">${rows}</div>
+   <div class="row" style="margin-top:12px"><button class="btn sm" data-act="copyrank">順位をテキストでコピー</button><span class="mu3">KDAは（キル＋アシスト）÷デス。入力した試合のみ。</span></div>`;
+}
+function assignSlot(n){const used=new Set(UI.sel.map(x=>UI.slots[x]));for(let i=1;i<=8;i++)if(!used.has(i)){UI.slots[n]=i;return true;}return false;}
+function chartView(names){
+  const {rat,stats}=calc();
+  if(!UI.sel){UI.sel=[];UI.slots={};names.slice(0,5).forEach(n=>{assignSlot(n);UI.sel.push(n);});}
+  UI.sel=UI.sel.filter(n=>names.includes(n));
+  const pick=names.map(n=>{const on=UI.sel.includes(n);return `<button data-act="pickc" data-n="${esc(n)}" aria-pressed="${on}" style="${on?`--c:var(--s${UI.slots[n]})`:""}"><i></i>${esc(n)}</button>`;}).join("");
+  const series=UI.sel.map(n=>({name:n,slot:UI.slots[n],pts:rat.series[n].map(p=>({x:p.mi,y:p.v,diff:p.init?null:p.diff}))}));
+  let body;
+  if(!series.length)body=`<div class="empty">グラフに出す人を選んでください。</div>`;
+  else if(UI.tbl)body=`<div class="tw"><table class="mini-t"><thead><tr><th>名前</th><th class="n">現在</th><th class="n">最高</th><th class="n">最低</th><th class="n">試合数</th><th class="n">直近の増減</th></tr></thead><tbody>${series.map(s=>{const v=s.pts.map(p=>p.y),l=s.pts[s.pts.length-1];return `<tr><td><span style="display:inline-block;width:12px;border-top:2px solid var(--s${s.slot});vertical-align:middle;margin-right:7px"></span>${esc(s.name)}</td><td class="n">${l.y}</td><td class="n">${Math.max(...v)}</td><td class="n">${Math.min(...v)}</td><td class="n">${stats[s.name].g}</td><td class="n">${dl(l.diff||0)}</td></tr>`;}).join("")}</tbody></table></div>`;
+  else body=lineChart("all",series,{ref:RATE.start,label:"全員のDGPの推移"});
+  return `<div class="card"><h2 class="sec">DGPの推移<span class="mu">最大8人まで。横軸は試合数</span><span class="sp"></span><button class="btn sm" data-act="tbl">${UI.tbl?"グラフで見る":"表で見る"}</button></h2><div class="pick">${pick}</div>${body}</div>`;
+}
+function hallView(){
+  const {rec,stats,titles}=calc();
+  const fc=(k,v,who,d,t)=>`<div class="fc"><span class="k">${k}</span><span class="v${t?" t":""}">${v}</span><span class="w">${who||""}</span><span class="d">${d||""}</span></div>`;
+  const mdate=m=>fmtDate(m.date);
+  const c=[];
+  if(rec.peak)c.push(fc("最高DGP",rec.peak.v,esc(rec.peak.name),"これまでの最高到達点"));
+  if(rec.longStreak)c.push(fc("最長連勝",rec.longStreak.v+"連勝",esc(rec.longStreak.name)));
+  if(rec.upset)c.push(fc("最大の番狂わせ",Math.round(rec.upset.e*100)+"%",esc(rec.upset.m[rec.upset.m.winner].map(p=>p.name).join("・")),`勝つ確率が${Math.round(rec.upset.e*100)}%だったのに勝利（${mdate(rec.upset.m)}・${SIDE_JA[rec.upset.m.winner]}）`));
+  if(rec.bestKDA)c.push(fc("最高KDA（1試合）",kdaTxt(rec.bestKDA.p.k,rec.bestKDA.p.d,rec.bestKDA.p.a),esc(rec.bestKDA.p.name),`${rec.bestKDA.p.k}/${rec.bestKDA.p.d}/${rec.bestKDA.p.a}${rec.bestKDA.p.champ?"　"+esc(rec.bestKDA.p.champ):""}（K+Aが8以上の試合）`));
+  if(rec.mostKills)c.push(fc("最多キル（1試合）",rec.mostKills.v,esc(rec.mostKills.p.name),(rec.mostKills.p.champ?esc(rec.mostKills.p.champ)+"　":"")+mdate(rec.mostKills.m)));
+  if(rec.bigGain)c.push(fc("1試合の最大アップ","+"+rec.bigGain.v,esc(rec.bigGain.name),mdate(rec.bigGain.m)));
+  if(rec.bigLoss)c.push(fc("1試合の最大ダウン",String(rec.bigLoss.v).replace("-","−"),esc(rec.bigLoss.name),mdate(rec.bigLoss.m)));
+  if(rec.mostGames)c.push(fc("最多出場",rec.mostGames.v+"試合",esc(rec.mostGames.name)));
+  if(rec.bestWin)c.push(fc("最高勝率",Math.round(rec.bestWin.v*100)+"%",esc(rec.bestWin.name),rec.bestWin.g+"試合（5試合以上が対象）"));
+  if(rec.topChamp)c.push(fc("人気チャンピオン",esc(rec.topChamp.name),rec.topChamp.g+"回使用",null,true));
+  if(rec.bestChamp)c.push(fc("勝率の高いチャンピオン",esc(rec.bestChamp.name),Math.round(rec.bestChamp.v*100)+"%",rec.bestChamp.g+"試合（4試合以上が対象）",true));
+  const tl=Object.entries(titles).map(([n,a])=>`<div class="fc" style="gap:6px"><b>${esc(n)}</b><div class="row" style="gap:5px">${a.map(t=>`<span class="tag gold">${esc(t.label)}</span>`).join("")}</div></div>`).join("");
+  const cat=[["首位","現在DGPが1位（3人以上、5試合以上出場）"],["○連勝中","いま3連勝以上している"],["最長連勝 ○","団体内の最長連勝記録（4連勝以上）"],["○専","ロールを決めた試合が6試合以上あり、その7割以上が同じロール"],["○一筋","チャンピオンを入力した試合が6試合以上あり、その半分以上が同じチャンピオン"],["雑食","12試合以上で、8種類以上のチャンピオンを使った"],["不屈","3連敗以上したあとに勝った"],["皆勤","直近5試合すべてに出場した"],["KDAの鬼","KDAを入力した試合が5試合以上ある人の中で、平均KDAが最高（3人以上いるとき）"],["番狂わせ","団体内で最も勝つ確率の低かった試合（45%未満）に勝ったチーム"]];
+  const catH=`<h2 class="sec" style="margin-top:22px">称号の条件</h2><div class="card tw"><table class="mini-t"><tbody>${cat.map(([l,d])=>`<tr><td style="white-space:nowrap"><span class="tag gold">${l}</span></td><td class="mu">${d}</td></tr>`).join("")}</tbody></table><div class="mu3" style="margin-top:6px">称号は試合を保存するたびに自動で付け直されます。</div></div>`;
+  return `<div class="fame">${c.join("")}</div>${tl?`<h2 class="sec" style="margin-top:22px">いま付いている称号</h2><div class="fame" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">${tl}</div>`:""}${catH}`;
+}
+
+// ---------- 選手の詳細 ----------
+function sheetHTML(n){
+  const {rat,stats,titles}=calc(),s=stats[n];
+  if(!s)return "";
+  const names=ordered(),rank=names.indexOf(n)+1,ser=rat.series[n],st=streakOf(s.res);
+  const ch=Object.entries(s.champs).sort((a,b)=>b[1].g-a[1].g).slice(0,6);
+  const rl=Object.entries(s.roles).sort((a,b)=>b[1].g-a[1].g);
+  const rel=(o,min)=>Object.entries(o).filter(([,v])=>v.g>=min).map(([k,v])=>({k,g:v.g,r:v.w/v.g}));
+  const pa=rel(s.partners,3).sort((a,b)=>b.r-a.r||b.g-a.g),ri=rel(s.rivals,3).sort((a,b)=>b.r-a.r||b.g-a.g);
+  const relT=(a,t)=>a.length?`<table class="mini-t"><thead><tr><th>${t}</th><th class="n">試合</th><th class="n">勝率</th></tr></thead><tbody>${a.map(x=>`<tr><td>${esc(x.k)}</td><td class="n">${x.g}</td><td class="n">${Math.round(x.r*100)}%</td></tr>`).join("")}</tbody></table>`:`<div class="mu3">3試合以上のデータがまだありません。</div>`;
+  const recent=ser.slice(1).slice(-8).reverse().map(p=>`<tr><td>${fmtDate(p.date)}</td><td>${p.win?"勝":"負"}</td><td>${p.role||"-"}　${esc(p.champ||"")}</td><td class="n">${p.k!=null&&p.d!=null&&p.a!=null?p.k+"/"+p.d+"/"+p.a:"-"}</td><td class="n">${p.v}</td><td class="n">${dl(p.diff)}</td></tr>`).join("");
+  const chart=lineChart("pl",[{name:n,slot:1,pts:ser.map(p=>({x:p.mi,y:p.v,diff:p.init?null:p.diff}))}],{ref:RATE.start,h:220,label:n+"のDGPの推移"});
+  return `<div class="shade" data-act="closesheet"></div><aside class="sheet" role="dialog" aria-label="${esc(n)}の詳細">
+   <div class="row"><span class="sp"></span><button class="btn sm" data-act="closesheet">閉じる</button></div>
+   <div class="ph"><div><div class="mu3">${rank}位／${names.length}人</div><div class="nm">${esc(n)}</div></div><span class="sp"></span><div class="big">${rat.rt[n]}<small class="mu3" style="font-size:14px"> DGP</small></div></div>
+   <div style="margin-top:8px">${(titles[n]||[]).map(t=>`<div style="margin:3px 0"><span class="tag gold">${esc(t.label)}</span> <span class="mu">${esc(t.desc)}</span></div>`).join("")}</div>
+   <div class="kpis" style="margin-top:12px"><div class="kpi"><div class="mu3">戦績</div><div class="v">${s.w}-${s.g-s.w}</div></div><div class="kpi"><div class="mu3">勝率</div><div class="v">${pct(s.w,s.g)}%</div></div>
+   <div class="kpi"><div class="mu3">KDA</div><div class="v">${s.kg?kdaTxt(s.k,s.d,s.a):"-"}</div></div><div class="kpi"><div class="mu3">連勝・連敗</div><div class="v">${st.cur>0?st.cur+"連勝中":st.cur<0?(-st.cur)+"連敗中":"-"}</div></div></div>
+   <div class="card">${chart}<div class="mu3" style="margin-top:4px">最高 ${rat.pk[n]}　最長連勝 ${st.bw}　最長連敗 ${st.bl}</div></div>
+   ${ch.length?`<h3>チャンピオン</h3><table class="mini-t"><thead><tr><th>名前</th><th class="n">試合</th><th class="n">勝率</th><th class="n">KDA</th></tr></thead><tbody>${ch.map(([c,v])=>`<tr><td>${esc(c)}</td><td class="n">${v.g}</td><td class="n">${pct(v.w,v.g)}%</td><td class="n">${v.kg?kdaTxt(v.k,v.d,v.a):"-"}</td></tr>`).join("")}</tbody></table>`:""}
+   ${rl.length?`<h3>ロール</h3>${rl.map(([r,v])=>`<div class="row" style="gap:10px;margin:3px 0"><b style="width:44px">${r}</b><div class="hbar sp"><i style="width:${pct(v.g,s.g)}%"></i></div><span class="mu num">${v.g}試合　${pct(v.w,v.g)}%</span></div>`).join("")}`:""}
+   <div class="two"><div><h3>相性の良い味方</h3>${relT(pa.slice(0,3),"味方")}</div><div><h3>相性の悪い味方</h3>${relT(pa.slice(-3).reverse().filter(x=>!pa.slice(0,3).includes(x)),"味方")}</div></div>
+   <div class="two"><div><h3>得意な相手</h3>${relT(ri.slice(0,3),"相手")}</div><div><h3>苦手な相手</h3>${relT(ri.slice(-3).reverse().filter(x=>!ri.slice(0,3).includes(x)),"相手")}</div></div>
+   <h3>直近の試合</h3><div class="tw"><table class="mini-t"><thead><tr><th>日</th><th></th><th>ロール・チャンピオン</th><th class="n">KDA</th><th class="n">DGP</th><th class="n">増減</th></tr></thead><tbody>${recent}</tbody></table></div></aside>`;
+}
+
+// ---------- 履歴 ----------
+function vHist(){
+  const f=UI.hf,{rat}=calc(),nq=normKey(f.q);
+  let L=S.history.slice().reverse();
+  if(f.w)L=L.filter(m=>m.winner===f.w);
+  if(nq)L=L.filter(m=>[...m.blue,...m.red].some(p=>normKey(p.name).includes(nq)||(p.champ&&normKey(p.champ).includes(nq))));
+  const shown=L.slice(0,f.n);
+  const flt=`<div class="flt"><input class="field" id="hq" value="${esc(f.q)}" placeholder="名前・チャンピオンで検索" style="flex:1;min-width:180px"><div class="seg">${[["","すべて"],["blue","ブルー勝ち"],["red","レッド勝ち"]].map(([v,l])=>`<button data-act="hw" data-v="${v}" aria-pressed="${f.w===v}">${l}</button>`).join("")}</div><span class="mu3">${L.length}試合</span></div>`;
+  if(!S.history.length)return `<div class="empty"><h3>履歴はまだありません</h3><div>保存した試合がここに並びます。あとから修正や削除もできます。</div></div>`;
+  const items=shown.map(m=>{
+    const no=S.history.indexOf(m)+1,open=UI.openM===m.id;
+    return `<div class="mt"><button class="sm-h" data-act="openm" data-id="${m.id}" aria-expanded="${open}"><span class="num mu3">#${no}</span><span><span class="mu3">${fmtDate(m.date)}　</span><span class="${m.winner==="blue"?"win-b":"win-r"}">${SIDE_JA[m.winner]}勝利</span></span><span class="pp">${m.blue.map(p=>esc(p.name)).join("・")} vs ${m.red.map(p=>esc(p.name)).join("・")}</span><span class="mu3">${open?"閉じる":"開く"}</span></button>${open?editorHTML(m,rat):""}</div>`;
+  }).join("");
+  return flt+(items||`<div class="empty">条件に合う試合がありません。</div>`)+(L.length>shown.length?`<div class="row" style="justify-content:center;margin-top:10px"><button class="btn" data-act="more">さらに表示（残り${L.length-shown.length}）</button></div>`:"");
+}
+function editorHTML(m,rat){
+  const per=rat.per[m.id]||{};
+  const team=sd=>`<h3 class="sec" style="margin:12px 0 4px;color:var(--${sd==="blue"?"blue":"red"})">${SIDE_JA[sd]}</h3>`+m[sd].map((p,i)=>{
+    const e=per[p.name];
+    return `<div class="row" style="margin:5px 0;gap:6px"><b style="min-width:76px">${esc(p.name)}</b>
+     <select class="mini field" style="min-height:32px;width:64px;padding:2px" data-e="role" data-m="${m.id}" data-s="${sd}" data-i="${i}" aria-label="ロール">${["","TOP","JG","MID","ADC","SUP"].map(r=>`<option value="${r}"${p.role===r?" selected":""}>${r||"—"}</option>`).join("")}</select>
+     <input class="field" list="champs" style="width:128px;min-height:32px" data-e="champ" data-m="${m.id}" data-s="${sd}" data-i="${i}" value="${esc(p.champ||"")}" placeholder="チャンピオン" aria-label="チャンピオン">
+     ${["k","d","a"].map(f=>`<input class="field num" inputmode="numeric" style="width:46px;min-height:32px;text-align:center;padding-inline:2px" data-e="${f}" data-m="${m.id}" data-s="${sd}" data-i="${i}" value="${p[f]==null?"":p[f]}" placeholder="${f.toUpperCase()}" aria-label="${f.toUpperCase()}">`).join("")}
+     ${e?`<span class="sp"></span><span class="mu3 num">${e.before}→${e.after}</span> ${dl(e.d)}`:""}</div>`;
+  }).join("");
+  return `<div class="bd"><div class="row" style="margin:10px 0 2px"><label class="mu">日付 <input class="field" type="date" value="${esc(m.date)}" data-e="date" data-m="${m.id}" style="min-height:32px"></label>
+   <div class="seg"><button class="b" data-act="setwin" data-id="${m.id}" data-v="blue" aria-pressed="${m.winner==="blue"}">ブルー勝ち</button><button class="r" data-act="setwin" data-id="${m.id}" data-v="red" aria-pressed="${m.winner==="red"}">レッド勝ち</button></div>
+   <span class="sp"></span><button class="btn sm danger" data-act="delm" data-id="${m.id}">${arm("del"+m.id)?"もう一度押して削除":"この試合を削除"}</button></div>${team("blue")}${team("red")}
+   <div class="mu3" style="margin-top:8px">変更はすぐ保存され、DGPは全試合を順番にやり直して計算し直されます。</div></div>`;
+}
+
+// ---------- 設定 ----------
+function vSet(){
+  const {stats}=calc(),names=Object.keys(stats).sort();
+  const th=getTheme();
+  const R=RATE,kb=Object.entries(R.kdaRole).map(([r,v])=>r+" "+v).join(" / ");
+  const total=DB.groups.reduce((a,g)=>a+g.history.length,0);
+  return `<div class="set"><div class="col">  <div class="card"><h3>団体</h3><div class="grp">
+    <div class="mu">いまの団体：<b>${esc(S.name)}</b>（${S.history.length}試合）。団体ごとに参加者・戦績・DGPが別になります。</div>
+    <div class="add"><input class="field" id="gname" placeholder="新しい団体の名前"><button class="btn" data-act="gnew">作る</button></div>
+    <div class="add"><input class="field" id="grename" value="${esc(S.name)}"><button class="btn" data-act="grename">名前を変える</button></div>
+    <div><button class="btn danger" data-act="gdel"${DB.groups.length<2?" disabled":""}>${arm("gdel")?"もう一度押して削除":"この団体を削除"}</button></div></div></div>
+
+  <div class="card"><h3>名前の変更・統合</h3><div class="grp"><div class="mu">表記ゆれや改名を直します。すでにある名前を指定すると統合されます（同じ試合に両方いる場合は統合できません）。</div>
+    <div class="row"><select class="sel" id="rn-from" aria-label="直したい名前">${names.map(n=>`<option>${esc(n)}</option>`).join("")}</select><span>→</span><input class="field" id="rn-to" placeholder="新しい名前"><button class="btn" data-act="rename"${names.length?"":" disabled"}>変更</button></div></div></div>
+  <div class="card"><h3>デモデータ</h3><div class="grp"><div class="mu">10人・40試合ぶんのサンプルを「デモ」という別の団体として作ります。今のデータには触りません。使い方を試すときにどうぞ。</div><div><button class="btn" data-act="demo">デモ団体を作る</button></div></div></div>
+  <div class="card"><h3>データを消す</h3><div class="row"><span class="mu">この団体の参加者と履歴をすべて消します。元に戻せないので、先にバックアップを。</span><span class="sp"></span><button class="btn danger" data-act="wipe">${arm("wipe")?"もう一度押して消す":"この団体を空にする"}</button></div></div></div><div class="col">  <div class="card"><h3>見た目</h3><div class="seg">${[["","端末に合わせる"],["dark","ダーク"],["light","ライト"]].map(([v,l])=>`<button data-act="theme" data-v="${v}" aria-pressed="${th===v}">${l}</button>`).join("")}</div></div>
+  <div class="card"><h3>バックアップ</h3><div class="grp"><div class="mu">全団体（${DB.groups.length}団体・${total}試合）をまとめてファイルに書き出します。ブラウザのデータは消える場合があるので、ときどき保存しておくと安心です。</div>
+    <div class="row"><button class="btn" data-act="backup">ファイルに書き出す</button><button class="btn" data-act="backupcopy">コピーする</button></div>
+    <div class="mu" style="margin-top:6px">取り込み（ver2系のファイルも使えます）</div>
+    <input type="file" id="impf" accept=".json,application/json" class="field">
+    <textarea class="field" id="impt" rows="3" placeholder="またはここに書き出した内容を貼り付け"></textarea>
+    <div class="row"><button class="btn" data-act="import" data-v="merge">いまのデータに追加する</button><button class="btn danger" data-act="import" data-v="replace">全部置き換える</button></div>
+    <div class="mu3" id="impmsg"></div></div></div>
+  <div class="card"><h3>DGPの仕組み</h3>
+    <details class="rule" open><summary>1試合の増減 = TG補正 + KDA補正 + 連勝ボーナス</summary><p>最初はみんな ${R.start} DGP。試合ごとに、この3つを足した分だけ増減します。</p></details>
+    <details class="rule"><summary>TG補正（TeamGap補正）</summary><p>チームの平均DGPの差から期待勝率を出し、勝敗との差で決まります。強いチームが勝っても少ししか増えず、弱いチームが勝つと大きく増えます。勝てば最大 +${2*R.win}、負ければ最大 −${2*R.win}（互角なら ±${R.win}）。</p></details>
+    <details class="rule"><summary>KDA補正</summary><p>KDA = （キル＋アシスト）÷デス（デス0は1として計算）。ロールごとの基準（${kb}）との差の2倍が補正になり、±${R.kda}で頭打ち。KDAを入力しなかった試合は0です。</p></details>
+    <details class="rule"><summary>連勝ボーナス</summary><p>${R.streak.from}連勝目から、勝つたびに +${R.streak.step} ずつ増え、最大 +${R.streak.max}。負けると連勝はリセットされます。</p></details>
+    <details class="rule"><summary>チーム分けのしくみ</summary><p>10人未満でも分けられます。サイドの希望は必ず守り、ロールの希望はできるだけ通します。「DGPでバランスを取る」をオンにすると、平均DGPの差が小さい組み合わせを3案出します。直前と同じ組み合わせは出にくく、続けて観戦した人と「優先して出場」の人が先に選ばれます。</p></details></div></div></div>
+<div class="card" style="margin-top:12px"><h3>パッチノート</h3>${PATCH.map((p,i)=>`<details class="pv"${i===0?" open":""}><summary><b>ver${esc(p.v)}</b> <span class="mu3">${esc(p.date)}</span></summary>${p.sec.map(([t,a])=>`<h5>${esc(t)}</h5><ul>${a.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`).join("")}</details>`).join("")}</div>
+`;
+}
+// ---------- データの出し入れ ----------
+function backupJSON(){return JSON.stringify({app:"lolpark",ver:VER,exportedAt:new Date().toISOString(),cur:DB.cur,groups:DB.groups.map(g=>({id:g.id,name:g.name,players:g.players,history:g.history}))},null,1);}
+function markExported(){DB.meta.exp=DB.groups.reduce((a,g)=>a+g.history.length,0);save();}
+function doBackup(){
+  try{
+    const b=new Blob([backupJSON()],{type:"application/json"}),a=document.createElement("a");
+    a.href=URL.createObjectURL(b);a.download="lolpark-backup-"+localDate()+".json";document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),4000);markExported();toast("書き出しました。ダウンロードフォルダを確認してください。");render();
+  }catch(e){toast("書き出せませんでした。「コピーする」を試してください。");}
+}
+function importData(d,mode){
+  if(!d||typeof d!=="object")return "読み込めない形式です。";
+  const inc=Array.isArray(d.groups)?d:{groups:[{id:"imp",name:"取り込み",players:d.players||[],history:d.history||[]}],single:true};
+  const nd=norm({groups:inc.groups.map(g=>({...g})),cur:inc.cur});
+  const nMatch=nd.groups.reduce((a,g)=>a+g.history.length,0);
+  if(mode==="replace"){
+    if(inc.single&&!Array.isArray(d.groups)){S.players=nd.groups[0].players;S.history=nd.groups[0].history;S.draft=null;}
+    else{DB=nd;DB.meta={exp:nMatch};}
+    setG(DB.cur);cur=null;UI.props=null;UI.done=null;save();render();
+    return `置き換えました（${nMatch}試合）。`;
+  }
+  let add=0;
+  nd.groups.forEach(g=>{
+    let t=inc.single?S:DB.groups.find(x=>x.name===g.name);
+    if(!t){t={...g,id:DB.groups.some(x=>x.id===g.id)?"g"+uid():g.id};DB.groups.push(t);add+=g.history.length;return;}
+    const ids=new Set(t.history.map(m=>String(m.id)));
+    g.history.forEach(m=>{if(!ids.has(String(m.id))){t.history.push(m);ids.add(String(m.id));add++;}});
+    t.history.sort((a,b)=>a.id-b.id);
+    g.players.forEach(p=>{if(!t.players.some(q=>q.name===p.name))t.players.push(p);});
+  });
+  _rc=null;save();render();
+  return `追加しました（新しい試合 ${add}件）。`;
+}
+function demoData(){
+  const rng=mulberry32(20261029);
+  const names=["つよし","たける","みお","ゆうき","れん","あかね","しょう","ひなた","こうた","さくら"];
+  const skill={};names.forEach(n=>skill[n]=(rng()-0.5)*260);
+  const pool={TOP:["ガレン","ネクサス","ケネン","オーン","フィオラ"],JG:["リー・シン","ヴィエゴ","グレイブス","ジャーヴァンIV","ワーウィック"],MID:["アーリ","ヤスオ","ゼド","ガリオ","ライズ"],ADC:["ジンクス","ケイトリン","エズリアル","ジン","ミス・フォーチュン"],SUP:["ソナ","ナミ","レオナ","ブリッツクランク","ルル"]};
+  const roles=["TOP","JG","MID","ADC","SUP"],hist=[];
+  const base=new Date();base.setDate(base.getDate()-70);
+  for(let i=0;i<40;i++){
+    const order=shuffle(names,rng),B=order.slice(0,5),Rd=order.slice(5);
+    const sb=B.reduce((a,n)=>a+skill[n],0)/5,sr=Rd.reduce((a,n)=>a+skill[n],0)/5;
+    const winner=rng()<1/(1+Math.pow(10,-(sb-sr)/380))?"blue":"red";
+    const mk=(team,win)=>shuffle(roles,rng).map((r,j)=>{
+      const n=team[j],pw=skill[n]/260,k=Math.max(0,Math.round(4+rng()*7+pw*3+(win?1.5:-1))),d=Math.max(0,Math.round(4+rng()*5-pw*2+(win?-1:1.5))),a=Math.max(0,Math.round(4+rng()*10+(r==="SUP"?4:0)+(win?2:0)));
+      const pl=pool[r];return{name:n,role:r,champ:pl[Math.floor(rng()*pl.length)],k,d,a};
     });
-  });
-  const opts=[[10,"直近10試合"],[30,"直近30試合"],[50,"直近50試合"],[0,"全期間"]].map(([v,t])=>`<option value="${v}"${gWin===v?" selected":""}>${t}</option>`).join("");
-  const leg=rank.map(n=>`<button class="gchip" data-gn="${esc(n)}" style="opacity:${shown.has(n)?1:.4}"><i style="background:${col(n)}"></i>${esc(n)} <span class="mu">${RT.rt[n]}</span></button>`).join("");
-  const svg=Object.keys(ser).length?`<svg viewBox="0 0 ${W} ${H}" class="chart-svg">${grid}${lines}${nodes}${xl}</svg><div class="mu" style="text-align:center">横軸: この団体の通算の試合番号　／　縦軸: レート（単位: DGP）</div>`:'<div class="mu">表示する人を選んでください。</div>';
-  el.innerHTML=`<b>全員のレート推移</b>
-  <div class="row" style="margin:8px 0"><select id="gwin">${opts}</select><button class="sm" data-gx="top">上位8人</button><button class="sm" data-gx="all">全員</button><button class="sm" data-gx="none">なし</button></div>
-  <div class="mu">名前をタップで表示／非表示。点にカーソルを乗せると詳細が出ます。${dense?"（試合数が多いので、点は最新のものだけ表示しています）":""}</div>
-  <div style="margin-top:4px">${leg}</div><div class="chart-container">${svg}</div>`;
+    const dt=new Date(base);dt.setDate(base.getDate()+Math.floor(i*1.7));
+    hist.push({id:1700000000000+i*86400000/3,date:localDate(dt),mode:"role",winner,blue:mk(B,winner==="blue"),red:mk(Rd,winner==="red"),spec:[]});
+  }
+  const g={id:"g"+uid(),name:"デモ",players:names.map(n=>({name:n,pref:"",side:"",prio:false})),history:hist};
+  DB.groups.push(g);DB.meta.exp+=hist.length;setG(g.id);cur=null;UI.props=null;UI.done=null;UI.sel=null;save();render();
+  toast("「デモ」団体を作りました。右上で元の団体に戻せます。");
 }
-$("ag").addEventListener("click",e=>{
-  const b=e.target.closest("button");if(!b)return;
-  const RT=rate(),names=Object.keys(RT.ht);
-  if(b.dataset.gx){gShow=b.dataset.gx==="top"?null:b.dataset.gx==="all"?names:[];allGraph();return;}
-  if(b.dataset.gn){
-    const base=gShow?gShow.filter(n=>names.includes(n)):names.slice().sort((x,y)=>RT.rt[y]-RT.rt[x]).slice(0,8),st=new Set(base);
-    if(st.has(b.dataset.gn))st.delete(b.dataset.gn);else st.add(b.dataset.gn);
-    gShow=[...st];allGraph();
+function renameMember(from,to){
+  to=to.trim();
+  if(!from||!to||from===to)return "新しい名前を入力してください。";
+  if(S.history.some(m=>[...m.blue,...m.red].some(p=>p.name===from)&&[...m.blue,...m.red].some(p=>p.name===to)))return "同じ試合に両方の名前があるため統合できません。";
+  let n=0;
+  const fix=p=>{if(p.name===from){p.name=to;n++;}};
+  S.history.forEach(m=>{m.blue.forEach(fix);m.red.forEach(fix);if(m.spec)m.spec=m.spec.map(x=>x===from?to:x);});
+  if(S.players.some(p=>p.name===from)){
+    if(S.players.some(p=>p.name===to))S.players=S.players.filter(p=>p.name!==from);else S.players.forEach(p=>{if(p.name===from)p.name=to;});
+  }
+  if(cur){[...cur.blue,...cur.red].forEach(fix);cur.spec=cur.spec.map(x=>x===from?to:x);S.draft=cur;}
+  save();render();
+  return `${from} → ${to}（${n}件）に変更しました。`;
+}
+function rankText(){
+  const {rat,stats}=calc();
+  return `【${S.name} DGPランキング】（${S.history.length}試合）\n`+ordered().map((n,i)=>`${i+1}. ${n}　${rat.rt[n]} DGP　${stats[n].w}勝${stats[n].g-stats[n].w}敗`).join("\n");
+}
+function getTheme(){try{return localStorage.getItem("lolpark_theme")||"";}catch(e){return "";}}
+function setTheme(v){try{if(v)localStorage.setItem("lolpark_theme",v);else localStorage.removeItem("lolpark_theme");}catch(e){}applyTheme();}
+function applyTheme(){const t=getTheme();if(t)document.documentElement.setAttribute("data-theme",t);else document.documentElement.removeAttribute("data-theme");}
+
+// ---------- イベント ----------
+function addFromInput(){
+  const el=$("nm");if(!el)return;
+  const v=el.value;if(!v.trim())return;
+  const r=addNames(v);
+  if(r.dup.length&&!r.a)toast(r.dup.join("、")+" はすでに追加されています。");
+  UI.focus="nm";render();
+  if($("nm"))$("nm").value="";
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-act]");if(!t)return;
+  const a=t.dataset.act,d=t.dataset;
+  switch(a){
+    case"view":UI.view=d.v;UI.sheet=null;window.scrollTo(0,0);render();break;
+    case"sub":UI.sub=d.v;render();break;
+    case"add":addFromInput();break;
+    case"addn":addNames(d.n);render();break;
+    case"addlast":{const m=S.history[S.history.length-1];if(m)addNames([...m.blue,...m.red].map(p=>p.name).concat(m.spec||[]).join("、"));render();break;}
+    case"bulk":UI.bulk=!UI.bulk;UI.focus=UI.bulk?"bulkt":null;render();break;
+    case"bulkadd":{const r=addNames($("bulkt").value);UI.bulk=false;render();toast(r.a?r.a+"人を追加しました。":"追加できる名前がありませんでした。");break;}
+    case"clearroster":S.players=[];save();render();break;
+    case"rm":S.players=S.players.filter(p=>p.name!==d.n);UI.openRm.delete(d.n);save();render();break;
+    case"pref":{const p=playerObj(d.n);if(p){p.pref=d.v;save();render();}break;}
+    case"side":{const p=playerObj(d.n);if(p){p.side=d.v;save();render();}break;}
+    case"gen":case"regen":
+      gen();break;
+    case"plan":pickPlan(+d.i);break;
+    case"qc":{const p=cur[d.t][+d.i];p.champ=d.c;S.draft=cur;save();render();break;}
+    case"win":if(cur)saveMatch(d.w);break;
+    case"discard":if(arm("discard")){cur=null;S.draft=null;UI.props=null;UI.arm=null;save();render();}else armSet("discard");break;
+    case"discord":copyText(discordText()).then(ok=>toast(ok?"コピーしました。Discordに貼り付けてください。":"コピーできませんでした。"));break;
+    case"rematch":rematch();break;
+    case"newround":UI.done=null;render();break;
+    case"undo":undoMatch(+d.id);break;
+    case"toastact":{const f=UI.toastFn;toast("");if(f)f();break;}
+    case"demo":demoData();break;
+    case"player":UI.sheet=d.n;render();break;
+    case"closesheet":UI.sheet=null;render();break;
+    case"pickc":{
+      const i=UI.sel.indexOf(d.n);
+      if(i>=0)UI.sel.splice(i,1);
+      else if(UI.sel.length>=8)toast("同時に表示できるのは8人までです。");
+      else{assignSlot(d.n);UI.sel.push(d.n);}
+      render();break;}
+    case"tbl":UI.tbl=!UI.tbl;render();break;
+    case"copyrank":copyText(rankText()).then(ok=>toast(ok?"コピーしました。":"コピーできませんでした。"));break;
+    case"hw":UI.hf.w=d.v;UI.hf.n=30;render();break;
+    case"more":UI.hf.n+=30;render();break;
+    case"openm":UI.openM=UI.openM==+d.id?null:+d.id;render();break;
+    case"setwin":{const m=S.history.find(x=>x.id==d.id);if(m){m.winner=d.v;save();render();}break;}
+    case"delm":
+      if(arm("del"+d.id)){S.history=S.history.filter(x=>x.id!=d.id);UI.openM=null;UI.arm=null;save();render();toast("削除しました。");}
+      else armSet("del"+d.id);break;
+    case"gnew":{const v=$("gname").value.trim();if(!v)break;if(DB.groups.some(g=>g.name===v)){toast("同じ名前の団体があります。");break;}
+      const g={id:"g"+uid(),name:v,players:[],history:[]};DB.groups.push(g);setG(g.id);cur=null;UI.props=null;UI.done=null;UI.sel=null;save();render();toast("「"+v+"」を作って切り替えました。");break;}
+    case"grename":{const v=$("grename").value.trim();if(!v)break;if(DB.groups.some(g=>g!==S&&g.name===v)){toast("同じ名前の団体があります。");break;}S.name=v;save();render();toast("名前を変えました。");break;}
+    case"gdel":
+      if(arm("gdel")){DB.groups=DB.groups.filter(g=>g!==S);setG(DB.groups[0].id);cur=S.draft||null;UI.props=null;UI.done=null;UI.sel=null;UI.arm=null;save();render();toast("削除しました。");}
+      else armSet("gdel");break;
+    case"wipe":
+      if(arm("wipe")){S.players=[];S.history=[];S.draft=null;cur=null;UI.props=null;UI.done=null;UI.sel=null;UI.arm=null;save();render();toast("空にしました。");}
+      else armSet("wipe");break;
+    case"theme":setTheme(d.v);render();break;
+    case"rename":{const m=renameMember($("rn-from").value,$("rn-to").value);toast(m);break;}
+    case"backup":doBackup();break;
+    case"backupcopy":copyText(backupJSON()).then(ok=>{if(ok)markExported();toast(ok?"コピーしました。メモ帳などに貼り付けて保存してください。":"コピーできませんでした。");render();});break;
+    case"nudgeoff":DB.meta.exp=DB.groups.reduce((a,g)=>a+g.history.length,0);save();render();break;
+    case"import":{
+      const msg=$("impmsg"),txt=$("impt").value.trim();
+      const run=text=>{let d;try{d=JSON.parse(text);}catch(err){msg.textContent="読み込めませんでした。書き出したファイルの内容か確認してください。";return;}
+        if(d.groups||d.history||d.players){const r=importData(d,t.dataset.v);toast(r);}else msg.textContent="読み込めない形式です。";};
+      const f=$("impf").files&&$("impf").files[0];
+      if(f){const fr=new FileReader();fr.onload=()=>run(String(fr.result));fr.readAsText(f);}
+      else if(txt)run(txt);else msg.textContent="ファイルを選ぶか、内容を貼り付けてください。";
+      break;}
   }
 });
-$("ag").addEventListener("change",e=>{if(e.target.id==="gwin"){gWin=Number(e.target.value);allGraph();}});
-function rateHelp(){
-  const sg=n=>n>0?"+"+n:""+n,e=(d,w)=>Math.round(2*RATE.win*((w?1:0)-1/(1+Math.pow(10,d/RATE.eloScale))));
-  const sb=[];if(RATE.streak.step>0&&RATE.streak.max>0)for(let k=0;k<50;k++){const b=Math.min(RATE.streak.max,(k+1)*RATE.streak.step);if(b>=RATE.streak.max){sb.push(`${RATE.streak.from+k}連勝目以降 +${b}`);break;}sb.push(`${RATE.streak.from+k}連勝目 +${b}`);}
-  const h=t=>`<div style="font-weight:700;color:#f0f6fc;margin:14px 0 4px">${t}</div>`;
-  const eloT=RATE.elo?`<div class="tw"><table><tr><th>相手の平均レート − 自チームの平均レート</th><th>自チームの期待勝率</th><th>勝ったとき(DGP)</th><th>負けたとき(DGP)</th></tr>${[-200,-100,0,100,200].map(d=>`<tr><td>${d>0?"+":""}${d}</td><td>${Math.round(100/(1+Math.pow(10,d/RATE.eloScale)))}%</td><td>${sg(e(d,true))}</td><td>${sg(e(d,false))}</td></tr>`).join("")}</table></div>`:"";
-  $("rl").innerHTML=`<b>レートの計算方法</b>
-  <div class="mu" style="margin-top:4px">レートは、カスタムマッチでの強さを表す数字で、単位は「DGP（ドパガキポイント）」です。以下の加点・減点の数字もすべてDGPです。全員が同じルールで計算しています。試合履歴を直すと、全員のレートが自動で計算し直されます。</div>
-  ${h("1. 初期レートと対象")}<div class="mu">全員 ${RATE.start} DGP から始まります。出場して勝敗を保存した試合だけが対象で、観戦は対象外です。</div>
-  ${h("2. 勝敗の増減（TG補正）")}<div class="mu">勝てば +${RATE.win} DGP、負ければ −${RATE.win} DGP が基本です。${RATE.elo?`さらに「TG補正（TeamGap補正）」として、その試合の前の両チームの平均レートの差から「期待勝率」（そのチームが勝ちそうな確率。互角なら50%）を出し、強い相手に勝つほど多く増え、弱い相手に負けるほど多く減ります（増減 = ${2*RATE.win} × (結果 − 期待勝率)）。互角なら ±${RATE.win} です。`:""}</div>${eloT}
-  ${h("3. KDA補正")}<div class="mu">KDA = (K + A) ÷ D（Dが0のときは1で計算）。ロールごとの基準KDAと比べて、(KDA − 基準) × 2 を四捨五入し、−${RATE.kda}〜+${RATE.kda} の範囲で加減します。勝敗とは別に付くので、負けてもKDAがよければ減りが小さくなります。KDAを入力していない試合は補正なしです。<br>基準KDA: ${R.map(r=>`${r} ${RATE.kdaRole[r]}`).join(" / ")}</div>
-  ${h("4. 連勝ボーナス")}<div class="mu">${sb.length?`勝った試合で連勝が ${RATE.streak.from} に達すると加点されます。${sb.join(" / ")}。負けると連勝は0に戻ります。観戦した試合は連勝に影響しません。`:"連勝ボーナスは設定されていません。"}</div>
-  ${h("5. 1試合の増減")}<div class="mu">勝敗の増減 + KDA補正 + 連勝ボーナス。同じチームでも、KDA補正と連勝ボーナスは個人ごとに違います。</div>`;
-}
-const pct=(w,g)=>g?Math.round(w/g*100)+"%":"-";
-function stats(){gl();mh();dl();fillRo();allGraph();rateHelp();
-  const A=agg(),RT=rate(),names=Object.keys(A).sort((a,b)=>RT.rt[b]-RT.rt[a]||A[b].g-A[a].g);
-  $("dt").hidden=true;
-  $("st").innerHTML=names.length?`<table><tr><th style="width:36px">順位</th><th>名前</th><th>レート</th><th>試合</th><th>勝</th><th>勝率</th><th>平均KDA</th><th>連続</th></tr>${names.map((n,idx)=>{
-    const a=A[n];
-    const rankClass=idx===0?'rank-1':idx===1?'rank-2':idx===2?'rank-3':'';
-    return `<tr class="cl" data-n="${esc(n)}"><td><span class="rank-num ${rankClass}">${idx+1}</span></td><td><b>${esc(n)}</b></td><td><b style="color:#d29922">${RT.rt[n]}</b><span class="mu" style="margin-left:3px">DGP</span></td><td>${a.g}</td><td>${a.w}</td><td>${pct(a.w,a.g)}</td><td>${a.kg?(a.d?((a.k+a.a)/a.d).toFixed(2):"Perfect"):"-"}</td><td>${stkT(a.res)}</td></tr>`}).join("")}</table><div class="mu" style="margin-top:8px">行をタップで詳細表示　／　レート: 初期${RATE.start} DGP、勝敗±${RATE.win} DGP${RATE.elo?"（TG補正あり）":""}、KDAで最大±${RATE.kda} DGP加減</div>`:'<div class="mu">まだ記録がありません。</div>';
-}
-$("st").addEventListener("click",e=>{
-  const tr=e.target.closest("tr[data-n]");if(!tr)return;
-  if(!$("dt").hidden&&$("dt").dataset.n===tr.dataset.n){$("dt").hidden=true;return;}
-  const n=tr.dataset.n,a=agg()[n],sk=stk(a.res),RT=rate(),P=pairs(n),tb=o=>Object.keys(o).length?`<div class="tw"><table><tr><th>相手</th><th>試合</th><th>勝率</th></tr>${rows(o)}</table></div>`:'<div class="mu">記録なし</div>';
-  const rows=o=>Object.entries(o).sort((x,y)=>y[1].g-x[1].g).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${v.g}</td><td>${pct(v.w,v.g)}</td></tr>`).join("");
-  $("dt").hidden=false;$("dt").dataset.n=n;
-  $("dt").innerHTML=`<h3 style="margin:0 0 8px;font-size:16px;color:var(--tx)">${esc(n)} <span style="font-size:12px;color:var(--tx-sub)">詳細データ</span><button class="sm" id="dtx" style="float:right">✕ 閉じる</button></h3>
-  <div class="mu">合計 K${a.k} / D${a.d} / A${a.a}（入力があった${a.kg}試合）</div>
-  <div class="mu">最大 ${sk.bw}連勝 / ${sk.bl}連敗</div>
-  <div class="mu">現在のレート <b style="color:#d29922;font-size:14px">${RT.rt[n]} DGP</b>（最高 ${RT.pk[n]} DGP）　直近の増減(DGP): ${(RT.ls[n]||[]).slice(-5).map(d=>d>0?"+"+d:d).join(" ")}</div>
-  ${graphSVG(RT.ht[n])}
-  <h4 style="margin:14px 0 4px">ピックチャンピオン</h4>${Object.keys(a.ch).length?`<div class="tw"><table><tr><th>チャンプ</th><th>試合</th><th>勝率</th></tr>${rows(a.ch)}</table></div>`:'<div class="mu">記録なし</div>'}
-  <h4 style="margin:14px 0 4px">味方のときの勝率</h4>${tb(P.al)}
-  <h4 style="margin:14px 0 4px">敵のときの勝率</h4>${tb(P.en)}
-  <h4 style="margin:14px 0 4px">ロール別</h4>${Object.keys(a.ro).length?`<div class="tw"><table><tr><th>ロール</th><th>試合</th><th>勝率</th></tr>${rows(a.ro)}</table></div>`:'<div class="mu">記録なし</div>'}`;
+document.addEventListener("change",e=>{
+  const t=e.target;
+  if(t.id==="grp"){setG(t.value);cur=S.draft||null;UI.props=null;UI.done=null;UI.sel=null;UI.openM=null;save();render();return;}
+  if(t.dataset.opt){S.opt[t.dataset.opt]=t.checked;save();return;}
+  if(t.dataset.prio!=null){const p=playerObj(t.dataset.prio);if(p){p.prio=t.checked;save();render();}return;}
+  if(t.dataset.f&&cur){const p=cur[t.dataset.t][+t.dataset.i];if(t.dataset.f==="role"){p.role=t.value;S.draft=cur;save();const w=$("warns");if(w)w.innerHTML=warnsHTML();}return;}
 });
-$("dt").addEventListener("click",e=>{if(e.target.id==="dtx")$("dt").hidden=true;});
-function data(){return JSON.stringify({app:"lol-team-splitter",v:2,group:S.name,players:S.players,history:S.history},null,1);}
-function merge(txt){
-  let d;try{d=JSON.parse(txt)}catch(e){return "JSONとして読み込めませんでした。";}
-  if(!d||!Array.isArray(d.history))return "形式が違います。";
-  const ids=new Set(S.history.map(m=>m.id));let n=0;
-  d.history.forEach(m=>{if(m&&m.id&&!ids.has(m.id)){S.history.push(m);ids.add(m.id);n++;}});
-  S.history.sort((a,b)=>a.id-b.id);
-  (d.players||[]).forEach(p=>{if(p&&p.name&&!S.players.some(q=>q.name===p.name))S.players.push({name:String(p.name),pref:p.pref||"",side:p.side||"",prio:!!p.prio});});
-  save();pl();gl();stats();return "「"+S.name+"」に"+n+"試合を追加しました。";
-}
-$("ex").onclick=()=>{
-  try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data()],{type:"application/json"}));a.download="lol-"+S.name+".json";a.click();}catch(e){}
-  $("ta").value=data();$("io").open=true;$("msg").textContent="ダウンロードされない環境では、下のテキストをコピーして data.json として保存してください。";
-};
-$("im").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$("msg").textContent=merge(r.result);};r.readAsText(f);e.target.value="";};
-$("ld").onclick=()=>{$("msg").textContent=merge($("ta").value);};
-$("sh").onclick=()=>{$("ta").value=data();};
-function gl(){$("gs").innerHTML=DB.groups.map(g=>`<option value="${g.id}"${g.id===DB.cur?" selected":""}>${esc(g.name)}（${g.history.length}試合）</option>`).join("");}
-function refresh(){gShow=null;cur=S.draft||null;if(cur)show();else $("res").innerHTML="";pl();gl();stats();}
-$("gs").onchange=e=>{setG(e.target.value);save();refresh();$("gm").textContent="「"+S.name+"」に切り替えました。";};
-$("ga").onclick=()=>{
-  const v=$("gn").value.trim();
-  if(!v){$("gm").textContent="団体名を入力してください。";return;}
-  if(DB.groups.some(g=>g.name===v)){$("gm").textContent="同じ名前の団体があります。";return;}
-  const id="g"+Date.now();DB.groups.push({id,name:v,players:[],history:[]});setG(id);save();$("gn").value="";refresh();$("gm").textContent="「"+v+"」を作成して切り替えました。";
-};
-$("gr").onclick=()=>{
-  const v=$("gn").value.trim();
-  if(!v){$("gm").textContent="新しい名前を入力してから押してください。";return;}
-  if(DB.groups.some(g=>g.name===v)){$("gm").textContent="同じ名前の団体があります。";return;}
-  S.name=v;save();$("gn").value="";gl();$("gm").textContent="名前を変更しました。";
-};
-let gdArm=false;
-$("gd").onclick=()=>{
-  if(DB.groups.length<2){$("gm").textContent="最後の1団体は削除できません。";return;}
-  if(!gdArm){gdArm=true;$("gd").textContent="本当に削除";$("gm").textContent="「"+S.name+"」の参加者と戦績が消えます。もう一度押すと削除します。";setTimeout(()=>{gdArm=false;$("gd").textContent="削除";},4000);return;}
-  gdArm=false;$("gd").textContent="削除";DB.groups=DB.groups.filter(g=>g!==S);setG(DB.groups[0].id);save();refresh();$("gm").textContent="削除しました。";
-};
-function applyEdits(d,m){d.querySelectorAll("[data-f]").forEach(el=>{const p=m[el.dataset.s][el.dataset.i],f=el.dataset.f,v=el.value.trim();if(f==="champ"||f==="role")p[f]=v;else p[f]=v===""?null:Number(v);});}
-$("mh").addEventListener("change",e=>{
-  const t=e.target;if(t.dataset.mvSide==null)return;
-  const d=t.closest("details"),id=Number(d.dataset.id),m=S.history.find(x=>x.id===id);if(!m)return;
-  const from=t.dataset.mvSide,to=t.value;if(from===to||!m[to])return;
-  applyEdits(d,m);
-  const [p]=m[from].splice(Number(t.dataset.mvI),1);m[to].push(p);
-  m[to].sort((a,b)=>ri(a.role)-ri(b.role));
-  save();openId=id;delArm=null;stats();$("mm").textContent="チームを移動しました。レートも計算し直されます。";
+document.addEventListener("toggle",e=>{const d=e.target;if(d.dataset&&d.dataset.rm!=null){if(d.open)UI.openRm.add(d.dataset.rm);else UI.openRm.delete(d.dataset.rm);}},true);
+const numOrNull=v=>{v=String(v).replace(/[^\d]/g,"");return v===""?null:Math.min(99,+v);};
+document.addEventListener("input",e=>{
+  const t=e.target;
+  if(t.id==="hq"){UI.hf.q=t.value;UI.hf.n=30;const p=t.selectionStart;render();const q=$("hq");if(q){q.focus();q.setSelectionRange(p,p);}return;}
+  if(t.dataset.f&&cur){
+    const p=cur[t.dataset.t][+t.dataset.i],f=t.dataset.f;
+    if(f==="champ")p.champ=t.value;
+    else if(f==="role")return;
+    else{const v=numOrNull(t.value);p[f]=v;if(String(v??"")!==t.value)t.value=v==null?"":v;}
+    S.draft=cur;save();const w=$("warns");if(w)w.innerHTML=warnsHTML();return;
+  }
+  if(t.dataset.e){
+    const m=S.history.find(x=>x.id==t.dataset.m);if(!m)return;
+    if(t.dataset.e==="date"){if(t.value)m.date=t.value;save();return;}
+    const p=m[t.dataset.s][+t.dataset.i],f=t.dataset.e;
+    if(f==="champ")p.champ=t.value;else if(f==="role")p.role=t.value;else{const v=numOrNull(t.value);p[f]=v;if(String(v??"")!==t.value)t.value=v==null?"":v;}
+    save();
+  }
 });
-$("mh").addEventListener("click",e=>{
-  if(e.target.dataset.clear!=null){
-    const sl=e.target.closest(".slot");
-    sl.querySelectorAll(".in input").forEach(i=>i.value="");
-    sl.querySelector('input[data-f="champ"]').focus();
-    $("mm").textContent="入力を空にしました。「変更を保存」を押すと確定します。";return;
-  }
-  const a=e.target.dataset.a;if(!a)return;
-  const d=e.target.closest("details"),id=Number(d.dataset.id),m=S.history.find(x=>x.id===id);if(!m)return;
-  if(a==="del"){
-    if(delArm!==id){delArm=id;e.target.textContent="本当に削除";$("mm").textContent="この試合の記録が消えます。もう一度「本当に削除」を押すと削除します。";return;}
-    S.history=S.history.filter(x=>x.id!==id);save();openId=null;delArm=null;stats();$("mm").textContent="削除しました。";return;
-  }
-  if(a==="save"){
-    applyEdits(d,m);
-    save();openId=id;delArm=null;stats();$("mm").textContent="変更を保存しました。";return;
-  }
-  if(a==="flip"){m.winner=m.winner==="blue"?"red":"blue";save();openId=id;delArm=null;stats();$("mm").textContent="勝敗を変更しました。";}
+// KDAの貼り付け（5/2/7 など）
+document.addEventListener("paste",e=>{
+  const t=e.target;if(!(t.dataset&&(t.dataset.f==="k"||t.dataset.e==="k")))return;
+  const k=parseKDA((e.clipboardData||window.clipboardData).getData("text"));if(!k)return;
+  e.preventDefault();
+  const row=t.parentNode,fs=t.dataset.f?"f":"e";
+  ["k","d","a"].forEach((f,i)=>{const el=row.querySelector(`[data-${fs}="${f}"]`);if(el){el.value=k[i];el.dispatchEvent(new Event("input",{bubbles:true}));}});
 });
-function dl(){
-  const ch={},nm={};
-  const add=(o,v)=>{if(v)o[v]=(o[v]||0)+1;};
-  DB.groups.forEach(g=>g.history.forEach(m=>["blue","red"].forEach(sd=>m[sd].forEach(p=>add(ch,p.champ)))));
-  S.history.forEach(m=>["blue","red"].forEach(sd=>m[sd].forEach(p=>add(nm,p.name))));
-  S.players.forEach(p=>delete nm[p.name]);
-  const o=a=>Object.keys(a).sort((x,y)=>a[y]-a[x]||x.localeCompare(y,"ja")).map(v=>`<option value="${esc(v)}">`).join("");
-  $("champs").innerHTML=o(ch);$("names").innerHTML=o(nm);
-}
 document.addEventListener("keydown",e=>{
   const t=e.target;
-  if(!(t&&t.dataset&&t.dataset.f)||t.tagName!=="INPUT"||e.isComposing||e.keyCode===229)return;
-  const sc=t.closest("details")||$("res"),L=[...sc.querySelectorAll("input[data-f]")],i=L.indexOf(t),k=e.key,num=t.type==="number";
-  let j;
-  if(k==="Enter")j=i+1;
-  else if(k==="ArrowRight"&&(num||(t.selectionStart===t.value.length&&t.selectionEnd===t.value.length)))j=i+1;
-  else if(k==="ArrowLeft"&&(num||(t.selectionStart===0&&t.selectionEnd===0)))j=i-1;
-  else if(k==="ArrowDown"&&num)j=i+4;
-  else if(k==="ArrowUp"&&num)j=i-4;
-  else return;
-  if(k!=="Enter")e.preventDefault();
-  setTimeout(()=>{const n=L[j];if(n){n.focus();n.select();}},0);
+  if(e.key==="Escape"){if(UI.sheet){UI.sheet=null;render();}return;}
+  if(t.dataset&&t.dataset.f&&t.dataset.t&&t.tagName==="INPUT"&&!e.isComposing&&["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(e.key)){
+    const F=["champ","k","d","a"],col=(t.dataset.t==="red"?4:0)+F.indexOf(t.dataset.f),row=+t.dataset.i;
+    const txt=t.dataset.f==="champ";
+    if(txt&&e.key==="ArrowLeft"&&t.selectionStart!==0)return;
+    if(txt&&e.key==="ArrowRight"&&t.selectionStart!==t.value.length)return;
+    let c=col,r=row;
+    if(e.key==="ArrowLeft")c--;else if(e.key==="ArrowRight")c++;else if(e.key==="ArrowUp")r--;else r++;
+    const q=document.querySelector(`input[data-f="${F[c%4]}"][data-t="${c>=4?"red":"blue"}"][data-i="${r}"]`);
+    if(c>=0&&c<8&&q){e.preventDefault();q.focus();q.select();}
+    else if(e.key==="ArrowUp"||e.key==="ArrowDown")e.preventDefault();
+    return;
+  }
+  if(e.key!=="Enter"||e.isComposing)return;
+  if(t.id==="nm"){e.preventDefault();addFromInput();return;}
+  if(t.id==="gname"){$("main").querySelector('[data-act="gnew"]').click();return;}
+  if(t.dataset&&t.dataset.f&&t.tagName==="INPUT"){ // Enterで次の入力欄へ
+    e.preventDefault();
+    const all=[...document.querySelectorAll('.board input[data-f], .teams input[data-f]')],i=all.indexOf(t);
+    const nx=all[i+1];if(nx){nx.focus();nx.select();}
+  }
 });
-["fp","fc","fm"].forEach(i=>$(i).addEventListener("input",mh));
-$("fx").onclick=()=>{["fp","fc","fm"].forEach(i=>$(i).value="");mh();};
-$("rn").onclick=()=>{
-  const o=$("ro").value,n=$("rv").value.trim(),r=$("rm");
-  if(!o||!n){r.textContent="変更する人と新しい名前を入力してください。";return;}
-  if(o===n){r.textContent="同じ名前です。";return;}
-  if(S.history.some(m=>{const x=[...m.blue,...m.red].map(p=>p.name);return x.includes(o)&&x.includes(n);})){r.textContent="同じ試合に両方の名前があるため統合できません。";return;}
-  const merged=S.players.some(p=>p.name===n)||S.history.some(m=>[...m.blue,...m.red].some(p=>p.name===n));
-  S.history.forEach(m=>[...m.blue,...m.red].forEach(p=>{if(p.name===o)p.name=n;}));
-  if(S.draft)[...S.draft.blue,...S.draft.red,...S.draft.spec].forEach(p=>{if(p.name===o)p.name=n;});
-  const po=S.players.find(p=>p.name===o);
-  if(po){if(S.players.some(p=>p.name===n))S.players=S.players.filter(p=>p!==po);else po.name=n;}
-  save();pl();stats();$("rv").value="";r.textContent="「"+o+"」を「"+n+"」に"+(merged?"統合":"変更")+"しました。";
-};
 window.addEventListener("storage",e=>{
   if(e.key!==K||!e.newValue)return;
-  let d;try{d=JSON.parse(e.newValue)}catch(x){return}
-  if(!d||!Array.isArray(d.groups)||!d.groups.length)return;
-  const keep=DB.cur;DB=d;setG(DB.groups.some(g=>g.id===keep)?keep:DB.groups[0].id);
-  cur=S.draft||null;
-  $("swr").checked=!!(DB.opt&&DB.opt.r);$("swb").checked=!!(DB.opt&&DB.opt.b);
-  if(cur)show(false);else $("res").innerHTML="";
-  pl();gl();stats();
+  try{const keep=DB.cur;DB=norm(JSON.parse(e.newValue));setG(DB.groups.some(g=>g.id===keep)?keep:DB.cur);cur=S.draft||null;_rc=null;render();}catch(err){}
 });
-$("swr").checked=!!(DB.opt&&DB.opt.r);$("swb").checked=!!(DB.opt&&DB.opt.b);
-["swr","swb"].forEach(i=>$(i).onchange=()=>{DB.opt={r:$("swr").checked,b:$("swb").checked};save();});
-(()=>{
-  if(!PATCH.length){$("pn").hidden=true;return;}
-  $("pns").textContent="パッチノート";
-  $("pnb").innerHTML=PATCH.map((r,i)=>`
-    <details class="patch-ver"${i===0?" open":""}>
-      <summary>ver${esc(r.v)}　<span class="mu">${esc(r.date||"")}</span></summary>
-      <div class="patch-body">
-        ${r.sec.map(([t,l])=>`<div class="ph">【${esc(t)}】</div><ul>${l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`).join("")}
-      </div>
-    </details>
-  `).join("");
-})();
-(()=>{
-  const list = ANNOUNCE.filter(Boolean);
-  if(!list.length) return;
-  const t = list.join("　　　◆　　　");
-  $("annt").textContent = t;
-  $("annt").style.setProperty("--d", Math.max(15, t.length * ANNOUNCE_SPEED) + "s");
-  $("ann").hidden = false;
-})();
-$("res").addEventListener("input",()=>{if(!cur)return;syncCurInputs();S.draft=cur;save();});
-cur=S.draft||null;if(cur)show();
-pl();gl();
-</script>
-</body>
-</html>
+// ---------- はじめる ----------
+applyTheme();
+DB=loadDB();setG(DB.cur);cur=S.draft||null;
+if(cur&&!Array.isArray(cur.blue)){cur=null;S.draft=null;}
+render();
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
+
+</script></body></html>
