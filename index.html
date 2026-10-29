@@ -956,7 +956,7 @@ function vRank(){
      <span class="spw">${spark(ser.map(p=>p.v))}</span></button>`;
   }).join("");
   return h+kp+`<div class="lhead"><span></span><span>名前</span><span style="text-align:right">DGP</span><span>戦績</span><span style="text-align:right">直近5</span><span style="text-align:right">KDA</span><span>推移</span></div><div class="lb">${rows}</div>
-   <div class="row" style="margin-top:12px"><button class="btn sm" data-act="copyrank">順位をテキストでコピー</button><span class="mu3">KDAは（キル＋アシスト）÷デス。入力した試合のみ。</span></div>`;
+   <div class="row" style="margin-top:12px"><button class="btn sm" data-act="copyrank">順位をテキストでコピー</button><span class="mu3">DGP＝ドパガキポイント（レートの単位。計算のしくみは設定画面）。KDAは（キル＋アシスト）÷デス。入力した試合のみ。</span></div>`;
 }
 function assignSlot(n){const used=new Set(UI.sel.map(x=>UI.slots[x]));for(let i=1;i<=8;i++)if(!used.has(i)){UI.slots[n]=i;return true;}return false;}
 function chartView(names){
@@ -1073,8 +1073,8 @@ function vSet(){
     <textarea class="field" id="impt" rows="3" placeholder="またはここに書き出した内容を貼り付け"></textarea>
     <div class="row"><button class="btn" data-act="import" data-v="merge">いまのデータに追加する</button><button class="btn danger" data-act="import" data-v="replace">全部置き換える</button></div>
     <div class="mu3" id="impmsg"></div></div></div>
-  <div class="card"><h3>DGPの仕組み</h3>
-    <details class="rule" open><summary>1試合の増減 = TG補正 + KDA補正 + 連勝ボーナス</summary><p>最初はみんな ${R.start} DGP。試合ごとに、この3つを足した分だけ増減します。</p></details>
+  <div class="card"><h3>DGP（ドパガキポイント）の仕組み</h3>
+    <details class="rule" open><summary>1試合の増減 = TG補正 + KDA補正 + 連勝ボーナス</summary><p>DGP（ドパガキポイント）は、このアプリのレートの単位です。最初はみんな ${R.start} DGP。試合ごとに、この3つを足した分だけ増減します。</p></details>
     <details class="rule"><summary>TG補正（TeamGap補正）</summary><p>チームの平均DGPの差から期待勝率を出し、勝敗との差で決まります。強いチームが勝っても少ししか増えず、弱いチームが勝つと大きく増えます。勝てば最大 +${2*R.win}、負ければ最大 −${2*R.win}（互角なら ±${R.win}）。</p></details>
     <details class="rule"><summary>KDA補正</summary><p>KDA = （キル＋アシスト）÷デス（デス0は1として計算）。ロールごとの基準（${kb}）との差の2倍が補正になり、±${R.kda}で頭打ち。KDAを入力しなかった試合は0です。</p></details>
     <details class="rule"><summary>連勝ボーナス</summary><p>${R.streak.from}連勝目から、勝つたびに +${R.streak.step} ずつ増え、最大 +${R.streak.max}。負けると連勝はリセットされます。</p></details>
